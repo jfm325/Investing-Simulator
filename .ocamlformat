@@ -1,3 +1,4 @@
 profile = conventional
 doc-comments = before
-margin = 80
+margin = 72
+wrap-comments = true
