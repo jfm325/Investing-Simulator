@@ -1,0 +1,10 @@
+# ocamlbuild
+_build
+*.native
+*.byte
+*.cmo
+*.cma
+*.cmi
+
+# System files
+.DS_Store
