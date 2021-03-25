@@ -27,6 +27,6 @@ let stock_tests =
       62.98 200;
   ]
 
-let suite = "test suite" >::: List.flatten [ stock_tests ]
+let suite = "test suite 1" >::: List.flatten [ stock_tests ]
 
 let _ = run_test_tt_main suite
