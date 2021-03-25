@@ -1,4 +1,5 @@
 TEST=test.byte
+OBJECTS=$(MODULES:=.cmo)
 OCAMLBUILD=ocamlbuild -use-ocamlfind
 
 default: build
@@ -6,3 +7,9 @@ default: build
 
 test:
 	$(OCAMLBUILD) -tag 'debug' $(TEST) && ./$(TEST) -runner sequential
+
+build:
+	$(OCAMLBUILD) $(OBJECTS)
+
+clean:
+	ocamlbuild -clean
