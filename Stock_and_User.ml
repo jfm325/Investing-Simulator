@@ -1,3 +1,5 @@
+open Stock
+
 type stockHistory = {
   stock : string;
   mutable shares : int;
@@ -38,22 +40,43 @@ let rec find x lst =
   | [] -> raise (Failure "Not Found")
   | h :: t -> if x = h then 0 else 1 + find x t
 
-let create_stock_history name_stock name_shares =
-  { stock = name_stock; shares = name_shares; buy_in_prices = [] }
+let create_stock_history name_stock name_shares name_buy_in_price =
+  {
+    stock = name_stock;
+    shares = name_shares;
+    buy_in_prices = [ name_buy_in_price ];
+  }
 
-let buy (stock : string) (shares : int) (firstuser : user) =
-  if List.mem stock firstuser.string_stock_companies then
+let change_cash_buy (s : user) (shares : int) (stock_t : Stock.t) =
+  s.cash <- s.cash -. (float shares *. Stock.get_price stock_t 0)
+
+let buy (stock : string) (shares : int) (firstuser : user)
+    (stock_t : Stock.t) =
+  if
+    firstuser.cash -. (float shares *. Stock.get_price stock_t 0) <= 0.0
+  then print_string "You do not have enough cash to purchase this stock"
+  else if List.mem stock firstuser.string_stock_companies then (
     (List.nth firstuser.stock_companies
        (find stock firstuser.string_stock_companies)).shares <-
       (List.nth firstuser.stock_companies
          (find stock firstuser.string_stock_companies))
-        .shares + shares
+        .shares + shares;
+    (List.nth firstuser.stock_companies
+       (find stock firstuser.string_stock_companies)).buy_in_prices <-
+      (List.nth firstuser.stock_companies
+         (find stock firstuser.string_stock_companies))
+        .buy_in_prices
+      @ [ Stock.get_price stock_t 0 ];
+    change_cash_buy firstuser shares stock_t )
   else (
     firstuser.stock_companies <-
-      firstuser.stock_companies @ [ create_stock_history stock shares ];
+      firstuser.stock_companies
+      @ [
+          create_stock_history stock shares (Stock.get_price stock_t 0);
+        ];
     firstuser.string_stock_companies <-
-      firstuser.string_stock_companies @ [ stock ]
-    (*default_user.cash <- update_cash (- shares current_price)*) )
+      firstuser.string_stock_companies @ [ stock ];
+    change_cash_buy firstuser shares stock_t )
 
 (*Test Cases (this will be placed onto the test.ml file later on)*)
 let firstuser = default_user 2000.0
@@ -64,14 +87,14 @@ let () =
 
 let () = firstuser.string_stock_companies <- [ "TSLA" ]
 
-let () = buy "TSLA" 2 firstuser
+(*let () = buy "TSLA" 2 firstuser
 
-let () = buy "TSLA" 62 firstuser
+  let () = buy "TSLA" 62 firstuser
 
-let () = buy "UMC" 1 firstuser
+  let () = buy "UMC" 1 firstuser
 
-let () = buy "UMC" 1 firstuser
+  let () = buy "UMC" 1 firstuser
 
-let () = buy "FUNKO" 3 firstuser
+  let () = buy "FUNKO" 3 firstuser*)
 
 let () = print_int (List.nth firstuser.stock_companies 0).shares
