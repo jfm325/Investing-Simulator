@@ -41,8 +41,8 @@ let view c =
   try
     let u = User.default_user 2000.0 in
     match c with
-    | Cash -> print_float (get_cash u)
-    | Networth -> print_float (get_net_worth u)
+    | Cash -> print_float (User.get_cash u)
+    | Networth -> print_float (User.get_net_worth u)
     (*s is stock symbol, n is number of shares. u is user and st is
       Stock.t *)
     | Buy invest ->
