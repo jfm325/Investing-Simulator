@@ -26,14 +26,23 @@ let parse str =
 let rec legal list symb =
   match list with
   | [] -> raise Not_found
-  | h :: t -> if get_name h = symb then h else legal t symb
+  | h :: t -> if Stock.get_ticker h = symb then h else legal t symb
 
-let view command =
+(**Sell invest -> let s = List.hd invest in let n = int_of_string
+   (List.nth invest 1) in let st = legal stocks s in User.sell s n u st
+   (*sell not made yet*)**)
+
+(**let v3 c = let u = User.default_user 2000.0 in match c with | Cash ->
+   print_float (get_cash u) | Networth -> print_float (get_net_worth u)
+   | Sell inv -> print_string "not yet implemented" | Buy inv ->
+   print_string "not yet implemented" *)
+
+let view c =
   try
-    let u = User.default_user in
-    match command with
-    | Cash -> print_float u.cash
-    | Networth -> print_float u.net_worth
+    let u = User.default_user 2000.0 in
+    match c with
+    | Cash -> print_float (User.get_cash u)
+    | Networth -> print_float (User.get_net_worth u)
     (*s is stock symbol, n is number of shares. u is user and st is
       Stock.t *)
     | Buy invest ->
@@ -41,10 +50,5 @@ let view command =
         let n = int_of_string (List.nth invest 1) in
         let st = legal stocks s in
         User.buy s n u st
-    | Sell invest ->
-        let s = List.hd invest in
-        let n = int_of_string (List.nth invest 1) in
-        let st = legal stocks s in
-        User.sell s n u st
-    (*sell not made yet*)
+    | Sell invest -> print_string "not yet implemented"
   with Not_found -> print_string "Share doesn't exit"

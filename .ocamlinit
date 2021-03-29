@@ -1,9 +1,11 @@
+#directory "_build";;
 #require "oUnit2";;
 #require "Core";;
 #require "Async";;
 #require "ANSITerminal";;
-#directory "_build";;
-#load "user.cmo"
-#load "stock.cmo"
-#load "interaction.cmo"
+#load "stock.cmo" ;;
+#load "init.cmo" ;;
+#load "user.cmo" ;;
+#load "interaction.cmo" ;;
+
 
