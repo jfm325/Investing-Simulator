@@ -6,6 +6,7 @@ type t = {
   name : stock_name;
   ticker : ticker_symbol;
   prices : float array;
+  current_price : float;
 }
 
 let get_name s = s.name
@@ -13,6 +14,8 @@ let get_name s = s.name
 let get_ticker s = s.ticker
 
 let get_price s i = s.prices.(i)
+
+let get_current_price s = s.current_price
 
 (* [create_prices_array filename n] is the float array of prices of size
    [n] constructed from floats in file [filename].*)
@@ -32,4 +35,9 @@ let create_prices_array filename n =
 
 let create_stock n t file =
   let prices_arr = create_prices_array file 240 in
-  { name = n; ticker = t; prices = prices_arr }
+  {
+    name = n;
+    ticker = t;
+    prices = prices_arr;
+    current_price = prices_arr.(0);
+  }

@@ -3,10 +3,32 @@ include Init
 
 let prompt_str = "> "
 
+(* [print_stocks s_lst] prints the stocks in [s_lst]. *)
+let print_stocks (s_lst : Stock.t list) =
+  let bar = "****************" in
+  let name = "" in
+  let prices = "" in
+  let rec print_stocks_helper (lst : Stock.t list) n p =
+    match lst with
+    | [] ->
+        print_endline bar;
+        print_endline n;
+        print_endline p;
+        print_endline bar
+    | h :: t ->
+        print_stocks_helper t
+          (n ^ get_name h ^ "\t")
+          (prices ^ string_of_float (get_current_price h) ^ "\t")
+  in
+  print_stocks_helper s_lst name prices
+
 let rec prompt_input () =
   (* Implement parsing *)
-  print_string "started game\n"
+  print_stocks Init.stocks
 
+(** [prompt_for_start] trims the user input and starts the game if the
+    user types "start", quits the game if user types "quit". If neither,
+    the user is prompted to again to choose. *)
 let rec prompt_for_start () =
   print_string
     ("Type [start] to begin, or [quit] to exit game.\n" ^ prompt_str);
