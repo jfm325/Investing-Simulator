@@ -1,15 +1,15 @@
 open Stock
 
-type stockHistory = {
+type sh = {
   stock : string;
   mutable shares : int;
   mutable buy_in_prices : float list;
 }
 
-type user = {
+type u = {
   mutable net_worth : float;
   mutable cash : float;
-  mutable stock_companies : stockHistory list;
+  mutable stock_companies : sh list;
   mutable string_stock_companies : string list;
 }
 
@@ -47,10 +47,10 @@ let create_stock_history name_stock name_shares name_buy_in_price =
     buy_in_prices = [ name_buy_in_price ];
   }
 
-let change_cash_buy (s : user) (shares : int) (stock_t : Stock.t) =
+let change_cash_buy (s : u) (shares : int) (stock_t : Stock.t) =
   s.cash <- s.cash -. (float shares *. Stock.get_price stock_t 0)
 
-let buy (stock : string) (shares : int) (firstuser : user)
+let buy (stock : string) (shares : int) (firstuser : u)
     (stock_t : Stock.t) =
   if
     firstuser.cash -. (float shares *. Stock.get_price stock_t 0) <= 0.0
