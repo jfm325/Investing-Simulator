@@ -1,6 +1,7 @@
+open User
 open Stock
 include Init
-open User
+
 
 type invest = string list
 
@@ -28,6 +29,7 @@ let rec legal list symb =
   | [] -> raise Not_found
   | h :: t -> if get_name h = symb then h else legal t symb
 
+  User.
 let view command =
   try
     let u = User.default_user in
