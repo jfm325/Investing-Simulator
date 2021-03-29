@@ -56,3 +56,7 @@ exception BadCommand
     "cash" / "networth" and there is a non-empty invest list, or if
     the verb is "buy" / "sell" and there is an empty invest list.*)
 val parse : string -> command
+
+
+(** Raised when a bad command is encountered. *)
+val view : command -> unit
