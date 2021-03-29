@@ -1,5 +1,5 @@
 B _build
 PKG ounit2
-PKG Core 
-PKG Async 
+PKG core 
+PKG async 
 PKG ANSITerminal

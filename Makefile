@@ -11,7 +11,7 @@ timer:
 	$(OCAMLBUILD) -tag 'debug' $(TIMER) && OCAMLRUNPARAM=b ./$(TIMER)
 
 play:
-	$(OCAMLBUILD) -tag 'debug' $(MAIN) && OCAMLRUNPARAM=b ./$(MAIN)
+	$(OCAMLBUILD) -tag  'debug'  $(MAIN) && OCAMLRUNPARAM=b ./$(MAIN)
 
 test:
 	$(OCAMLBUILD) -tag 'debug' $(TEST) && ./$(TEST) -runner sequential
