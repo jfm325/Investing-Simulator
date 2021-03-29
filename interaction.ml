@@ -1,10 +1,10 @@
+open Stock
+include Init
 open User
 
 type invest = string list
 
 type command = Buy of invest | Sell of invest | Cash | Networth
-
-let user = User.current_player
 
 exception EmptyCommand
 
@@ -15,19 +15,36 @@ let parse str =
   match lst with
   | [] -> raise EmptyCommand
   | [ "" ] -> raise EmptyCommand
-  | h :: object_phrase ->
+  | h :: invest ->
       if h = "" then raise EmptyCommand
       else if h = "cash" then Cash
       else if h = "networth" then Networth
-      else if h = "sell" && object_phrase <> [ "" ] then
-        Sell object_phrase
-      else if h = "buy" && object_phrase <> [ "" ] then
-        Buy object_phrase
+      else if h = "sell" && invest <> [ "" ] then Sell invest
+      else if h = "buy" && invest <> [ "" ] then Buy invest
       else raise BadCommand
 
+let rec legal list symb =
+  match list with
+  | [] -> raise Not_found
+  | h :: t -> if get_name h = symb then h else legal t symb
+
 let view command =
-  match command with
-  | Cash -> print_string
-  | Networth -> print_string
-  | Buy inv -> print_string
-  | Sell inv -> print_string
+  try
+    let u = User.default_user in
+    match command with
+    | Cash -> print_float u.cash
+    | Networth -> print_float u.net_worth
+    (*s is stock symbol, n is number of shares. u is user and st is
+      Stock.t *)
+    | Buy invest ->
+        let s = List.hd invest in
+        let n = int_of_string (List.nth invest 1) in
+        let st = legal stocks s in
+        User.buy s n u st
+    | Sell invest ->
+        let s = List.hd invest in
+        let n = int_of_string (List.nth invest 1) in
+        let st = legal stocks s in
+        User.sell s n u st
+    (*sell not made yet*)
+  with Not_found -> print_string "Share doesn't exit"
