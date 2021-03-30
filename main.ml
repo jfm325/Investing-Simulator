@@ -1,6 +1,8 @@
 open Stock
 include Init
 
+(* include Countdown *)
+
 let prompt_str = "> "
 
 (* [print_stocks s_lst] prints the stocks in [s_lst]. *)
@@ -22,8 +24,9 @@ let print_stocks (s_lst : Stock.t list) =
   in
   print_stocks_helper s_lst name prices
 
-let rec prompt_input () =
+let prompt_input () =
   (* Implement parsing *)
+  (* Countdown.(()) *)
   print_stocks Init.stocks
 
 (** [prompt_for_start] trims the user input and starts the game if the
@@ -36,7 +39,7 @@ let rec prompt_for_start () =
   | exception End_of_file -> ()
   | line ->
       let trimmed = String.trim line in
-      if trimmed = "start" then prompt_input ()
+      if trimmed = "start" then Countdown.(())
       else if trimmed = "quit" then exit 0
       else prompt_for_start ()
 

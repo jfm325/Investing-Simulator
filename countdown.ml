@@ -1,5 +1,5 @@
-open Async
 open Core
+open Async
 
 let printf = Print.printf
 

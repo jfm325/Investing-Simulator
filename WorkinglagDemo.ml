@@ -1,4 +1,5 @@
-open! Async
+open Core
+open Async
 
 let main () =
   let rec loop () = Deferred.return () >>= fun () -> loop () in
