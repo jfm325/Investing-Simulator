@@ -3,6 +3,12 @@ open Stock
 let stocks : Stock.t list =
   [ Stock.create_stock "Coke" "COKE" "coke.txt" ]
 
+let start_time = ref 0.
+
+let update_start_time t = start_time := t
+
+let get_start_time () = !start_time
+
 let intro_string =
   "\n\
    *************************\n\

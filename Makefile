@@ -1,8 +1,9 @@
-MODULES=interaction user stock init
+MODULES=interaction user stock init 
 TEST=test.byte
 MAIN=main.byte
 OBJECTS=$(MODULES:=.cmo)
 OCAMLBUILD=ocamlbuild -use-ocamlfind
+# COREBUILD=corebuild -use-ocamlfind
 TIMER=timer.byte
 
 default: build

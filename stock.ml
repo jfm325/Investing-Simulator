@@ -6,7 +6,7 @@ type t = {
   name : stock_name;
   ticker : ticker_symbol;
   prices : float array;
-  current_price : float;
+  mutable current_price : float;
 }
 
 let get_name s = s.name
@@ -16,6 +16,13 @@ let get_ticker s = s.ticker
 let get_price s i = s.prices.(i)
 
 let get_current_price s = s.current_price
+
+let update_current_prices lst time =
+  let i = time / 5 in
+  let update_price (stock : t) =
+    stock.current_price <- get_price stock i
+  in
+  List.iter update_price lst
 
 (* [create_prices_array filename n] is the float array of prices of size
    [n] constructed from floats in file [filename].*)

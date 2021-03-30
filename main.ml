@@ -24,10 +24,21 @@ let print_stocks (s_lst : Stock.t list) =
   in
   print_stocks_helper s_lst name prices
 
-let prompt_input () =
-  (* Implement parsing *)
-  (* Countdown.(()) *)
-  print_stocks Init.stocks
+let rec prompt_input () =
+  print_string prompt_str;
+  match read_line () with
+  | exception End_of_file -> ()
+  | line ->
+      let trimmed = String.trim line in
+      if trimmed = "stocks" then (
+        let time =
+          int_of_float (Unix.time () -. Init.get_start_time ())
+        in
+        Stock.update_current_prices Init.stocks time;
+        print_stocks Init.stocks;
+        prompt_input () )
+      else if trimmed = "quit" then exit 0
+      else prompt_input ()
 
 (** [prompt_for_start] trims the user input and starts the game if the
     user types "start", quits the game if user types "quit". If neither,
@@ -39,7 +50,9 @@ let rec prompt_for_start () =
   | exception End_of_file -> ()
   | line ->
       let trimmed = String.trim line in
-      if trimmed = "start" then Countdown.(())
+      if trimmed = "start" then (
+        Init.update_start_time (Unix.time ());
+        prompt_input () )
       else if trimmed = "quit" then exit 0
       else prompt_for_start ()
 
