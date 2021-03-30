@@ -1,3 +1,4 @@
+MODULES=interaction user stock init
 TEST=test.byte
 MAIN=main.byte
 OBJECTS=$(MODULES:=.cmo)
