@@ -36,19 +36,16 @@ let rec legal list symb =
    print_float (get_cash u) | Networth -> print_float (get_net_worth u)
    | Sell inv -> print_string "not yet implemented" | Buy inv ->
    print_string "not yet implemented" *)
+let u = User.default_user 2000.0
 
 let view c =
-  try
-    let u = User.default_user 2000.0 in
-    match c with
-    | Cash -> print_float (User.get_cash u)
-    | Networth -> print_float (User.get_net_worth u)
-    (*s is stock symbol, n is number of shares. u is user and st is
-      Stock.t *)
-    | Buy invest ->
-        let s = List.hd invest in
-        let n = int_of_string (List.nth invest 1) in
-        let st = legal stocks s in
-        User.buy s n u st
-    | Sell invest -> print_string "not yet implemented"
-  with Not_found -> print_string "Share doesn't exit"
+  match c with
+  | Cash -> print_float (User.get_cash u)
+  | Networth -> print_float (User.get_net_worth u)
+  | Buy invest ->
+      let s = List.hd invest in
+      let n = int_of_string (List.nth invest 1) in
+      let st = legal stocks s in
+      User.buy s n u st;
+      print_float (User.get_cash u) (**just to test*)
+  | Sell invest -> print_string "not yet implemented"
