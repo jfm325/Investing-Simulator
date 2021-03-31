@@ -77,4 +77,4 @@ of "COKE" if exists in the market.
  Raises: [Not_Found] if the share being sold/bought does not exist 
     i.e the company is not included in [stocks] Stok.t list in Init.
 *)
-val view : command -> unit
+val view : command -> User.u -> unit

@@ -1,7 +1,10 @@
 open Stock
+open User
 
 let stocks : Stock.t list =
   [ Stock.create_stock "Coke" "COKE" "coke.txt" ]
+
+let user : User.u = User.default_user 20000.
 
 let start_time = ref 0.
 
