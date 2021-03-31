@@ -28,9 +28,7 @@ let rec legal list symb =
   | [] -> raise Not_found
   | h :: t -> if Stock.get_ticker h = symb then h else legal t symb
 
-let u = User.default_user 2000.0
-
-let view com =
+let view com u =
   try
     match com with
     | Cash ->
@@ -38,7 +36,7 @@ let view com =
         print_string ("Your current cash is " ^ c ^ "\n")
     | Networth ->
         let n = string_of_float (User.get_net_worth u) in
-        print_string ("Your current cash is " ^ n ^ "\n")
+        print_string ("Your current networth is " ^ n ^ "\n")
     | Buy invest ->
         let s = List.hd invest in
         let n = int_of_string (List.nth invest 1) in
