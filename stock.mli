@@ -27,6 +27,10 @@ val get_price : t -> int -> float
 (* [get_current_price s] is the current price of the stock [s]. *)
 val get_current_price : t -> float
 
+(* [update_current_prices lst time] updates the current prices of stocks
+   in [lst] based on the current time.*)
+val update_current_prices : t list -> int -> unit
+
 (** [create_stock n t f] is the stock with name [n], ticker symbol [t],
     and a prices array built from prices are listed on file [f].
     Requires: [f] is a valid filename. *)
