@@ -28,24 +28,22 @@ let rec legal list symb =
   | [] -> raise Not_found
   | h :: t -> if Stock.get_ticker h = symb then h else legal t symb
 
-(**Sell invest -> let s = List.hd invest in let n = int_of_string
-   (List.nth invest 1) in let st = legal stocks s in User.sell s n u st
-   (*sell not made yet*)**)
-
-(**let v3 c = let u = User.default_user 2000.0 in match c with | Cash ->
-   print_float (get_cash u) | Networth -> print_float (get_net_worth u)
-   | Sell inv -> print_string "not yet implemented" | Buy inv ->
-   print_string "not yet implemented" *)
-let u = User.default_user 2000.0
-
-let view c =
-  match c with
-  | Cash -> print_float (User.get_cash u)
-  | Networth -> print_float (User.get_net_worth u)
-  | Buy invest ->
-      let s = List.hd invest in
-      let n = int_of_string (List.nth invest 1) in
-      let st = legal stocks s in
-      User.buy s n u st;
-      print_float (User.get_cash u) (**just to test*)
-  | Sell invest -> print_string "not yet implemented"
+let view com u =
+  try
+    match com with
+    | Cash ->
+        let c = string_of_float (User.get_cash u) in
+        print_string ("Your current cash is " ^ c ^ "\n")
+    | Networth ->
+        let n = string_of_float (User.get_net_worth u) in
+        print_string ("Your current networth is " ^ n ^ "\n")
+    | Buy invest ->
+        let s = List.hd invest in
+        let n = int_of_string (List.nth invest 1) in
+        let st = legal stocks s in
+        User.buy s n u st;
+        print_string
+          "You just bought stocks and your cash has changed \n"
+    | Sell invest -> print_string "not yet implemented"
+  with Not_found ->
+    print_string "Invalid stock not found in market. \n"

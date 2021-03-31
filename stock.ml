@@ -17,7 +17,8 @@ let get_price s i = s.prices.(i)
 
 let get_current_price s = s.current_price
 
-let update_current_prices lst time =
+let update_current_prices lst start_time =
+  let time = int_of_float (Unix.time () -. start_time) in
   let i = time / 5 in
   let update_price (stock : t) =
     stock.current_price <- get_price stock i
