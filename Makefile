@@ -19,5 +19,9 @@ test:
 build:
 	$(OCAMLBUILD) $(OBJECTS)
 
+zip:
+	zip stock_simulator.zip *.ml* *.txt *.sh _tags .merlin .ocamlformat .ocamlinit Makefile	
+	
+
 clean:
 	ocamlbuild -clean

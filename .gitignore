@@ -1,3 +1,6 @@
+# zip file
+stock_simulator.zip
+
 # ocamlbuild
 _build
 *.native
