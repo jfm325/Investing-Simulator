@@ -22,6 +22,7 @@ let instructions =
   "You will be able to buy/sell individual stock shares\n\
    with the goal of making the most of your salary.\n\n\
    Commands:\n\
+   See stocks:         s\n\
    See networth:       networth\n\
    See on-hand cash:   cash\n\
    Buy shares:         buy [ticker_symbol] [# of shares]\n\
