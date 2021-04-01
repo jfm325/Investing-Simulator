@@ -9,8 +9,6 @@ TIMER=timer.byte
 default: build
 	OCAMLRUNPARAM=b utop
 
-
-
 play:
 	$(OCAMLBUILD) -tag  'debug'  $(MAIN) && OCAMLRUNPARAM=b ./$(MAIN)
 
