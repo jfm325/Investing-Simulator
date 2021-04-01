@@ -2,8 +2,6 @@ open Stock
 open Interaction
 open Init
 
-(* include Countdown *)
-
 let prompt_str = "> "
 
 (* [print_stocks s_lst] prints the stocks in [s_lst]. *)
@@ -30,6 +28,10 @@ let rec prompt_input () =
   match read_line () with
   | exception End_of_file -> ()
   | line when line = "quit" -> exit 0
+  | line when line = "s" ->
+      Stock.update_current_prices stocks !start_time;
+      print_stocks stocks;
+      prompt_input ()
   | line -> (
       try
         let cmd = Interaction.parse line in
