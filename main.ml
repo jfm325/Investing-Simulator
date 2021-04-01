@@ -2,8 +2,6 @@ open Stock
 open Interaction
 open Init
 
-(* include Countdown *)
-
 let prompt_str = "> "
 
 (* [print_stocks s_lst] prints the stocks in [s_lst]. *)
