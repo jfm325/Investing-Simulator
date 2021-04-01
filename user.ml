@@ -78,10 +78,3 @@ let buy (stock : string) (shares : int) (firstuser : u)
     firstuser.string_stock_companies <-
       firstuser.string_stock_companies @ [ stock ];
     change_cash_buy firstuser shares stock_t )
-
-(*Test Cases (this will be placed onto the test.ml file later on)*)
-(* let firstuser = default_user 2000.0
-
-   let () = buy "COKE" 2 firstuser (List.nth stocks 0)
-
-   let () = print_int (List.nth firstuser.stock_companies 0).shares *)
