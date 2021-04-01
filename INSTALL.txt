@@ -1,1 +1,9 @@
+Install Instructions:
+Packages used: Ounit2
+run 'make install'
 
+
+Build Instructions:
+To build system: run 'make build'
+To run simulation: run 'make play'
+To run tests: run 'make test'

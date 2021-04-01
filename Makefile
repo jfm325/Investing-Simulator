@@ -3,11 +3,12 @@ TEST=test.byte
 MAIN=main.byte
 OBJECTS=$(MODULES:=.cmo)
 OCAMLBUILD=ocamlbuild -use-ocamlfind
-# COREBUILD=corebuild -use-ocamlfind
-TIMER=timer.byte
 
 default: build
 	OCAMLRUNPARAM=b utop
+
+install: 
+	OCAMLRUNPARAM=b opam install -y ounit
 
 play:
 	$(OCAMLBUILD) -tag  'debug'  $(MAIN) && OCAMLRUNPARAM=b ./$(MAIN)
