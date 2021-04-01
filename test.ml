@@ -17,11 +17,6 @@ let stock_test test_name (stock : Stock.t) (name : string)
   assert_equal ticker (get_ticker stock) ~printer:string_of_s;
   assert_equal price (get_price stock index) ~printer:string_of_float
 
-(*let user_test test_name (theuser: u) (networth : float) (cash : float)
-  = test_name >:: fun _ -> assert_equal networth (get_net_worth theuser)
-  ~printer:string_of_float; assert_equal cash (get_cash theuser)
-  ~printer:string_of_float;*)
-
 let stock_tests =
   let coke = Stock.create_stock "Coke" "COKE" "coke.txt" in
   [
@@ -32,9 +27,6 @@ let stock_tests =
     stock_test "COKE: Price at index 200 = 62.98" coke "Coke" "COKE"
       62.98 200;
   ]
-
-(*let user_tests = let firstuser = default_user 2000.0 in [ user_test
-  "testing for get_cash and get_networth" firstuser 2000.0 2000.0; ]*)
 
 let suite = "test suite 1" >::: List.flatten [ stock_tests ]
 

@@ -1,6 +1,6 @@
 open Stock
 open Interaction
-include Init
+open Init
 
 (* include Countdown *)
 
