@@ -52,11 +52,7 @@ let change_cash_buy (s : u) (shares : int) (stock_t : Stock.t) =
 
 let buy (stock : string) (shares : int) (firstuser : u)
     (stock_t : Stock.t) =
-  if
-    firstuser.cash -. (float shares *. Stock.get_current_price stock_t)
-    <= 0.0
-  then print_string "You do not have enough cash to purchase this stock"
-  else if List.mem stock firstuser.string_stock_companies then (
+  if List.mem stock firstuser.string_stock_companies then (
     (List.nth firstuser.stock_companies
        (find stock firstuser.string_stock_companies)).shares <-
       (List.nth firstuser.stock_companies
