@@ -41,9 +41,16 @@ let view com u =
         let s = List.hd invest in
         let n = int_of_string (List.nth invest 1) in
         let st = legal stocks s in
-        User.buy s n u st;
-        print_string
-          "You just bought stocks and your cash has changed \n"
+        if
+          User.get_cash u -. (float n *. Stock.get_current_price st)
+          <= 0.0
+        then
+          print_string
+            "You do not have enough cash to purchase this stock \n"
+        else (
+          User.buy s n u st;
+          print_string
+            "You just bought stocks and your cash has changed \n" )
     | Sell invest -> print_string "not yet implemented"
   with Not_found ->
     print_string "Invalid stock not found in market. \n"

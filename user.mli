@@ -10,18 +10,28 @@ type u
   history*)
 val default_user : float -> u
 
+(*[get_net_worth u] return the net worth of the user*)
 val get_net_worth : u -> float
 
+(*[get_cash u] return the cash of the user*)
 val get_cash : u -> float
 
+(*[get_stock_companies u] return the list of stock companies the user
+  owns*)
 val get_stock_companies : u -> sh list
 
+(*[get_stock sh] return the stocks*)
 val get_stock : sh -> string
 
+(*[get_share sh] return the amount of shares owned from a stock*)
 val get_shares : sh -> int
 
 val find : 'a -> 'a list -> int
 
+(*[create_stock_history name_stock name_shares name_buy_in_price]
+  creates a record with the stock name [name_stock] and with shares
+  [name_shares] and a list of when they bought their shares
+  [name_buy_in_price]*)
 val create_stock_history : string -> int -> float -> sh
 
 val change_cash_buy : u -> int -> Stock.t -> unit

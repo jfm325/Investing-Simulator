@@ -1,5 +1,4 @@
 open Stock
-include Init
 
 type sh = {
   stock : string;
@@ -53,11 +52,7 @@ let change_cash_buy (s : u) (shares : int) (stock_t : Stock.t) =
 
 let buy (stock : string) (shares : int) (firstuser : u)
     (stock_t : Stock.t) =
-  if
-    firstuser.cash -. (float shares *. Stock.get_current_price stock_t)
-    <= 0.0
-  then print_string "You do not have enough cash to purchase this stock"
-  else if List.mem stock firstuser.string_stock_companies then (
+  if List.mem stock firstuser.string_stock_companies then (
     (List.nth firstuser.stock_companies
        (find stock firstuser.string_stock_companies)).shares <-
       (List.nth firstuser.stock_companies
@@ -79,10 +74,3 @@ let buy (stock : string) (shares : int) (firstuser : u)
     firstuser.string_stock_companies <-
       firstuser.string_stock_companies @ [ stock ];
     change_cash_buy firstuser shares stock_t )
-
-(*Test Cases (this will be placed onto the test.ml file later on)*)
-let firstuser = default_user 2000.0
-
-let () = buy "COKE" 2 firstuser (List.nth stocks 0)
-
-let () = print_int (List.nth firstuser.stock_companies 0).shares
