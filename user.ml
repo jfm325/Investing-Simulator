@@ -82,19 +82,6 @@ let buy (stock : string) (shares : int) (firstuser : u)
 (*Test Cases (this will be placed onto the test.ml file later on)*)
 (*let firstuser = default_user 2000.0
 
-  let () = firstuser.stock_companies <- [ { stock = "TSLA"; shares = 2;
-  buy_in_prices = [ 5.25; 5.15 ] } ]
-
-  let () = firstuser.string_stock_companies <- [ "TSLA" ]
-
-  let () = buy "TSLA" 2 firstuser
-
-  let () = buy "TSLA" 62 firstuser
-
-  let () = buy "UMC" 1 firstuser
-
-  let () = buy "UMC" 1 firstuser
-
-  let () = buy "FUNKO" 3 firstuser
+  let () = buy "COKE" 2 firstuser (List.nth stocks 0)
 
   let () = print_int (List.nth firstuser.stock_companies 0).shares*)
