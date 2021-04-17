@@ -3,7 +3,7 @@ open User
 
 val stocks : Stock.t list
 
-val user : User.u
+val user : User.t
 
 val start_time : float ref
 
