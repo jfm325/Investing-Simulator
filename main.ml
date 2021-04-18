@@ -6,9 +6,9 @@ let prompt_str = "> "
 
 (* [print_stocks s_lst] prints the stocks in [s_lst]. *)
 let print_stocks (s_lst : Stock.t list) =
-  let bar = "****************" in
-  let name = "" in
-  let prices = "" in
+  let bar = "*******************************************" in
+  let name = "Stock: " in
+  let prices = "Price: " in
   let rec print_stocks_helper (lst : Stock.t list) n p =
     match lst with
     | [] ->
@@ -19,7 +19,7 @@ let print_stocks (s_lst : Stock.t list) =
     | h :: t ->
         print_stocks_helper t
           (n ^ get_name h ^ "\t")
-          (prices ^ string_of_float (get_current_price h) ^ "\t")
+          (p ^ string_of_float (get_current_price h) ^ "\t")
   in
   print_stocks_helper s_lst name prices
 
