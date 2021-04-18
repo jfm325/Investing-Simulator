@@ -1,9 +1,10 @@
 open Stock
+include Init
 
 type sh = {
   stock : string;
   mutable shares : int;
-  mutable buy_in_prices : float list;
+  mutable buy_in_prices : (float * int) list;
 }
 
 type u = {
@@ -13,7 +14,23 @@ type u = {
   mutable string_stock_companies : string list;
 }
 
-let get_net_worth u = u.net_worth
+let rec legal list symb =
+  match list with
+  | [] -> raise Not_found
+  | h :: t -> if Stock.get_ticker h = symb then h else legal t symb
+
+let rec calculate_net_worth (u : sh list) counter : float =
+  match u with
+  | [] -> counter
+  | h :: t ->
+      calculate_net_worth t
+        ( counter
+        +. float h.shares
+           *. Stock.get_current_price (legal stocks h.stock) )
+
+let get_net_worth u =
+  u.net_worth <- u.cash +. calculate_net_worth u.stock_companies 0.;
+  u.net_worth
 
 let get_cash u = u.cash
 
@@ -44,11 +61,11 @@ let create_stock_history name_stock name_shares name_buy_in_price =
   {
     stock = name_stock;
     shares = name_shares;
-    buy_in_prices = [ name_buy_in_price ];
+    buy_in_prices = [ (name_buy_in_price, name_shares) ];
   }
 
 let change_cash_buy (s : u) (shares : int) (stock_t : Stock.t) =
-  s.cash <- s.cash -. (float shares *. Stock.get_price stock_t 0)
+  s.cash <- s.cash -. (float shares *. Stock.get_current_price stock_t)
 
 let buy (stock : string) (shares : int) (firstuser : u)
     (stock_t : Stock.t) =
@@ -63,13 +80,14 @@ let buy (stock : string) (shares : int) (firstuser : u)
       (List.nth firstuser.stock_companies
          (find stock firstuser.string_stock_companies))
         .buy_in_prices
-      @ [ Stock.get_price stock_t 0 ];
+      @ [ (Stock.get_current_price stock_t, shares) ];
     change_cash_buy firstuser shares stock_t )
   else (
     firstuser.stock_companies <-
       firstuser.stock_companies
       @ [
-          create_stock_history stock shares (Stock.get_price stock_t 0);
+          create_stock_history stock shares
+            (Stock.get_current_price stock_t);
         ];
     firstuser.string_stock_companies <-
       firstuser.string_stock_companies @ [ stock ];
