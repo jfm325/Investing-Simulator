@@ -2,7 +2,10 @@ open Stock
 open User
 
 let stocks : Stock.t list =
-  [ Stock.create_stock "Coke" "COKE" "coke.txt" ]
+  [
+    Stock.create_stock "Coke" "COKE" "coke1995.txt";
+    Stock.create_stock "Apple" "AAPL" "aapl1995.txt";
+  ]
 
 let user : User.t = User.default_user 20000.
 
