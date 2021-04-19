@@ -1,3 +1,4 @@
+open Game
 open Stock
 open Interaction
 open Init
@@ -23,37 +24,50 @@ let print_stocks (s_lst : Stock.t list) =
   in
   print_stocks_helper s_lst name prices
 
+(** [has_game_ended s] returns true when in-game time has reached or
+    passed year 20 (nmonth 240). *)
+let has_game_ended s =
+  let current_time = int_of_float (Unix.time () -. !start_time) in
+  let month = current_time / s in
+  month >= 240
+
+let end_game_function () =
+  print_endline "TODO: End of game functionality"
+
+(** [prompt_input] prompts user for input during the simulation. *)
 let rec prompt_input () =
-  print_string prompt_str;
-  match read_line () with
-  | exception End_of_file -> ()
-  | line when line = "quit" -> exit 0
-  | line when line = "s" ->
-      Stock.update_current_prices stocks !start_time;
-      print_stocks stocks;
-      prompt_input ()
-  | line -> (
-      try
-        let cmd = Interaction.parse line in
-        match cmd with
-        | Cash ->
-            Interaction.view Cash user;
-            prompt_input ()
-        | Networth ->
-            Stock.update_current_prices stocks !start_time;
-            Interaction.view Networth user;
-            prompt_input ()
-        | Buy lst ->
-            Stock.update_current_prices stocks !start_time;
-            Interaction.view (Buy lst) user;
-            prompt_input ()
-        | Sell lst ->
-            Stock.update_current_prices stocks !start_time;
-            print_endline "Selling";
-            prompt_input ()
-      with _ ->
-        print_endline "Invalid Command";
-        prompt_input () )
+  if has_game_ended Stock.s_per_month then end_game_function ()
+  else (
+    print_string prompt_str;
+    match read_line () with
+    | exception End_of_file -> ()
+    | line when line = "quit" -> exit 0
+    | line when line = "s" ->
+        Stock.update_current_prices stocks !start_time;
+        print_stocks stocks;
+        prompt_input ()
+    | line -> (
+        try
+          let cmd = Interaction.parse line in
+          match cmd with
+          | Cash ->
+              Interaction.view Cash user;
+              prompt_input ()
+          | Networth ->
+              Stock.update_current_prices stocks !start_time;
+              Interaction.view Networth user;
+              prompt_input ()
+          | Buy lst ->
+              Stock.update_current_prices stocks !start_time;
+              Interaction.view (Buy lst) user;
+              prompt_input ()
+          | Sell lst ->
+              Stock.update_current_prices stocks !start_time;
+              print_endline "Selling";
+              prompt_input ()
+        with _ ->
+          print_endline "Invalid Command";
+          prompt_input () ) )
 
 (** [prompt_for_start] trims the user input and starts the game if the
     user types "start", quits the game if user types "quit". If neither,
@@ -66,7 +80,7 @@ let rec prompt_for_start () =
   | line ->
       let trimmed = String.trim line in
       if trimmed = "start" then (
-        Init.update_start_time (Unix.time ());
+        Game.update_start_time (Unix.time ());
         prompt_input () )
       else if trimmed = "quit" then exit 0
       else prompt_for_start ()

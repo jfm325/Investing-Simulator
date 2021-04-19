@@ -13,6 +13,9 @@ type stock_name = string
 (** The type for a stock's ticker symbol. *)
 type ticker_symbol = string
 
+(** [s_per_month] is the number of seconds before updating stock prices. *)
+val s_per_month : int
+
 (** [get_name s] is the name of stock [s]. *)
 val get_name : t -> stock_name
 
