@@ -1,3 +1,6 @@
+(* This module handles the time in the game and determining when the
+   game has ended. *)
+
 val start_time : float ref
 
 val update_start_time : float -> unit

@@ -24,6 +24,8 @@ let print_stocks (s_lst : Stock.t list) =
   in
   print_stocks_helper s_lst name prices
 
+(** [has_game_ended s] returns true when in-game time has reached or
+    passed year 20 (nmonth 240). *)
 let has_game_ended s =
   let current_time = int_of_float (Unix.time () -. !start_time) in
   let month = current_time / s in
@@ -32,6 +34,7 @@ let has_game_ended s =
 let end_game_function () =
   print_endline "TODO: End of game functionality"
 
+(** [prompt_input] prompts user for input during the simulation. *)
 let rec prompt_input () =
   if has_game_ended Stock.s_per_month then end_game_function ()
   else (
