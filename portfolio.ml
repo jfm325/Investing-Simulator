@@ -3,7 +3,7 @@ open Stock_history
 type t = {
   mutable stock_history : Stock_history.t list
 }
-
+let get_stock_history s = s.stock_history
 let create_portfolio sh = {
   stock_history = sh
 }
