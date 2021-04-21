@@ -1,16 +1,15 @@
 open Stock
 open User
 
+(* Will later randomize selection of stocks *)
 let stocks : Stock.t list =
-  [ Stock.create_stock "Coke" "COKE" "coke.txt" ]
+  [
+    Stock.create_stock "Coke" "COKE" "coke1995.txt";
+    Stock.create_stock "Apple" "AAPL" "aapl1995.txt";
+  ]
 
-let user : User.u = User.default_user 20000.
-
-let start_time = ref 0.
-
-let update_start_time t = start_time := t
-
-let get_start_time () = !start_time
+(* Will later send in stock history to user *)
+let user : User.t = User.default_user 20000.
 
 let intro_string =
   "\n\

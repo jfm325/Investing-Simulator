@@ -37,14 +37,15 @@ let interaction_tests =
   ]
 
 let stock_tests =
-  let coke = Stock.create_stock "Coke" "COKE" "coke.txt" in
+  let coke = Stock.create_stock "Coke" "COKE" "coke1995.txt" in
   [
-    stock_test "COKE: Price at index 0 = 21.5" coke "Coke" "COKE" 21.5 0;
-    stock_test "COKE: Price at index 239 = 50.47" coke "Coke" "COKE"
-      50.47 239;
-    stock_test "COKE: Price at index 3 = 22.5" coke "Coke" "COKE" 22.5 3;
-    stock_test "COKE: Price at index 200 = 62.98" coke "Coke" "COKE"
-      62.98 200;
+    stock_test "COKE: Price at index 0 = 28." coke "Coke" "COKE" 28. 0;
+    stock_test "COKE: Price at index 239 = 97.54" coke "Coke" "COKE"
+      97.54 239;
+    stock_test "COKE: Price at index 3 = 32.13" coke "Coke" "COKE" 32.13
+      3;
+    stock_test "COKE: Price at index 200 = 56.12" coke "Coke" "COKE"
+      56.12 200;
   ]
 
 let suite =

@@ -1,3 +1,5 @@
+open Game
+
 type stock_name = string
 
 type ticker_symbol = string
@@ -9,6 +11,8 @@ type t = {
   mutable current_price : float;
 }
 
+let s_per_month = 1
+
 let get_name s = s.name
 
 let get_ticker s = s.ticker
@@ -18,8 +22,9 @@ let get_price s i = s.prices.(i)
 let get_current_price s = s.current_price
 
 let update_current_prices lst start_time =
+  let ended = Game.game_ended s_per_month in
   let time = int_of_float (Unix.time () -. start_time) in
-  let i = time / 5 in
+  let i = if ended then 239 else time / s_per_month in
   let update_price (stock : t) =
     stock.current_price <- get_price stock i
   in
