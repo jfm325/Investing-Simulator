@@ -4,12 +4,14 @@
    user's investments. *)
 
 (** The abstract type for a portfolio. *)
-type t 
+type t
 
-(** [create_portfolio sh] is the portfolio with a list of sotck histories given 
-by [sh]. *)
+(** [create_portfolio sh] is the portfolio with a list of sotck
+    histories given by [sh]. *)
 val create_portfolio : Stock_history.t list -> t
 
-(** [buy_stock p stock n] updates portfolio [p] with a buy order of [n] shares 
-of stock [stock]]. *)
+(** [buy_stock p stock n] updates portfolio [p] with a buy order of [n]
+    shares of stock [stock]]. *)
 val buy_stock : t -> Stock.t -> int -> t
+
+val get_stock_history : t -> Stock_history.t list
