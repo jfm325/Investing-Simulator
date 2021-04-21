@@ -16,6 +16,8 @@ val get_net_worth : t -> Stock.t list -> float
 (*[get_cash u] return the cash of the user*)
 val get_cash : t -> float
 
+val checkstock : Stock.t -> Stock_history.t -> float
+
 val find : 'a -> 'a list -> int
 
 val change_cash_buy : t -> int -> Stock.t -> unit
