@@ -6,7 +6,7 @@
 (** The abstract type for a portfolio. *)
 type t
 
-(** [create_portfolio sh] is the portfolio with a list of sotck
+(** [create_portfolio sh] is the portfolio with a list of stock
     histories given by [sh]. *)
 val create_portfolio : Stock_history.t list -> t
 
@@ -14,4 +14,5 @@ val create_portfolio : Stock_history.t list -> t
     shares of stock [stock]]. *)
 val buy_stock : t -> Stock.t -> int -> t
 
+(** [get_stock_history p] is the stock history list in portfolio [p]. *)
 val get_stock_history : t -> Stock_history.t list
