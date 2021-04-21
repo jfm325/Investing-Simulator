@@ -18,35 +18,30 @@ let rec legal list symb =
   | [] -> raise Not_found
   | h :: t -> if Stock.get_ticker h = symb then h else legal t symb
 
-let rec calculate_net_worth (u : Stock_history.t list) (counter : float)
-    stocks =
-  match u with
+let rec calculate_net_worth sh_lst stocks_lst counter =
+  match sh_lst with
   | [] -> counter
   | h :: t ->
-      calculate_net_worth t
-        ( counter
-        +. float (Stock_history.get_shares h)
-           *. Stock.get_current_price
-                (legal stocks (Stock_history.get_ticker h)) )
-        stocks
+      let stock = legal stocks_lst (Stock_history.get_ticker h) in
+      let value =
+        float_of_int (Stock_history.get_shares h)
+        *. Stock.get_current_price stock
+      in
+      calculate_net_worth t stocks_lst (counter +. value)
 
-let get_net_worth u stock =
-  u.net_worth <-
-    u.cash
-    +. calculate_net_worth
-         (Portfolio.get_stock_history u.portfolio)
-         0. stock;
+let get_net_worth u stocks_lst =
+  let sh_lst = Portfolio.get_stock_history u.portfolio in
+  let investment_value = calculate_net_worth sh_lst stocks_lst 0. in
+  u.net_worth <- u.cash +. investment_value;
   u.net_worth
 
 let get_cash u = u.cash
 
-let default_user (set_amount : float) =
+let create_user c sh_lst =
   {
-    net_worth = set_amount;
-    cash = set_amount;
-    portfolio =
-      Portfolio.create_portfolio
-        [ Stock_history.create_stock_history "Demo" ];
+    net_worth = c;
+    cash = c;
+    portfolio = Portfolio.create_portfolio sh_lst;
     string_stock_companies = [];
   }
 

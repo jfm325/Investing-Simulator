@@ -2,11 +2,11 @@ open Stock_history
 
 type t = { mutable stock_history : Stock_history.t list }
 
-let create_portfolio sh = { stock_history = sh }
-
-let get_stock_history u = u.stock_history
-
 let get_stock_history_size u = List.length u.stock_history
+
+let get_stock_history p = p.stock_history
+
+let create_portfolio sh = { stock_history = sh }
 
 let buy_stock portfolio stock n =
   let ticker = Stock.get_ticker stock in
