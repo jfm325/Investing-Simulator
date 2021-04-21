@@ -16,7 +16,7 @@ let aapl_history = Stock_history.create_stock_history "AAPL"
 let stock_history_lst = [ coke_history; aapl_history ]
 
 (* Will later send in stock history to user *)
-let user : User.t = User.default_user 20000.
+let user : User.t = User.create_user 20000. stock_history_lst
 
 let intro_string =
   "\n\
