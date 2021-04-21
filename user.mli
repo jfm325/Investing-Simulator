@@ -11,10 +11,12 @@ type t
 val default_user : float -> t
 
 (*[get_net_worth u] return the net worth of the user*)
-val get_net_worth : t -> float
+val get_net_worth : t -> Stock.t list -> float
 
 (*[get_cash u] return the cash of the user*)
 val get_cash : t -> float
+
+val checkstock : Stock.t -> Stock_history.t -> float
 
 (*[get_stock_companies u] return the list of stock companies the user
   owns*)

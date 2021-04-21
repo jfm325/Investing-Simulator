@@ -8,6 +8,12 @@ let stocks : Stock.t list =
     Stock.create_stock "Apple" "AAPL" "aapl1995.txt";
   ]
 
+let new_stock_history =
+  [
+    Stock_history.create_stock_history "COKE";
+    Stock_history.create_stock_history "AAPL";
+  ]
+
 (* Will later send in stock history to user *)
 let user : User.t = User.default_user 20000.
 
