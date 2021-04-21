@@ -72,7 +72,7 @@ let view com u =
     | Checkstock invest ->
         let s = List.hd invest in
         let st = legal stocks s in
-        let b = legal_stock_history new_stock_history s in
+        let b = legal_stock_history stock_history_lst s in
         let c = string_of_float (User.checkstock st b) in
         if float_of_string c < 0. then
           print_string

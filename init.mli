@@ -2,7 +2,7 @@ val stocks : Stock.t list
 
 val user : User.t
 
-val new_stock_history : Stock_history.t list
+val stock_history_lst : Stock_history.t list
 
 val intro_string : string
 
