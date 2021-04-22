@@ -1,6 +1,9 @@
 open Stock
 open Stock_history
 open User
+open Cd_history
+
+let cd_history = Cd_history.create_cd_history "cd_rates1995.txt"
 
 (* Will later randomize selection of stocks *)
 let stocks : Stock.t list =

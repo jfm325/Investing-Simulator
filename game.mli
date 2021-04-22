@@ -3,6 +3,8 @@
 
 val start_time : float ref
 
+val s_per_month : int
+
 val update_start_time : float -> unit
 
 val get_start_time : unit -> float
