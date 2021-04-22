@@ -1,11 +1,9 @@
 open Stock
 open Portfolio
 
-(* type sh = {
-  stock : string;
-  mutable shares : int;
-  mutable buy_in_prices : float list;
-} *)
+(* type sh = { stock : string; mutable shares : int; mutable
+   buy_in_prices : (float * int) list; } mutable buy_in_prices : float
+   list; } *)
 
 type t = {
   mutable portfolio : Portfolio.t;
@@ -15,68 +13,70 @@ type t = {
   mutable string_stock_companies : string list;
 }
 
-let get_net_worth u = u.net_worth
+let rec legal list symb =
+  match list with
+  | [] -> raise Not_found
+  | h :: t -> if Stock.get_ticker h = symb then h else legal t symb
+
+let rec calculate_net_worth sh_lst stocks_lst counter =
+  match sh_lst with
+  | [] -> counter
+  | h :: t ->
+      let stock = legal stocks_lst (Stock_history.get_ticker h) in
+      let value =
+        float_of_int (Stock_history.get_shares h)
+        *. Stock.get_current_price stock
+      in
+      calculate_net_worth t stocks_lst (counter +. value)
+
+let get_net_worth u stocks_lst =
+  let sh_lst = Portfolio.get_stock_history u.portfolio in
+  let investment_value = calculate_net_worth sh_lst stocks_lst 0. in
+  u.net_worth <- u.cash +. investment_value;
+  u.net_worth
 
 let get_cash u = u.cash
 
-(* let get_stock_companies u = u.stock_companies *)
-
-(* let get_stock u = u.stock *)
-
-(* let get_shares u = u.shares *)
-
-let default_user (set_amount : float) =
+let create_user c sh_lst =
   {
-    net_worth = set_amount;
-    cash = set_amount;
-    portfolio = Portfolio.create_portfolio 
-    ([Stock_history.create_stock_history "Demo"]);
-    (* stock_companies = []; *)
+    net_worth = c;
+    cash = c;
+    portfolio = Portfolio.create_portfolio sh_lst;
     string_stock_companies = [];
   }
 
-(* method to buy stock first check to see if stock is in the
-   stockhistory list and if it is then it share gets updated else check
-   if stock is in the official stock board and then creates a new
-   stockhistory record and appends it to the stock history list*)
 let rec find x lst =
   match lst with
   | [] -> raise (Failure "Not Found")
   | h :: t -> if x = h then 0 else 1 + find x t
 
-(* let create_stock_history name_stock name_shares name_buy_in_price =
-  {
-    stock = name_stock;
-    shares = name_shares;
-    buy_in_prices = [ name_buy_in_price ];
-  } *)
-
 let change_cash_buy (s : t) (shares : int) (stock_t : Stock.t) =
-  s.cash <- s.cash -. (float shares *. Stock.get_price stock_t 0)
+  s.cash <- s.cash -. (float shares *. Stock.get_current_price stock_t)
 
 let buy (stock_name : string) (shares : int) (user : t)
-  (stock : Stock.t) =
-  user.portfolio <- Portfolio.buy_stock (user.portfolio) stock shares
+    (stock : Stock.t) =
+  user.portfolio <- Portfolio.buy_stock user.portfolio stock shares;
+  change_cash_buy user shares stock
 
-(* if List.mem stock firstuser.string_stock_companies then (
-  (List.nth firstuser.stock_companies
-     (find stock firstuser.string_stock_companies)).shares <-
-    (List.nth firstuser.stock_companies
-       (find stock firstuser.string_stock_companies))
-      .shares + shares;
-  (List.nth firstuser.stock_companies
-     (find stock firstuser.string_stock_companies)).buy_in_prices <-
-    (List.nth firstuser.stock_companies
-       (find stock firstuser.string_stock_companies))
-      .buy_in_prices
-    @ [ Stock.get_price stock_t 0 ];
-  change_cash_buy firstuser shares stock_t )
-else (
-  firstuser.stock_companies <-
-    firstuser.stock_companies
-    @ [
-        create_stock_history stock shares (Stock.get_price stock_t 0);
-      ];
-  firstuser.string_stock_companies <-
-    firstuser.string_stock_companies @ [ stock ];
-  change_cash_buy firstuser shares stock_t ) *)
+let rec lookup (k : (float * int) list) (acc : float) =
+  match k with
+  | [] -> acc
+  | (k, v) :: t -> lookup t (acc +. (k *. float_of_int v))
+
+let rec lookup_shares (k : (float * int) list) (acc : int) =
+  match k with [] -> acc | (k, v) :: t -> lookup_shares t (acc + v)
+
+let checkstock (stock_t : Stock.t) (stock : Stock_history.t) =
+  Stock.get_current_price stock_t
+  *. float_of_int
+       (lookup_shares (Stock_history.get_buy_in_prices stock) 0)
+  -. lookup (Stock_history.get_buy_in_prices stock) 0.
+
+let rec legal_stock_history list symb =
+  match list with
+  | [] -> raise Not_found
+  | h :: t ->
+      if Stock_history.get_ticker h = symb then h
+      else legal_stock_history t symb
+
+(*let get_stock_history stockhistory: Stock_history.t = *)

@@ -65,6 +65,10 @@ let rec prompt_input () =
               Stock.update_current_prices stocks !start_time;
               print_endline "Selling";
               prompt_input ()
+          | Checkstock lst ->
+              Stock.update_current_prices stocks !start_time;
+              Interaction.view (Checkstock lst) user;
+              prompt_input ()
         with _ ->
           print_endline "Invalid Command";
           prompt_input () ) )
