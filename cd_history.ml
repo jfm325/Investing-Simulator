@@ -1,4 +1,5 @@
 open Cd
+open Game
 
 type t = {
   interest_rates : float array;
@@ -6,8 +7,20 @@ type t = {
   mutable cd_lst : Cd.t list;
 }
 
-(* let buy_cd cd_hist amount length = *)
-(* cd_hist.cd_lst <- cd_hist.cd_lst :: *)
+(* let collect_cd cd_hist i = if i < cd_hist.cds_owned then *)
+
+let buy_cd cd_hist amt l =
+  let current_time = Unix.time () in
+  let start_time = Game.get_start_time () in
+  let time = int_of_float (current_time -. start_time) in
+  let seconds_per_yr = Game.s_per_month * 12 in
+  let i = time / seconds_per_yr in
+  let rate = cd_hist.interest_rates.(i) in
+  let new_cd = Cd.create_cd rate l amt in
+  let new_lst = new_cd :: cd_hist.cd_lst in
+  cd_hist.cd_lst <- new_lst;
+  cd_hist.cds_owned <- cd_hist.cds_owned + 1;
+  cd_hist
 
 (** [create_rates_arr filename n] is an array of length [n] filled with
     interest rates from file [filename]. Requires: [filename] has a

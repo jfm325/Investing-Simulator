@@ -6,5 +6,6 @@
 type t
 
 (** [create_cd rate l amt] is the cd with interest rate [rate], length
-    til maturity [l], and amount placed of [amt]. *)
+    til maturity [l], amount placed of [amt], and the month it was
+    bought in (given by current time). *)
 val create_cd : float -> int -> float -> t
