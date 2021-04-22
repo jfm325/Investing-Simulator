@@ -82,7 +82,7 @@ let rec prompt_input () =
               prompt_input ()
           | Sell lst ->
               Stock.update_current_prices stocks !start_time;
-              print_endline "Selling";
+              Interaction.view (Sell lst) user;
               prompt_input ()
           | Checkstock lst ->
               Stock.update_current_prices stocks !start_time;
