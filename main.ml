@@ -2,27 +2,46 @@ open Game
 open Stock
 open Interaction
 open Init
+open Stock_history
+open User
 
 let prompt_str = "> "
 
 (* [print_stocks s_lst] prints the stocks in [s_lst]. *)
-let print_stocks (s_lst : Stock.t list) =
+let print_stocks (s_lst : Stock.t list) (history : Stock_history.t list)
+    =
   let bar = "*******************************************" in
-  let name = "Stock: " in
-  let prices = "Price: " in
-  let rec print_stocks_helper (lst : Stock.t list) n p =
+  let shares = "Shares: " in
+  let name = "Stock:  " in
+  let prices = "Price:  " in
+  let user_stock_performance = "U P/L:  " in
+  let rec print_stocks_helper (his_lst : Stock_history.t list)
+      (lst : Stock.t list) n p g z =
     match lst with
     | [] ->
         print_endline bar;
         print_endline n;
         print_endline p;
+        print_endline g;
+        print_endline z;
         print_endline bar
     | h :: t ->
-        print_stocks_helper t
+        print_stocks_helper his_lst t
           (n ^ get_name h ^ "\t")
           (p ^ string_of_float (get_current_price h) ^ "\t")
+          ( g
+          ^ string_of_int
+              (get_shares
+                 (legal_stock_history his_lst (Stock.get_ticker h)))
+          ^ "\t" )
+          ( z
+          ^ string_of_float
+              (checkstock h
+                 (legal_stock_history his_lst (Stock.get_ticker h)))
+          ^ "\t" )
   in
-  print_stocks_helper s_lst name prices
+  print_stocks_helper history s_lst name prices shares
+    user_stock_performance
 
 (** [has_game_ended s] returns true when in-game time has reached or
     passed year 20 (nmonth 240). *)
@@ -44,7 +63,7 @@ let rec prompt_input () =
     | line when line = "quit" -> exit 0
     | line when line = "s" ->
         Stock.update_current_prices stocks !start_time;
-        print_stocks stocks;
+        print_stocks stocks stock_history_lst;
         prompt_input ()
     | line -> (
         try
