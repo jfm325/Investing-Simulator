@@ -1,5 +1,7 @@
 let start_time = ref 0.
 
+let s_per_month = 1
+
 let update_start_time t = start_time := t
 
 let get_start_time () = !start_time
