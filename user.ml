@@ -37,6 +37,8 @@ let get_net_worth u stocks_lst =
 
 let get_cash u = u.cash
 
+let get_portfolio u = u.portfolio
+
 let create_user c sh_lst =
   {
     net_worth = c;

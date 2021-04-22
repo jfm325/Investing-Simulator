@@ -36,7 +36,7 @@ let end_game_function () =
 
 (** [prompt_input] prompts user for input during the simulation. *)
 let rec prompt_input () =
-  if has_game_ended Stock.s_per_month then end_game_function ()
+  if has_game_ended Game.s_per_month then end_game_function ()
   else (
     print_string prompt_str;
     match read_line () with
