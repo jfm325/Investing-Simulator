@@ -26,6 +26,7 @@ type command =
   | Sell of invest
   | Cash
   | Networth
+  | Checkstock of invest
 
 (** Raised when an empty command is parsed. *)
 exception EmptyCommand

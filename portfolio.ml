@@ -4,6 +4,8 @@ type t = {
   mutable stock_history : Stock_history.t list; (* mutable cd_history *)
 }
 
+let get_stock_history_size u = List.length u.stock_history
+
 let get_stock_history p = p.stock_history
 
 let create_portfolio sh = { stock_history = sh }
