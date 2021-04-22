@@ -53,6 +53,8 @@ let create_user c sh_lst =
     string_stock_companies = [];
   }
 
+let getportfolio u = u.portfolio
+
 let rec find x lst =
   match lst with
   | [] -> raise (Failure "Not Found")
@@ -71,8 +73,9 @@ let buy (stock_name : string) (shares : int) (user : t)
 
 let sell (stock_name : string) (shares : int) (user : t)
     (stock : Stock.t) =
+  let p = user.portfolio in
   Stock_history.sell
-    (legal_stock_history Init.stock_history_lst stock_name)
+    (legal_stock_history (Portfolio.get_stock_history p) stock_name)
     shares;
   change_cash_sell user shares stock
 
