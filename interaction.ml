@@ -68,7 +68,19 @@ let view com u =
           User.buy s n u st;
           print_string
             "You just bought stocks and your cash has changed \n" )
-    | Sell invest -> print_string "not yet implemented"
+    | Sell invest ->
+        let s = List.hd invest in
+        (*let g = legal_stock_history new_stock_history s in*)
+        let n = int_of_string (List.nth invest 1) in
+        let st = legal stocks s in
+        if
+          Stock_history.get_shares
+            (User.legal_stock_history stock_history_lst s)
+          < n
+        then print_string "You do not have enough shares \n"
+        else (
+          User.sell s n u st;
+          print_string "You just sold shares \n" )
     | Checkstock invest ->
         let s = List.hd invest in
         let st = legal stocks s in

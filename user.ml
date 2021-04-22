@@ -1,5 +1,6 @@
 open Stock
 open Portfolio
+open Stock_history
 
 (* type sh = { stock : string; mutable shares : int; mutable
    buy_in_prices : (float * int) list; } mutable buy_in_prices : float
@@ -37,6 +38,13 @@ let get_net_worth u stocks_lst =
 
 let get_cash u = u.cash
 
+let rec legal_stock_history list symb =
+  match list with
+  | [] -> raise Not_found
+  | h :: t ->
+      if Stock_history.get_ticker h = symb then h
+      else legal_stock_history t symb
+
 let create_user c sh_lst =
   {
     net_worth = c;
@@ -53,10 +61,20 @@ let rec find x lst =
 let change_cash_buy (s : t) (shares : int) (stock_t : Stock.t) =
   s.cash <- s.cash -. (float shares *. Stock.get_current_price stock_t)
 
+let change_cash_sell (s : t) (shares : int) (stock_t : Stock.t) =
+  s.cash <- s.cash +. (float shares *. Stock.get_current_price stock_t)
+
 let buy (stock_name : string) (shares : int) (user : t)
     (stock : Stock.t) =
   user.portfolio <- Portfolio.buy_stock user.portfolio stock shares;
   change_cash_buy user shares stock
+
+let sell (stock_name : string) (shares : int) (user : t)
+    (stock : Stock.t) =
+  Stock_history.sell
+    (legal_stock_history Init.stock_history_lst stock_name)
+    shares;
+  change_cash_sell user shares stock
 
 let rec lookup (k : (float * int) list) (acc : float) =
   match k with
@@ -71,12 +89,5 @@ let checkstock (stock_t : Stock.t) (stock : Stock_history.t) =
   *. float_of_int
        (lookup_shares (Stock_history.get_buy_in_prices stock) 0)
   -. lookup (Stock_history.get_buy_in_prices stock) 0.
-
-let rec legal_stock_history list symb =
-  match list with
-  | [] -> raise Not_found
-  | h :: t ->
-      if Stock_history.get_ticker h = symb then h
-      else legal_stock_history t symb
 
 (*let get_stock_history stockhistory: Stock_history.t = *)
