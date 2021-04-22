@@ -72,10 +72,13 @@ let view com u =
         let s = List.hd invest in
         (*let g = legal_stock_history new_stock_history s in*)
         let n = int_of_string (List.nth invest 1) in
+        let user_portfolio = User.getportfolio u in
         let st = legal stocks s in
         if
           Stock_history.get_shares
-            (User.legal_stock_history stock_history_lst s)
+            (User.legal_stock_history
+               (Portfolio.get_stock_history user_portfolio)
+               s)
           < n
         then print_string "You do not have enough shares \n"
         else (
