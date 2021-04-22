@@ -23,3 +23,10 @@ val find : 'a -> 'a list -> int
 val change_cash_buy : t -> int -> Stock.t -> unit
 
 val buy : string -> int -> t -> Stock.t -> unit
+
+val sell : string -> int -> t -> Stock.t -> unit
+
+val getportfolio : t -> Portfolio.t
+
+val legal_stock_history :
+  Stock_history.t list -> string -> Stock_history.t
