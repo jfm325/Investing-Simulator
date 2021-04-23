@@ -7,7 +7,22 @@ type t = {
   mutable cd_lst : Cd.t list;
 }
 
-(* let collect_cd cd_hist i = if i < cd_hist.cds_owned then *)
+let get_cd_lst cd_hist = cd_hist.cd_lst
+
+let get_cds_owned cd_hist = cd_hist.cds_owned
+
+(* [remove_cd cd_lst] is the cd list [cd_lst] with the cd at index [i]
+   removed. *)
+let remove_cd (cd_lst : Cd.t list) i =
+  let f index cd = not (index = i) in
+  List.filteri f cd_lst
+
+let collect_cd cd_hist i =
+  if i < cd_hist.cds_owned && i >= 0 then (
+    let new_cd_lst = remove_cd cd_hist.cd_lst i in
+    cd_hist.cd_lst <- new_cd_lst;
+    cd_hist )
+  else raise (Failure "Index out of bounds in [collect_cd].")
 
 let buy_cd cd_hist amt l =
   let current_time = Unix.time () in

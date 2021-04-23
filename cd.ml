@@ -11,7 +11,7 @@ type t = {
    [r], and the length of the cd [l]. *)
 let match_new_rate l r =
   match l with
-  | SixMonths -> r -. 1.
+  | SixMonths -> if r -. 1. < 0. then r else r -. 1.
   | OneYear -> r
   | ThreeYears -> r +. 1.
 
