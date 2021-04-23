@@ -1,10 +1,12 @@
 type term = SixMonths | OneYear | ThreeYears
 
 type t = {
-  interest_rate : float;
-  starting_month : int;
+  apy : float;
+  monthly_rate : float;
+  starting_month_index : int;
   length : int;
   amount : float;
+  mutable current_value : float;
 }
 
 (* [match_new_rate l r] is the new rate based on the rate for 1 year
@@ -19,6 +21,29 @@ let match_new_rate l r =
 let term_to_months l =
   match l with SixMonths -> 6 | OneYear -> 12 | ThreeYears -> 36
 
+let update_current_value cd =
+  let current_time = Unix.time () in
+  let start_time = Game.get_start_time () in
+  let time = int_of_float (current_time -. start_time) in
+  let current_month_index = time / Game.s_per_month in
+  let term = current_month_index - cd.starting_month_index in
+  if term <= cd.length then (
+    let r = cd.monthly_rate ** float_of_int term in
+    cd.current_value <- cd.amount *. r;
+    cd )
+  else
+    let r = cd.monthly_rate ** float_of_int cd.length in
+    cd.current_value <- cd.amount *. r;
+    cd
+
+(* [match_monthly_rate l r] is the monthly rate given by APY [r] and
+   based on the length of the *)
+let match_monthly_rate l r =
+  match l with
+  | SixMonths -> (r /. 6.) +. 1.
+  | OneYear -> (r /. 12.) +. 1.
+  | ThreeYears -> (r /. 36.) +. 1.
+
 let create_cd rate length amt =
   let current_time = Unix.time () in
   let start_time = Game.get_start_time () in
@@ -26,9 +51,12 @@ let create_cd rate length amt =
   let month_index = time / Game.s_per_month in
   let l = term_to_months length in
   let new_rate = match_new_rate length rate in
+  let m_rate = match_monthly_rate length new_rate in
   {
-    interest_rate = new_rate;
-    starting_month = month_index;
+    apy = new_rate;
+    monthly_rate = m_rate;
+    starting_month_index = month_index;
     length = l;
     amount = amt;
+    current_value = amt;
   }

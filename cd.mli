@@ -8,6 +8,10 @@ type term
 (** The abstract type for a stock. *)
 type t
 
+(** [update_current_value cd] is the cd [cd] with an updated current
+    value of the investment. *)
+val update_current_value : t -> t
+
 (** [create_cd rate length amt] is the cd with interest rate [rate],
     length til maturity [length], amount placed of [amt], and the month
     it was bought in (given by current time). *)

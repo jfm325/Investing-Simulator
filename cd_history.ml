@@ -11,6 +11,8 @@ let get_cd_lst cd_hist = cd_hist.cd_lst
 
 let get_cds_owned cd_hist = cd_hist.cds_owned
 
+(* let update_cd_history cd_hist = *)
+
 (* [remove_cd cd_lst] is the cd list [cd_lst] with the cd at index [i]
    removed. *)
 let remove_cd (cd_lst : Cd.t list) i =
@@ -21,6 +23,7 @@ let collect_cd cd_hist i =
   if i < cd_hist.cds_owned && i >= 0 then (
     let new_cd_lst = remove_cd cd_hist.cd_lst i in
     cd_hist.cd_lst <- new_cd_lst;
+    cd_hist.cds_owned <- cd_hist.cds_owned - 1;
     cd_hist )
   else raise (Failure "Index out of bounds in [collect_cd].")
 
@@ -47,7 +50,8 @@ let create_rates_arr filename n =
   let rec fill_array a =
     try
       line := input_line channel;
-      a.(!index) <- float_of_string line.contents;
+      let apy = float_of_string line.contents in
+      a.(!index) <- apy /. 100.;
       index := !index + 1;
       fill_array a
     with End_of_file -> a
