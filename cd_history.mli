@@ -13,8 +13,20 @@ val get_cd_lst : t -> Cd.t list
     [cd_hist]. *)
 val get_cds_owned : t -> int
 
-(** [collect_cd cd_hist i] is the cd *)
-val collect_cd : t -> int -> t
+(** [update_cd_lst_values cd_hist] is the cd history [cd_hist] with an
+    updated list of cds with current value of investment. *)
+val update_cd_lst_values : t -> t
+
+(** [collect_cd_value cd_hist i] is the value of collecting the cd at
+    index [i] in [cd_hist]. A 10% penalty is applied if the cd is being
+    collected before maturity. Requires: [i] is a valid index in the cd
+    list in [cd_hist]. *)
+val collect_cd_value : t -> int -> float
+
+(** [remove_cd cd_hist i] is the cd history [cd_hist] with the cd at
+    index [i] removed. Requires: [i] >= 0 and [i] is less than the
+    number of cds owned. *)
+val remove_cd : t -> int -> t
 
 (** [buy_cd cd_hist amt l] adds a new cd to the cd history [cd_hist]
     with an amount of [amt], for [l] months, and at the current interest

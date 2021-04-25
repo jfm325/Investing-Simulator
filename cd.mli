@@ -8,6 +8,12 @@ type term
 (** The abstract type for a stock. *)
 type t
 
+(** [get_current_value cd] is the current value of [cd]. *)
+val get_current_value : t -> float
+
+(** [is_cd_matured cd] is true if cd [cd] has matured. *)
+val is_cd_matured : t -> bool
+
 (** [update_current_value cd] is the cd [cd] with an updated current
     value of the investment. *)
 val update_current_value : t -> t

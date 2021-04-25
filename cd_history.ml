@@ -11,17 +11,24 @@ let get_cd_lst cd_hist = cd_hist.cd_lst
 
 let get_cds_owned cd_hist = cd_hist.cds_owned
 
-(* let update_cd_history cd_hist = *)
+let update_cd_lst_values cd_hist =
+  let new_lst = List.map Cd.update_current_value cd_hist.cd_lst in
+  cd_hist.cd_lst <- new_lst;
+  cd_hist
 
-(* [remove_cd cd_lst] is the cd list [cd_lst] with the cd at index [i]
-   removed. *)
-let remove_cd (cd_lst : Cd.t list) i =
-  let f index cd = not (index = i) in
-  List.filteri f cd_lst
+let collect_cd_value cd_hist i =
+  let cd_opt = List.nth_opt cd_hist.cd_lst i in
+  match cd_opt with
+  | None -> raise (Failure "Index invalid in [collect_cd].")
+  | Some cd ->
+      let new_cd = Cd.update_current_value cd in
+      let value = Cd.get_current_value new_cd in
+      if Cd.is_cd_matured new_cd then value else value *. 0.9
 
-let collect_cd cd_hist i =
+let remove_cd cd_hist i =
   if i < cd_hist.cds_owned && i >= 0 then (
-    let new_cd_lst = remove_cd cd_hist.cd_lst i in
+    let f index cd = not (index = i) in
+    let new_cd_lst = List.filteri f cd_hist.cd_lst in
     cd_hist.cd_lst <- new_cd_lst;
     cd_hist.cds_owned <- cd_hist.cds_owned - 1;
     cd_hist )
