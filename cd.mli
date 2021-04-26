@@ -3,10 +3,19 @@
    This module represents a cd in the simulation and contains the *)
 
 (** The abstract type for the length until maturity of a cd. *)
-type term
+type term = SixMonths | OneYear | ThreeYears
 
 (** The abstract type for a stock. *)
 type t
+
+(** [get_apy cd] is the APY of [cd]. *)
+val get_apy : t -> float
+
+(** [get_monthly_rate cd] is the monthly percentage yield of [cd]. *)
+val get_monthly_rate : t -> float
+
+(** [get_length cd] is the length until maturity of [cd]. *)
+val get_length : t -> int
 
 (** [get_current_value cd] is the current value of [cd]. *)
 val get_current_value : t -> float

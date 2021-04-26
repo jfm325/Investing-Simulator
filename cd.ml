@@ -9,6 +9,12 @@ type t = {
   mutable current_value : float;
 }
 
+let get_apy cd = cd.apy
+
+let get_monthly_rate cd = cd.monthly_rate
+
+let get_length cd = cd.length
+
 let get_current_value cd = cd.current_value
 
 (* [match_new_rate l r] is the new rate based on the rate for 1 year
