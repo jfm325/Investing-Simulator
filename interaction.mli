@@ -23,6 +23,8 @@ type command =
   | Cash
   | Networth
   | Checkstock of invest
+  | Help
+  | BuyCD of invest
 
 (** Raised when an empty command is parsed. *)
 exception EmptyCommand

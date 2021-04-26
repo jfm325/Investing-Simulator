@@ -7,6 +7,13 @@ open User
 
 let prompt_str = "> "
 
+let print_cd apy =
+  let apy_str = string_of_float (100. *. apy) in
+  let bar = "*******************" in
+  print_endline bar;
+  print_endline ("APY: " ^ apy_str ^ "%");
+  print_endline bar
+
 (* [print_stocks s_lst] prints the stocks in [s_lst]. *)
 let print_stocks (s_lst : Stock.t list) (history : Stock_history.t list)
     =
@@ -61,6 +68,11 @@ let rec prompt_input () =
     match read_line () with
     | exception End_of_file -> ()
     | line when line = "quit" -> exit 0
+    | line when line = "cd" ->
+        let p = getportfolio user in
+        let cd_h = Portfolio.get_cd_history p in
+        print_cd (Cd_history.get_current_apy cd_h);
+        prompt_input ()
     | line when line = "s" ->
         Stock.update_current_prices stocks !start_time;
         print_stocks stocks stock_history_lst;
@@ -69,6 +81,9 @@ let rec prompt_input () =
         try
           let cmd = Interaction.parse line in
           match cmd with
+          | Help ->
+              Interaction.view Help user;
+              prompt_input ()
           | Cash ->
               Interaction.view Cash user;
               prompt_input ()
