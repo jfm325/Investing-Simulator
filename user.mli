@@ -44,3 +44,7 @@ val buy_index : string -> int -> t -> Stock.t -> unit
 val sell_index : string -> int -> t -> Stock.t -> unit
 
 val checkindex : Stock.t -> Index_history.i -> float
+
+val changecash_buycd : t -> float -> unit
+
+val changecash_sellcd : t -> float -> unit

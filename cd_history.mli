@@ -35,7 +35,7 @@ val remove_cd : t -> int -> t
 (** [buy_cd cd_hist amt l] adds a new cd to the cd history [cd_hist]
     with an amount of [amt], for [l] months, and at the current interest
     rate. *)
-val buy_cd : t -> float -> Cd.term -> t
+val buy_cd : t -> float -> Cd.term -> unit
 
 (** [create_cd_history filename] is the cd history for a cd with
     interest rates pulled from file [filename]. *)

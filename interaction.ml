@@ -1,19 +1,22 @@
 open Stock
 include Init
 open User
+open Portfolio
+open Cd_history
 open Cd
 
 type invest = string list
 
 type command =
-  | Buy of invest
-  | Sell of invest
+  | Buy_S of invest
+  | Sell_S of invest
   | Cash
   | Networth
   (*| My_stockhistory*)
   | Checkstock of invest
   | Help
   | BuyCD of invest
+  | SellCD of invest
 
 exception EmptyCommand
 
@@ -29,9 +32,10 @@ let parse str =
       else if h = "cash" then Cash
       else if h = "networth" then Networth
       else if h = "help" then Help
-      else if h = "sell" && invest <> [ "" ] then Sell invest
-      else if h = "buy" && invest <> [ "" ] then Buy invest
-      else if h = "buy cd" && invest <> [ "" ] then BuyCD invest
+      else if h = "sell_s" && invest <> [ "" ] then Sell_S invest
+      else if h = "buy_s" && invest <> [ "" ] then Buy_S invest
+      else if h = "buy_cd" && invest <> [ "" ] then BuyCD invest
+      else if h = "sell_cd" && invest <> [ "" ] then SellCD invest
       else if h = "checkstock" && invest <> [ "" ] then
         Checkstock invest
         (*else if h = "my_stockhistory" then My_stockhistory*)
@@ -49,17 +53,32 @@ let rec legal_stock_history list symb =
       if Stock_history.get_ticker h = symb then h
       else legal_stock_history t symb
 
-let checklegalterm t = if t = 6 || t = 12 || t = 36 then true else false
+let checklegalterm t =
+  if t = 6 then SixMonths
+  else if t = 12 then OneYear
+  else if t = 36 then ThreeYears
+  else raise BadCommand
 
 let view com u =
   try
     match com with
     | BuyCD invest ->
-        (*let amt = float_of_string (List.hd invest) in if (amt<1000.0)
-          then raise BadCommand else let term = int_of_string (List.nth
-          invest 1) in if (checklegalterm term) then (Cd.create_cd 0
-          term amt) print_string "You just purchased cd" else *)
-        print_string "Incorrect "
+        let amt = float_of_string (List.hd invest) in
+        if amt < 1000. then print_string "Amount not sufficient \n"
+        else
+          let term = int_of_string (List.nth invest 1) in
+          let cdterm = checklegalterm term in
+          let p = User.getportfolio u in
+          let cd_h = Portfolio.get_cd_history p in
+          changecash_buycd u amt;
+          Cd_history.buy_cd cd_h amt cdterm;
+          print_string "You just bought cd and your cash has changed \n"
+    | SellCD invest ->
+        let p = User.getportfolio u in
+        let cd_h = Portfolio.get_cd_history p in
+        let amt = Cd_history.collect_cd_value cd_h 0 in
+        changecash_sellcd u amt;
+        failwith ""
     | Help ->
         print_string
           "Commands to play the game: \n\
@@ -74,7 +93,7 @@ let view com u =
     | Networth ->
         let n = string_of_float (User.get_net_worth u Init.stocks) in
         print_string ("Your current networth is " ^ n ^ "\n")
-    | Buy invest ->
+    | Buy_S invest ->
         let s = List.hd invest in
         (*let g = legal_stock_history new_stock_history s in*)
         let n = int_of_string (List.nth invest 1) in
@@ -89,7 +108,7 @@ let view com u =
           User.buy s n u st;
           print_string
             "You just bought stocks and your cash has changed \n" )
-    | Sell invest ->
+    | Sell_S invest ->
         let s = List.hd invest in
         (*let g = legal_stock_history new_stock_history s in*)
         let n = int_of_string (List.nth invest 1) in

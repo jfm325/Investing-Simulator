@@ -81,7 +81,12 @@ let rec prompt_input () =
         try
           let cmd = Interaction.parse line in
           match cmd with
-          | BuyCD lst -> failwith ""
+          | BuyCD lst ->
+              Interaction.view (BuyCD lst) user;
+              prompt_input ()
+          | SellCD lst ->
+              Interaction.view (SellCD lst) user;
+              prompt_input ()
           | Help ->
               Interaction.view Help user;
               prompt_input ()
@@ -92,13 +97,13 @@ let rec prompt_input () =
               Stock.update_current_prices stocks !start_time;
               Interaction.view Networth user;
               prompt_input ()
-          | Buy lst ->
+          | Buy_S lst ->
               Stock.update_current_prices stocks !start_time;
-              Interaction.view (Buy lst) user;
+              Interaction.view (Buy_S lst) user;
               prompt_input ()
-          | Sell lst ->
+          | Sell_S lst ->
               Stock.update_current_prices stocks !start_time;
-              Interaction.view (Sell lst) user;
+              Interaction.view (Sell_S lst) user;
               prompt_input ()
           | Checkstock lst ->
               Stock.update_current_prices stocks !start_time;

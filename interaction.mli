@@ -18,13 +18,14 @@ type invest = string list
 (** The type [command] represents a player command that is decomposed
     into a verb and possibly an object phrase. *)
 type command =
-  | Buy of invest
-  | Sell of invest
+  | Buy_S of invest
+  | Sell_S of invest
   | Cash
   | Networth
   | Checkstock of invest
   | Help
   | BuyCD of invest
+  | SellCD of invest
 
 (** Raised when an empty command is parsed. *)
 exception EmptyCommand
