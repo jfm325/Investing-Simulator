@@ -96,6 +96,14 @@ let rec prompt_input () =
               Stock.update_current_prices stocks !start_time;
               Interaction.view (Sell lst) user;
               prompt_input ()
+          | Buy_Index lst ->
+              Stock.update_current_prices stocks !start_time;
+              Interaction.view (Buy lst) user;
+              prompt_input ()
+          | Sell_Index lst ->
+              Stock.update_current_prices stocks !start_time;
+              Interaction.view (Sell lst) user;
+              prompt_input ()
           | Checkstock lst ->
               Stock.update_current_prices stocks !start_time;
               Interaction.view (Checkstock lst) user;
