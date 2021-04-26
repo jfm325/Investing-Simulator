@@ -67,11 +67,11 @@ let rec legal_stock_history list symb =
       if Stock_history.get_ticker h = symb then h
       else legal_stock_history t symb
 
-let create_user c sh_lst i_lst =
+let create_user c sh_lst i_lst cd_h =
   {
     net_worth = c;
     cash = c;
-    portfolio = Portfolio.create_portfolio sh_lst i_lst;
+    portfolio = Portfolio.create_portfolio sh_lst i_lst cd_h;
     string_stock_companies = [];
   }
 

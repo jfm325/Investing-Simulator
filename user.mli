@@ -9,7 +9,11 @@ type t
    amount of [c] and the user net worth for the game. User starts with
    stock history of [sh_lst]. *)
 val create_user :
-  float -> Stock_history.t list -> Index_history.i list -> t
+  float ->
+  Stock_history.t list ->
+  Index_history.i list ->
+  Cd_history.t ->
+  t
 
 (*[get_net_worth u stocks_lst] return the net worth of the user. *)
 val get_net_worth : t -> Stock.t list -> float
