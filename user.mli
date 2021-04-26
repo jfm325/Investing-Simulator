@@ -5,10 +5,10 @@
 (*The type of record user*)
 type t
 
-(* [create_user c sh_lst] is the type of user.t . It has the starting
-   amount of [c] and the user net worth for the game. User starts with
-   stock history of [sh_lst]. *)
-val create_user : float -> Stock_history.t list -> t
+(* [create_user c sh_lst cd_h] is the type of user.t . It has the
+   starting amount of [c] and the user net worth for the game. User
+   starts with stock history of [sh_lst] and cd_history [cd_h]. *)
+val create_user : float -> Stock_history.t list -> Cd_history.t -> t
 
 (*[get_net_worth u stocks_lst] return the net worth of the user. *)
 val get_net_worth : t -> Stock.t list -> float
