@@ -8,7 +8,8 @@ type t
 (* [create_user c sh_lst] is the type of user.t . It has the starting
    amount of [c] and the user net worth for the game. User starts with
    stock history of [sh_lst]. *)
-val create_user : float -> Stock_history.t list -> t
+val create_user :
+  float -> Stock_history.t list -> Index_history.i list -> t
 
 (*[get_net_worth u stocks_lst] return the net worth of the user. *)
 val get_net_worth : t -> Stock.t list -> float
@@ -30,3 +31,12 @@ val getportfolio : t -> Portfolio.t
 
 val legal_stock_history :
   Stock_history.t list -> string -> Stock_history.t
+
+val legal_index_history :
+  Index_history.i list -> string -> Index_history.i
+
+val buy_index : string -> int -> t -> Stock.t -> unit
+
+val sell_index : string -> int -> t -> Stock.t -> unit
+
+val checkindex : Stock.t -> Index_history.i -> float

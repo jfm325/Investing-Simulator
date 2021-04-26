@@ -30,13 +30,35 @@ let rec calculate_net_worth sh_lst stocks_lst counter =
       in
       calculate_net_worth t stocks_lst (counter +. value)
 
+let rec index_calculate_net_worth sh_lst stocks_lst counter =
+  match sh_lst with
+  | [] -> counter
+  | h :: t ->
+      let stock = legal stocks_lst (Index_history.get_ticker h) in
+      let value =
+        float_of_int (Index_history.get_shares h)
+        *. Stock.get_current_price stock
+      in
+      index_calculate_net_worth t stocks_lst (counter +. value)
+
 let get_net_worth u stocks_lst =
   let sh_lst = Portfolio.get_stock_history u.portfolio in
+  let in_list = Portfolio.get_index_history u.portfolio in
+  let index_investment_value =
+    index_calculate_net_worth in_list stocks_lst 0.
+  in
   let investment_value = calculate_net_worth sh_lst stocks_lst 0. in
-  u.net_worth <- u.cash +. investment_value;
+  u.net_worth <- u.cash +. investment_value +. index_investment_value;
   u.net_worth
 
 let get_cash u = u.cash
+
+let rec legal_index_history list symb =
+  match list with
+  | [] -> raise Not_found
+  | h :: t ->
+      if Index_history.get_ticker h = symb then h
+      else legal_index_history t symb
 
 let rec legal_stock_history list symb =
   match list with
@@ -45,11 +67,11 @@ let rec legal_stock_history list symb =
       if Stock_history.get_ticker h = symb then h
       else legal_stock_history t symb
 
-let create_user c sh_lst =
+let create_user c sh_lst i_lst =
   {
     net_worth = c;
     cash = c;
-    portfolio = Portfolio.create_portfolio sh_lst;
+    portfolio = Portfolio.create_portfolio sh_lst i_lst;
     string_stock_companies = [];
   }
 
@@ -94,3 +116,21 @@ let checkstock (stock_t : Stock.t) (stock : Stock_history.t) =
   -. lookup (Stock_history.get_buy_in_prices stock) 0.
 
 (*let get_stock_history stockhistory: Stock_history.t = *)
+let buy_index (stock_name : string) (shares : int) (user : t)
+    (stock : Stock.t) =
+  user.portfolio <- Portfolio.buy_index user.portfolio stock shares;
+  change_cash_buy user shares stock
+
+let sell_index (stock_name : string) (shares : int) (user : t)
+    (stock : Stock.t) =
+  let p = user.portfolio in
+  Index_history.sell
+    (legal_index_history (Portfolio.get_index_history p) stock_name)
+    shares;
+  change_cash_sell user shares stock
+
+let checkindex (stock_t : Stock.t) (stock : Index_history.i) =
+  Stock.get_current_price stock_t
+  *. float_of_int
+       (lookup_shares (Index_history.get_buy_in_prices stock) 0)
+  -. lookup (Index_history.get_buy_in_prices stock) 0.
