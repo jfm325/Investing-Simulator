@@ -6,6 +6,10 @@
 (** The abstract type for a portfolio. *)
 type t
 
+(** [get_current_apy cd_h] is the current APY from the interest rates in
+    [cd_h]. *)
+val get_current_apy : t -> float
+
 (** [get_cd_lst cd_hist] is the list of cds in cd history [cd_hist]. *)
 val get_cd_lst : t -> Cd.t list
 

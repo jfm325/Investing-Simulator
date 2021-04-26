@@ -7,6 +7,14 @@ type t = {
   mutable cd_lst : Cd.t list;
 }
 
+let get_current_apy cd_h =
+  let current_time = Unix.time () in
+  let start_time = Game.get_start_time () in
+  let time = int_of_float (current_time -. start_time) in
+  let seconds_per_year = Game.s_per_month * 12 in
+  let index = time / seconds_per_year in
+  cd_h.interest_rates.(index)
+
 let get_cd_lst cd_hist = cd_hist.cd_lst
 
 let get_cds_owned cd_hist = cd_hist.cds_owned
