@@ -69,6 +69,9 @@ let rec prompt_input () =
         try
           let cmd = Interaction.parse line in
           match cmd with
+          | Help ->
+              Interaction.view Help user;
+              prompt_input ()
           | Cash ->
               Interaction.view Cash user;
               prompt_input ()

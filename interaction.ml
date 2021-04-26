@@ -4,6 +4,8 @@ open User
 
 type invest = string list
 
+type cd_invest = string list
+
 type command =
   | Buy of invest
   | Sell of invest
@@ -11,6 +13,8 @@ type command =
   | Networth
   (*| My_stockhistory*)
   | Checkstock of invest
+  | Help
+  | BuyCD of cd_invest
 
 exception EmptyCommand
 
@@ -25,11 +29,13 @@ let parse str =
       if h = "" then raise EmptyCommand
       else if h = "cash" then Cash
       else if h = "networth" then Networth
+      else if h = "help" then Help
       else if h = "sell" && invest <> [ "" ] then Sell invest
       else if h = "buy" && invest <> [ "" ] then Buy invest
       else if h = "checkstock" && invest <> [ "" ] then
         Checkstock invest
         (*else if h = "my_stockhistory" then My_stockhistory*)
+      else if h = "buy cd" && cd_invest <> [ "" ] then BuyCD cd_invest
       else raise BadCommand
 
 let rec legal list symb =
@@ -47,6 +53,14 @@ let rec legal_stock_history list symb =
 let view com u =
   try
     match com with
+    | Help ->
+        print_string
+          "Commands to play the game: \n\
+          \          cash to view cash, \n\
+          \          networth to check your networth, \n\
+          \          buy to buy stocks, \n\
+          \          sell to sell stocks, \n\
+          \          s to view the current stock market. \n"
     | Cash ->
         let c = string_of_float (User.get_cash u) in
         print_string ("Your current cash is " ^ c ^ "\n")
