@@ -17,7 +17,9 @@ let aapl_history = Stock_history.create_stock_history "AAPL"
 (** History of Investments *)
 let stock_history_lst = [ coke_history; aapl_history ]
 
-let index_history_lst = []
+let index_coke_history = Index_history.create_index_history "COKE"
+
+let index_history_lst = [ index_coke_history ]
 
 let cd_history = Cd_history.create_cd_history "cd_rates1995.txt"
 

@@ -8,7 +8,7 @@ type t = {
   mutable cd_history : Cd_history.t;
 }
 
-let get_stock_history_size u = List.length u.stock_history
+let get_index_history_size u = List.length u.index_history
 
 let get_stock_history p = p.stock_history
 

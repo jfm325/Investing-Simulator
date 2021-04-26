@@ -7,6 +7,8 @@ type invest = string list
 type command =
   | Buy of invest
   | Sell of invest
+  | Buy_Index of invest
+  | Sell_Index of invest
   | Cash
   | Networth
   (*| My_stockhistory*)
@@ -27,6 +29,9 @@ let parse str =
       else if h = "networth" then Networth
       else if h = "sell" && invest <> [ "" ] then Sell invest
       else if h = "buy" && invest <> [ "" ] then Buy invest
+      else if h = "sell_index" && invest <> [ "" ] then
+        Sell_Index invest
+      else if h = "buy_index" && invest <> [ "" ] then Buy_Index invest
       else if h = "checkstock" && invest <> [ "" ] then
         Checkstock invest
         (*else if h = "my_stockhistory" then My_stockhistory*)
@@ -83,6 +88,37 @@ let view com u =
         then print_string "You do not have enough shares \n"
         else (
           User.sell s n u st;
+          print_string "You just sold shares \n" )
+    | Buy_Index invest ->
+        let s = List.hd invest in
+        (*let g = legal_stock_history new_stock_history s in*)
+        let n = int_of_string (List.nth invest 1) in
+        let st = legal stocks s in
+        if
+          User.get_cash u -. (float n *. Stock.get_current_price st)
+          <= 0.0
+        then
+          print_string
+            "You do not have enough cash to purchase this stock \n"
+        else (
+          User.buy_index s n u st;
+          print_string
+            "You just bought stocks and your cash has changed \n" )
+    | Sell_Index invest ->
+        let s = List.hd invest in
+        (*let g = legal_stock_history new_stock_history s in*)
+        let n = int_of_string (List.nth invest 1) in
+        let user_portfolio = User.getportfolio u in
+        let st = legal stocks s in
+        if
+          Index_history.get_shares
+            (User.legal_index_history
+               (Portfolio.get_index_history user_portfolio)
+               s)
+          < n
+        then print_string "You do not have enough shares \n"
+        else (
+          User.sell_index s n u st;
           print_string "You just sold shares \n" )
     | Checkstock invest ->
         let s = List.hd invest in

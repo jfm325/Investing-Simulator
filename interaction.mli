@@ -24,6 +24,8 @@ type invest = string list
 type command =
   | Buy of invest
   | Sell of invest
+  | Buy_Index of invest
+  | Sell_Index of invest
   | Cash
   | Networth
   | Checkstock of invest

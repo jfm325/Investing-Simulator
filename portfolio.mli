@@ -11,7 +11,7 @@ type t
 val create_portfolio : Stock_history.t list -> Index_history.i list -> Cd_history.t -> t
 (** [get_cd_history p] is the cd history in portfolio [p]. *)
 val get_cd_history : t -> Cd_history.t
-
+val get_index_history_size: t -> int
 (** [get_stock_history p] is the stock history list in portfolio [p]. *)
 val get_stock_history : t -> Stock_history.t list
 

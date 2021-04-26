@@ -77,6 +77,8 @@ let create_user c sh_lst i_lst cd_h =
 
 let getportfolio u = u.portfolio
 
+let getindexsize u = Portfolio.get_index_history
+
 let rec find x lst =
   match lst with
   | [] -> raise (Failure "Not Found")
