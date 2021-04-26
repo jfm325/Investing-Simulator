@@ -2,11 +2,26 @@ open OUnit2
 open Stock
 open User
 open Interaction
+open Cd_history
 
 (* Printers *)
 
 (* [string_of_s s] is the printer for string [s]. *)
 let string_of_s s = s
+
+(* [cd_test] is the test for module CD. *)
+let cd_test test_name (cd : Cd.t) expected_apy expected_monthly_rate
+    expected_length =
+  test_name >:: fun _ ->
+  assert_equal expected_apy (Cd.get_apy cd) ~printer:string_of_float;
+  assert_equal expected_monthly_rate
+    (Cd.get_monthly_rate cd)
+    ~printer:string_of_float;
+  assert_equal expected_length (Cd.get_length cd) ~printer:string_of_int
+
+let cd_tests =
+  let cd_1 = Cd.create_cd 10. ThreeYears 1000. in
+  []
 
 (* [stock_test] is the test for module Stock. [stock] is tested for
    expected values of stock name, ticker symbol, and price at index

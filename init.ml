@@ -3,8 +3,6 @@ open Stock_history
 open User
 open Cd_history
 
-let cd_history = Cd_history.create_cd_history "cd_rates1995.txt"
-
 (* Will later randomize selection of stocks *)
 let stocks : Stock.t list =
   [
@@ -17,12 +15,19 @@ let coke_history = Stock_history.create_stock_history "COKE"
 
 let aapl_history = Stock_history.create_stock_history "AAPL"
 
+<<<<<<< HEAD
 let msft_history = Stock_history.create_stock_history "MSFT"
 
 let stock_history_lst = [ coke_history; aapl_history; msft_history ]
+=======
+(** History of Investments *)
+let stock_history_lst = [ coke_history; aapl_history ]
+>>>>>>> d8c6fa98c1decaf99c4d3e93a74a383e540afc4b
+
+let cd_history = Cd_history.create_cd_history "cd_rates1995.txt"
 
 (* Will later send in stock history to user *)
-let user : User.t = User.create_user 20000. stock_history_lst
+let user : User.t = User.create_user 20000. stock_history_lst cd_history
 
 let intro_string =
   "\n\
