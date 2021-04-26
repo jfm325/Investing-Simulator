@@ -1,10 +1,9 @@
 open Stock
 include Init
 open User
+open Cd
 
 type invest = string list
-
-type cd_invest = string list
 
 type command =
   | Buy of invest
@@ -14,7 +13,7 @@ type command =
   (*| My_stockhistory*)
   | Checkstock of invest
   | Help
-  | BuyCD of cd_invest
+  | BuyCD of invest
 
 exception EmptyCommand
 
@@ -32,10 +31,10 @@ let parse str =
       else if h = "help" then Help
       else if h = "sell" && invest <> [ "" ] then Sell invest
       else if h = "buy" && invest <> [ "" ] then Buy invest
+      else if h = "buy cd" && invest <> [ "" ] then BuyCD invest
       else if h = "checkstock" && invest <> [ "" ] then
         Checkstock invest
         (*else if h = "my_stockhistory" then My_stockhistory*)
-      else if h = "buy cd" && cd_invest <> [ "" ] then BuyCD cd_invest
       else raise BadCommand
 
 let rec legal list symb =
@@ -50,9 +49,17 @@ let rec legal_stock_history list symb =
       if Stock_history.get_ticker h = symb then h
       else legal_stock_history t symb
 
+let checklegalterm t = if t = 6 || t = 12 || t = 36 then true else false
+
 let view com u =
   try
     match com with
+    | BuyCD invest ->
+        (*let amt = float_of_string (List.hd invest) in if (amt<1000.0)
+          then raise BadCommand else let term = int_of_string (List.nth
+          invest 1) in if (checklegalterm term) then (Cd.create_cd 0
+          term amt) print_string "You just purchased cd" else *)
+        print_string "Incorrect "
     | Help ->
         print_string
           "Commands to play the game: \n\
