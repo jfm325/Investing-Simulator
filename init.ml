@@ -38,8 +38,11 @@ let instructions =
    with the goal of making the most of your salary.\n\n\
    Commands:\n\
    See stocks:         s\n\
+   See cd info :       cd\n\
    See networth:       networth\n\
    See on-hand cash:   cash\n\
-   Buy shares:         buy [ticker_symbol] [# of shares]\n\
-   Sell shares:        sell [ticker_symbol] [# of shares]\n\
+   Buy shares:         buy_s [ticker_symbol] [# of shares]\n\
+   Sell shares:        sell_s [ticker_symbol] [# of shares]\n\
+   Buy cd:             buy_cd [amt] [term of 6,12 or 36 months]\n\
+   Sell cd:            sell_cd [index # in cd_history list] \n\
    View commands again: help\n\n"

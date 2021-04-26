@@ -76,17 +76,11 @@ let view com u =
     | SellCD invest ->
         let p = User.getportfolio u in
         let cd_h = Portfolio.get_cd_history p in
-        let amt = Cd_history.collect_cd_value cd_h 0 in
+        let i = int_of_string (List.hd invest) in
+        let amt = Cd_history.collect_cd_value cd_h i in
         changecash_sellcd u amt;
-        failwith ""
-    | Help ->
-        print_string
-          "Commands to play the game: \n\
-          \          cash to view cash, \n\
-          \          networth to check your networth, \n\
-          \          buy to buy stocks, \n\
-          \          sell to sell stocks, \n\
-          \          s to view the current stock market. \n"
+        print_string "You just sold cd and your cash has changed \n"
+    | Help -> print_string Init.instructions
     | Cash ->
         let c = string_of_float (User.get_cash u) in
         print_string ("Your current cash is " ^ c ^ "\n")
