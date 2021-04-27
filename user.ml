@@ -136,3 +136,7 @@ let checkindex (stock_t : Stock.t) (stock : Index_history.i) =
   *. float_of_int
        (lookup_shares (Index_history.get_buy_in_prices stock) 0)
   -. lookup (Index_history.get_buy_in_prices stock) 0.
+
+let changecash_buycd s f = s.cash <- s.cash -. f
+
+let changecash_sellcd s f = s.cash <- s.cash +. f

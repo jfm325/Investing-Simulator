@@ -38,8 +38,7 @@ let remove_cd cd_hist i =
     let f index cd = not (index = i) in
     let new_cd_lst = List.filteri f cd_hist.cd_lst in
     cd_hist.cd_lst <- new_cd_lst;
-    cd_hist.cds_owned <- cd_hist.cds_owned - 1;
-    cd_hist )
+    cd_hist.cds_owned <- cd_hist.cds_owned - 1 )
   else raise (Failure "Index out of bounds in [collect_cd].")
 
 let buy_cd cd_hist amt l =
@@ -52,8 +51,9 @@ let buy_cd cd_hist amt l =
   let new_cd = Cd.create_cd rate l amt in
   let new_lst = new_cd :: cd_hist.cd_lst in
   cd_hist.cd_lst <- new_lst;
-  cd_hist.cds_owned <- cd_hist.cds_owned + 1;
-  cd_hist
+  cd_hist.cds_owned <- cd_hist.cds_owned + 1
+
+(*cd_hist*)
 
 (** [create_rates_arr filename n] is an array of length [n] filled with
     interest rates from file [filename]. Requires: [filename] has a
