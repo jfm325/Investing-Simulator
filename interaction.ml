@@ -17,6 +17,7 @@ type command =
   | Help
   | BuyCD of invest
   | SellCD of invest
+  | ViewCD
 
 exception EmptyCommand
 
@@ -36,6 +37,7 @@ let parse str =
       else if h = "buy_s" && invest <> [ "" ] then Buy_S invest
       else if h = "buy_cd" && invest <> [ "" ] then BuyCD invest
       else if h = "sell_cd" && invest <> [ "" ] then SellCD invest
+      else if h = "view_cd" then ViewCD
       else if h = "checkstock" && invest <> [ "" ] then
         Checkstock invest
         (*else if h = "my_stockhistory" then My_stockhistory*)
@@ -59,9 +61,37 @@ let checklegalterm t =
   else if t = 36 then ThreeYears
   else raise BadCommand
 
+let rec print_cd his_lst lst count =
+  let bar = "*******************************************" in
+  let num = "Cd: " in
+  let term = "Term (in months): " in
+  let apy = "APY (%):  " in
+  let c = 1 in
+  let rec print_cd_helper his_lst (lst : Cd.t list) num term f c =
+    match lst with
+    | [] ->
+        print_endline bar;
+        print_endline num;
+        print_endline term;
+        print_endline f;
+        print_endline bar
+    | h :: t ->
+        print_cd_helper his_lst t
+          (num ^ "\t" ^ "\t" ^ " " ^ string_of_int c ^ "\t")
+          (term ^ string_of_int (Cd.get_length h) ^ "\t" ^ "\t")
+          (f ^ "\t" ^ string_of_float (Cd.get_apy h) ^ "\t")
+          (c + 1)
+  in
+  print_cd_helper his_lst lst num term apy c
+
 let view com u =
   try
     match com with
+    | ViewCD ->
+        let p = User.getportfolio u in
+        let cd_h = Portfolio.get_cd_history p in
+        let c_lst = Cd_history.get_cd_lst cd_h in
+        print_cd cd_h c_lst 1
     | BuyCD invest ->
         let amt = float_of_string (List.hd invest) in
         if amt < 1000. then print_string "Amount not sufficient \n"
@@ -70,15 +100,16 @@ let view com u =
           let cdterm = checklegalterm term in
           let p = User.getportfolio u in
           let cd_h = Portfolio.get_cd_history p in
-          changecash_buycd u amt;
+          User.changecash_buycd u amt;
           Cd_history.buy_cd cd_h amt cdterm;
           print_string "You just bought cd and your cash has changed \n"
     | SellCD invest ->
         let p = User.getportfolio u in
         let cd_h = Portfolio.get_cd_history p in
         let i = int_of_string (List.hd invest) in
+        Cd_history.remove_cd cd_h i;
         let amt = Cd_history.collect_cd_value cd_h i in
-        changecash_sellcd u amt;
+        User.changecash_sellcd u amt;
         print_string "You just sold cd and your cash has changed \n"
     | Help -> print_string Init.instructions
     | Cash ->

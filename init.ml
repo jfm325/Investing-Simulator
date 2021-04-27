@@ -45,4 +45,5 @@ let instructions =
    Sell shares:        sell_s [ticker_symbol] [# of shares]\n\
    Buy cd:             buy_cd [amt] [term of 6,12 or 36 months]\n\
    Sell cd:            sell_cd [index # in cd_history list] \n\
+   View bought cd:     view_cd \n\
    View commands again: help\n\n"

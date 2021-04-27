@@ -81,6 +81,9 @@ let rec prompt_input () =
         try
           let cmd = Interaction.parse line in
           match cmd with
+          | ViewCD ->
+              Interaction.view ViewCD user;
+              prompt_input ()
           | BuyCD lst ->
               Interaction.view (BuyCD lst) user;
               prompt_input ()

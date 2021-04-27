@@ -26,6 +26,7 @@ type command =
   | Help
   | BuyCD of invest
   | SellCD of invest
+  | ViewCD
 
 (** Raised when an empty command is parsed. *)
 exception EmptyCommand
