@@ -18,15 +18,10 @@ type invest = string list
 (** The type [command] represents a player command that is decomposed
     into a verb and possibly an object phrase. *)
 type command =
-<<<<<<< HEAD
-  | Buy of invest
-  | Sell of invest
   | Buy_Index of invest
   | Sell_Index of invest
-=======
   | Buy_S of invest
   | Sell_S of invest
->>>>>>> Anushka_b2
   | Cash
   | Networth
   | Checkstock of invest

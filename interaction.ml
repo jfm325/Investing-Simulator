@@ -8,15 +8,10 @@ open Cd
 type invest = string list
 
 type command =
-<<<<<<< HEAD
-  | Buy of invest
-  | Sell of invest
   | Buy_Index of invest
   | Sell_Index of invest
-=======
   | Buy_S of invest
   | Sell_S of invest
->>>>>>> Anushka_b2
   | Cash
   | Networth
   (*| My_stockhistory*)
@@ -40,20 +35,14 @@ let parse str =
       else if h = "cash" then Cash
       else if h = "networth" then Networth
       else if h = "help" then Help
-<<<<<<< HEAD
-      else if h = "sell" && invest <> [ "" ] then Sell invest
-      else if h = "buy" && invest <> [ "" ] then Buy invest
       else if h = "sell_index" && invest <> [ "" ] then
         Sell_Index invest
       else if h = "buy_index" && invest <> [ "" ] then Buy_Index invest
-      else if h = "buy cd" && invest <> [ "" ] then BuyCD invest
-=======
       else if h = "sell_s" && invest <> [ "" ] then Sell_S invest
       else if h = "buy_s" && invest <> [ "" ] then Buy_S invest
       else if h = "buy_cd" && invest <> [ "" ] then BuyCD invest
       else if h = "sell_cd" && invest <> [ "" ] then SellCD invest
       else if h = "view_cd" then ViewCD
->>>>>>> Anushka_b2
       else if h = "checkstock" && invest <> [ "" ] then
         Checkstock invest
         (*else if h = "my_stockhistory" then My_stockhistory*)
