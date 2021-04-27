@@ -42,6 +42,9 @@ let instructions =
    See stocks:         s\n\
    See networth:       networth\n\
    See on-hand cash:   cash\n\
+   See specific stock:  checkstock [ticker_symbol]\n\
    Buy shares:         buy [ticker_symbol] [# of shares]\n\
+   Buy_index shares:   buy_index [ticker_symbol] [# of shares]\n\
    Sell shares:        sell [ticker_symbol] [# of shares]\n\
+   Sell_index shares:  sell_index [ticker_symbol] [# of shares]\n\
    View commands again: help\n\n"
