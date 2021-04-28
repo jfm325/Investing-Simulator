@@ -112,8 +112,8 @@ let view com u =
         let p = User.getportfolio u in
         let cd_h = Portfolio.get_cd_history p in
         let i = int_of_string (List.hd invest) in
-        Cd_history.remove_cd cd_h i;
         let amt = Cd_history.collect_cd_value cd_h i in
+        Cd_history.remove_cd cd_h i;
         User.changecash_sellcd u amt;
         print_string "You just sold cd and your cash has changed \n"
     | Help -> print_string Init.instructions
