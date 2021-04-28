@@ -109,11 +109,11 @@ let rec prompt_input () =
               Interaction.view (Sell_S lst) user;
               prompt_input ()
           | Buy_Index lst ->
-              Stock.update_current_prices stocks !start_time;
+              Stock.update_current_prices index !start_time;
               Interaction.view (Buy_Index lst) user;
               prompt_input ()
           | Sell_Index lst ->
-              Stock.update_current_prices stocks !start_time;
+              Stock.update_current_prices index !start_time;
               Interaction.view (Sell_Index lst) user;
               prompt_input ()
           | Checkstock lst ->

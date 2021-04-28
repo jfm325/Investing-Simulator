@@ -121,7 +121,9 @@ let view com u =
         let c = string_of_float (User.get_cash u) in
         print_string ("Your current cash is " ^ c ^ "\n")
     | Networth ->
-        let n = string_of_float (User.get_net_worth u Init.stocks) in
+        let n =
+          string_of_float (User.get_net_worth u Init.stocks index)
+        in
         print_string ("Your current networth is " ^ n ^ "\n")
     | Buy_S invest ->
         let s = List.hd invest in
@@ -158,8 +160,9 @@ let view com u =
         let s = List.hd invest in
         (*let g = legal_stock_history new_stock_history s in*)
         let n = int_of_string (List.nth invest 1) in
-        let st = legal stocks s in
-        if
+        let st = legal index s in
+        if s <> "SPY" then print_string "this is not an index_fund \n"
+        else if
           User.get_cash u -. (float n *. Stock.get_current_price st)
           <= 0.0
         then
@@ -174,7 +177,7 @@ let view com u =
         (*let g = legal_stock_history new_stock_history s in*)
         let n = int_of_string (List.nth invest 1) in
         let user_portfolio = User.getportfolio u in
-        let st = legal stocks s in
+        let st = legal index s in
         if
           Index_history.get_shares
             (User.legal_index_history
