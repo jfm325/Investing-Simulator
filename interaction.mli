@@ -29,6 +29,7 @@ type command =
   | BuyCD of invest
   | SellCD of invest
   | ViewCD
+  | ViewIndex
 
 (** Raised when an empty command is parsed. *)
 exception EmptyCommand

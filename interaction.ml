@@ -20,10 +20,19 @@ type command =
   | BuyCD of invest
   | SellCD of invest
   | ViewCD
+  | ViewIndex
 
 exception EmptyCommand
 
 exception BadCommand
+
+let rec print_in indexlist =
+  match indexlist with
+  | [] -> print_string "You don't own any index funds. \n"
+  | h :: t ->
+      let s = Index_history.get_shares h in
+      print_string ("Index funds owned : " ^ string_of_int s ^ "\n");
+      print_in t
 
 let rec legal list symb =
   match list with
@@ -69,6 +78,10 @@ let rec print_cd his_lst lst count =
 let view com u =
   try
     match com with
+    | ViewIndex ->
+        let p = User.getportfolio u in
+        let in_h = Portfolio.get_index_history p in
+        print_in in_h
     | ViewCD ->
         let p = User.getportfolio u in
         let cd_h = Portfolio.get_cd_history p in
@@ -145,7 +158,7 @@ let view com u =
           print_string
             "You do not have enough cash to purchase this stock \n"
         else (
-          User.buy_index s n u st;
+          User.buy s n u st;
           print_string
             "You just bought stocks and your cash has changed \n" )
     | Sell_Index invest ->
@@ -189,6 +202,7 @@ let parse str u =
   | h :: invest ->
       if h = "" then raise EmptyCommand
       else if h = "cash" then view Cash u
+      else if h = "view_invest" then view ViewIndex u
       else if h = "networth" then view Networth u
       else if h = "help" then view Help u
       else if h = "sell_index" && invest <> [ "" ] then

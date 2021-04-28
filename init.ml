@@ -44,6 +44,7 @@ let instructions =
    Commands:\n\
    See stocks:         s\n\
    See cd info :       cd\n\
+   See index_funds:    view_cd \n\
    See networth:       networth\n\
    See on-hand cash:   cash\n\
    See specific stock: checkstock [ticker_symbol]\n\
