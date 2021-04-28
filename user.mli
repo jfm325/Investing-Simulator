@@ -16,7 +16,7 @@ val create_user :
   t
 
 (*[get_net_worth u stocks_lst] return the net worth of the user. *)
-val get_net_worth : t -> Stock.t list -> float
+val get_net_worth : t -> Stock.t list -> Stock.t list -> float
 
 (*[get_cash u] return the cash of the user*)
 val get_cash : t -> float

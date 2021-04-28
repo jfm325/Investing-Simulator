@@ -41,11 +41,11 @@ let rec index_calculate_net_worth sh_lst stocks_lst counter =
       in
       index_calculate_net_worth t stocks_lst (counter +. value)
 
-let get_net_worth u stocks_lst =
+let get_net_worth u stocks_lst index_lst =
   let sh_lst = Portfolio.get_stock_history u.portfolio in
   let in_list = Portfolio.get_index_history u.portfolio in
   let index_investment_value =
-    index_calculate_net_worth in_list stocks_lst 0.
+    index_calculate_net_worth in_list index_lst 0.
   in
   let investment_value = calculate_net_worth sh_lst stocks_lst 0. in
   u.net_worth <- u.cash +. investment_value +. index_investment_value;

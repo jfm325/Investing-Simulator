@@ -98,7 +98,9 @@ let view com u =
         let c = string_of_float (User.get_cash u) in
         print_string ("Your current cash is " ^ c ^ "\n")
     | Networth ->
-        let n = string_of_float (User.get_net_worth u Init.stocks) in
+        let s = Init.stocks in
+        let f = User.get_net_worth u s s in
+        let n = string_of_float f in
         print_string ("Your current networth is " ^ n ^ "\n")
     | Buy_S invest ->
         let s = List.hd invest in
