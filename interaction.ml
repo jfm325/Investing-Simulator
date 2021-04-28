@@ -26,13 +26,13 @@ exception EmptyCommand
 
 exception BadCommand
 
-let rec print_in indexlist =
+let print_in indexlist =
   match indexlist with
   | [] -> print_string "You don't own any index funds. \n"
   | h :: t ->
       let s = Index_history.get_shares h in
-      print_string ("Index funds owned : " ^ string_of_int s ^ "\n");
-      print_in t
+      print_string
+        ("Shares in index funds owned : " ^ string_of_int s ^ "\n")
 
 let rec legal list symb =
   match list with
@@ -150,15 +150,16 @@ let view com u =
         let s = List.hd invest in
         (*let g = legal_stock_history new_stock_history s in*)
         let n = int_of_string (List.nth invest 1) in
-        let st = legal stocks s in
-        if
+        let st = legal index s in
+        if s <> "SPY" then print_string "this is not an index_fund \n"
+        else if
           User.get_cash u -. (float n *. Stock.get_current_price st)
           <= 0.0
         then
           print_string
             "You do not have enough cash to purchase this stock \n"
         else (
-          User.buy s n u st;
+          User.buy_index s n u st;
           print_string
             "You just bought stocks and your cash has changed \n" )
     | Sell_Index invest ->
@@ -166,7 +167,7 @@ let view com u =
         (*let g = legal_stock_history new_stock_history s in*)
         let n = int_of_string (List.nth invest 1) in
         let user_portfolio = User.getportfolio u in
-        let st = legal stocks s in
+        let st = legal index s in
         if
           Index_history.get_shares
             (User.legal_index_history
@@ -202,7 +203,7 @@ let parse str u =
   | h :: invest ->
       if h = "" then raise EmptyCommand
       else if h = "cash" then view Cash u
-      else if h = "view_invest" then view ViewIndex u
+      else if h = "view_index" then view ViewIndex u
       else if h = "networth" then view Networth u
       else if h = "help" then view Help u
       else if h = "sell_index" && invest <> [ "" ] then
