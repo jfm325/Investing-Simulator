@@ -79,47 +79,8 @@ let rec prompt_input () =
         prompt_input ()
     | line -> (
         try
-          let cmd = Interaction.parse line in
-          match cmd with
-          | ViewCD ->
-              Interaction.view ViewCD user;
-              prompt_input ()
-          | BuyCD lst ->
-              Interaction.view (BuyCD lst) user;
-              prompt_input ()
-          | SellCD lst ->
-              Interaction.view (SellCD lst) user;
-              prompt_input ()
-          | Help ->
-              Interaction.view Help user;
-              prompt_input ()
-          | Cash ->
-              Interaction.view Cash user;
-              prompt_input ()
-          | Networth ->
-              Stock.update_current_prices stocks !start_time;
-              Interaction.view Networth user;
-              prompt_input ()
-          | Buy_S lst ->
-              Stock.update_current_prices stocks !start_time;
-              Interaction.view (Buy_S lst) user;
-              prompt_input ()
-          | Sell_S lst ->
-              Stock.update_current_prices stocks !start_time;
-              Interaction.view (Sell_S lst) user;
-              prompt_input ()
-          | Buy_Index lst ->
-              Stock.update_current_prices stocks !start_time;
-              Interaction.view (Buy_Index lst) user;
-              prompt_input ()
-          | Sell_Index lst ->
-              Stock.update_current_prices stocks !start_time;
-              Interaction.view (Sell_Index lst) user;
-              prompt_input ()
-          | Checkstock lst ->
-              Stock.update_current_prices stocks !start_time;
-              Interaction.view (Checkstock lst) user;
-              prompt_input ()
+          Interaction.parse line user;
+          prompt_input ()
         with _ ->
           print_endline "Invalid Command";
           prompt_input () ) )

@@ -25,29 +25,6 @@ exception EmptyCommand
 
 exception BadCommand
 
-let parse str =
-  let lst = String.split_on_char ' ' str in
-  match lst with
-  | [] -> raise EmptyCommand
-  | [ "" ] -> raise EmptyCommand
-  | h :: invest ->
-      if h = "" then raise EmptyCommand
-      else if h = "cash" then Cash
-      else if h = "networth" then Networth
-      else if h = "help" then Help
-      else if h = "sell_index" && invest <> [ "" ] then
-        Sell_Index invest
-      else if h = "buy_index" && invest <> [ "" ] then Buy_Index invest
-      else if h = "sell_s" && invest <> [ "" ] then Sell_S invest
-      else if h = "buy_s" && invest <> [ "" ] then Buy_S invest
-      else if h = "buy_cd" && invest <> [ "" ] then BuyCD invest
-      else if h = "sell_cd" && invest <> [ "" ] then SellCD invest
-      else if h = "view_cd" then ViewCD
-      else if h = "checkstock" && invest <> [ "" ] then
-        Checkstock invest
-        (*else if h = "my_stockhistory" then My_stockhistory*)
-      else raise BadCommand
-
 let rec legal list symb =
   match list with
   | [] -> raise Not_found
@@ -201,3 +178,30 @@ let view com u =
       "\n")*)
   with Not_found ->
     print_string "Invalid stock not found in market. \n"
+
+let parse str u =
+  let lst = String.split_on_char ' ' str in
+  match lst with
+  | [] -> raise EmptyCommand
+  | [ "" ] -> raise EmptyCommand
+  | h :: invest ->
+      if h = "" then raise EmptyCommand
+      else if h = "cash" then view Cash u
+      else if h = "networth" then view Networth u
+      else if h = "help" then view Help u
+      else if h = "sell_index" && invest <> [ "" ] then
+        view (Sell_Index invest) u
+      else if h = "buy_index" && invest <> [ "" ] then
+        view (Buy_Index invest) u
+      else if h = "sell_s" && invest <> [ "" ] then
+        view (Sell_S invest) u
+      else if h = "buy_s" && invest <> [ "" ] then view (Buy_S invest) u
+      else if h = "buy_cd" && invest <> [ "" ] then
+        view (BuyCD invest) u
+      else if h = "sell_cd" && invest <> [ "" ] then
+        view (SellCD invest) u
+      else if h = "view_cd" then view ViewCD u
+      else if h = "checkstock" && invest <> [ "" ] then
+        view (Checkstock invest) u
+        (*else if h = "my_stockhistory" then My_stockhistory*)
+      else raise BadCommand
