@@ -48,3 +48,11 @@ val checkindex : Stock.t -> Index_history.i -> float
 val changecash_buycd : t -> float -> unit
 
 val changecash_sellcd : t -> float -> unit
+
+(** [buy_cd u amt t] buys a cd for user [u] for an amount [amt] and for
+    a maturity length of [t]. Updates the user's cash. *)
+val buy_cd : t -> float -> Cd.term -> unit
+
+(** [sell_cd u i] sells the cd for user [u] at index [i]. Requires: [i]
+    is a valid index in the list of currently owned cds. *)
+val sell_cd : t -> int -> unit
