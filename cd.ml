@@ -53,14 +53,12 @@ let is_cd_matured cd =
 let update_current_value cd =
   let current_month_index = get_current_month_index () in
   let current_term = current_month_index - cd.starting_month_index in
-  if current_term < cd.length then (
+  if current_term < cd.length then
     let r = cd.monthly_rate ** float_of_int current_term in
-    cd.current_value <- cd.amount *. r;
-    cd )
+    cd.current_value <- cd.amount *. r
   else
     let r = cd.monthly_rate ** float_of_int cd.length in
-    cd.current_value <- cd.amount *. r;
-    cd
+    cd.current_value <- cd.amount *. r
 
 (* [match_monthly_rate l r] is the monthly rate given by APY [r] and
    based on the length of the *)

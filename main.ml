@@ -17,7 +17,7 @@ let print_cd apy =
     apy_str_6mnth ^ "%\t\t" ^ apy_str_1yr ^ "%\t\t" ^ apy_str_3yrs ^ "%"
   in
   let bar = "*****************************************************" in
-  let terms = "CD Term: 6 months(1)\t 1 year(2)\t 3 years(3)" in
+  let terms = "CD Term: 6 months(1)\t1 year(2)\t3 years(3)" in
   print_endline bar;
   print_endline terms;
   print_endline ("APY:     " ^ apy_str);
@@ -28,9 +28,9 @@ let print_stocks (s_lst : Stock.t list) (history : Stock_history.t list)
     =
   let bar = "*******************************************" in
   let shares = "Shares: " in
-  let ticker = "Ticker:  " in
+  let ticker = "Ticker: " in
   let prices = "Price:  " in
-  let user_stock_performance = "P/L:  " in
+  let user_stock_performance = "P/L:    " in
   let rec print_stocks_helper (his_lst : Stock_history.t list)
       (lst : Stock.t list) n p g z =
     match lst with
@@ -43,7 +43,7 @@ let print_stocks (s_lst : Stock.t list) (history : Stock_history.t list)
         print_endline bar
     | h :: t ->
         print_stocks_helper his_lst t
-          (n ^ get_name h ^ "\t")
+          (n ^ Stock.get_ticker h ^ "\t")
           (p ^ string_of_float (get_current_price h) ^ "\t")
           ( g
           ^ string_of_int

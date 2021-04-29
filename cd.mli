@@ -34,9 +34,9 @@ val months_until_maturity : t -> int
 (** [is_cd_matured cd] is true if cd [cd] has matured. *)
 val is_cd_matured : t -> bool
 
-(** [update_current_value cd] is the cd [cd] with an updated current
-    value of the investment. *)
-val update_current_value : t -> t
+(** [update_current_value cd] updates the current value of the
+    investment for cd [cd]. *)
+val update_current_value : t -> unit
 
 (** [create_cd rate length amt] is the cd with interest rate [rate],
     length til maturity [length], amount placed of [amt], and the month

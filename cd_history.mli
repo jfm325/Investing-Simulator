@@ -17,9 +17,9 @@ val get_cd_lst : t -> Cd.t list
     [cd_hist]. *)
 val get_cds_owned : t -> int
 
-(** [update_cd_lst_values cd_hist] is the cd history [cd_hist] with an
-    updated list of cds with current value of investment. *)
-val update_cd_lst_values : t -> t
+(** [update_cd_lst_values cd_hist] updates the list of cds with current
+    value of investment. *)
+val update_cd_lst_values : t -> unit
 
 (** [collect_cd_value cd_hist i] is the value of collecting the cd at
     index [i] in [cd_hist]. A 10% penalty is applied if the cd is being
@@ -36,6 +36,10 @@ val remove_cd : t -> int -> unit
     with an amount of [amt], for [l] months, and at the current interest
     rate. *)
 val buy_cd : t -> float -> Cd.term -> unit
+
+(** [get_investment_value cd_h] is the value of all the cds owned in cd
+    history [cd_h]. *)
+val get_investment_value : t -> float
 
 (** [create_cd_history filename] is the cd history for a cd with
     interest rates pulled from file [filename]. *)

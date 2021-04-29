@@ -16,18 +16,16 @@ let get_cd_lst cd_hist = cd_hist.cd_lst
 let get_cds_owned cd_hist = List.length cd_hist.cd_lst
 
 let update_cd_lst_values cd_hist =
-  let new_lst = List.map Cd.update_current_value cd_hist.cd_lst in
-  cd_hist.cd_lst <- new_lst;
-  cd_hist
+  List.iter Cd.update_current_value cd_hist.cd_lst
 
 let collect_cd_value cd_hist i =
   let cd_opt = List.nth_opt cd_hist.cd_lst i in
   match cd_opt with
   | None -> raise (Failure "Index invalid in [collect_cd].")
   | Some cd ->
-      let new_cd = Cd.update_current_value cd in
-      let value = Cd.get_current_value new_cd in
-      if Cd.is_cd_matured new_cd then value else value *. 0.9
+      Cd.update_current_value cd;
+      let value = Cd.get_current_value cd in
+      if Cd.is_cd_matured cd then value else value *. 0.9
 
 let remove_cd cd_hist i =
   let cds_owned = get_cds_owned cd_hist in
@@ -48,7 +46,14 @@ let buy_cd cd_hist amt l =
   let new_lst = new_cd :: cd_hist.cd_lst in
   cd_hist.cd_lst <- new_lst
 
-(*cd_hist*)
+let get_investment_value cd_h =
+  update_cd_lst_values cd_h;
+  let f acc cd =
+    let value = Cd.get_current_value cd in
+    acc +. value
+  in
+  let cd_lst_value = List.fold_left f 0. cd_h.cd_lst in
+  cd_lst_value
 
 (** [create_rates_arr filename n] is an array of length [n] filled with
     interest rates from file [filename]. Requires: [filename] has a
