@@ -8,10 +8,19 @@ open User
 let prompt_str = "> "
 
 let print_cd apy =
-  let apy_str = string_of_float (100. *. apy) in
-  let bar = "*******************" in
+  let six_month_apy = Cd.match_new_rate Cd.SixMonths apy in
+  let three_yr_apy = Cd.match_new_rate Cd.ThreeYears apy in
+  let apy_str_6mnth = string_of_float (100. *. six_month_apy) in
+  let apy_str_1yr = string_of_float (100. *. apy) in
+  let apy_str_3yrs = string_of_float (100. *. three_yr_apy) in
+  let apy_str =
+    apy_str_6mnth ^ "%\t\t" ^ apy_str_1yr ^ "%\t\t" ^ apy_str_3yrs ^ "%"
+  in
+  let bar = "*****************************************************" in
+  let terms = "CD Term: 6 months(1)\t 1 year(2)\t 3 years(3)" in
   print_endline bar;
-  print_endline ("APY: " ^ apy_str ^ "%");
+  print_endline terms;
+  print_endline ("APY:     " ^ apy_str);
   print_endline bar
 
 (* [print_stocks s_lst] prints the stocks in [s_lst]. *)
@@ -19,9 +28,9 @@ let print_stocks (s_lst : Stock.t list) (history : Stock_history.t list)
     =
   let bar = "*******************************************" in
   let shares = "Shares: " in
-  let name = "Stock:  " in
+  let ticker = "Ticker:  " in
   let prices = "Price:  " in
-  let user_stock_performance = "U P/L:  " in
+  let user_stock_performance = "P/L:  " in
   let rec print_stocks_helper (his_lst : Stock_history.t list)
       (lst : Stock.t list) n p g z =
     match lst with
@@ -47,7 +56,7 @@ let print_stocks (s_lst : Stock.t list) (history : Stock_history.t list)
                  (legal_stock_history his_lst (Stock.get_ticker h)))
           ^ "\t" )
   in
-  print_stocks_helper history s_lst name prices shares
+  print_stocks_helper history s_lst ticker prices shares
     user_stock_performance
 
 (** [has_game_ended s] returns true when in-game time has reached or

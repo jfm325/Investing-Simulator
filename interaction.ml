@@ -47,33 +47,40 @@ let rec legal_stock_history list symb =
       else legal_stock_history t symb
 
 let checklegalterm t =
-  if t = 6 then SixMonths
-  else if t = 12 then OneYear
-  else if t = 36 then ThreeYears
+  if t = 1 then SixMonths
+  else if t = 2 then OneYear
+  else if t = 3 then ThreeYears
   else raise BadCommand
 
-let rec print_cd his_lst lst count =
-  let bar = "*******************************************" in
-  let num = "Cd: " in
-  let term = "Term (in months): " in
-  let apy = "APY (%):  " in
+let print_cd his_lst lst count =
+  let penalty_warning =
+    "** 10% penalty if collected before maturity **"
+  in
+  let bar = "**********************************************" in
+  let num = "Cd:                    " in
+  let term = "Term (months):         " in
+  let maturity = "Months until Maturity: " in
+  let apy = "APY (%):               " in
   let c = 1 in
-  let rec print_cd_helper his_lst (lst : Cd.t list) num term f c =
+  let rec print_cd_helper his_lst (lst : Cd.t list) num term mat f c =
     match lst with
     | [] ->
         print_endline bar;
         print_endline num;
         print_endline term;
+        print_endline mat;
         print_endline f;
-        print_endline bar
+        print_endline bar;
+        print_endline penalty_warning
     | h :: t ->
         print_cd_helper his_lst t
-          (num ^ "\t" ^ "\t" ^ " " ^ string_of_int c ^ "\t")
-          (term ^ string_of_int (Cd.get_length h) ^ "\t" ^ "\t")
-          (f ^ "\t" ^ string_of_float (Cd.get_apy h) ^ "\t")
+          (num ^ string_of_int c ^ "\t")
+          (term ^ string_of_int (Cd.get_length h) ^ "\t")
+          (mat ^ string_of_int (Cd.months_until_maturity h) ^ "\t")
+          (f ^ string_of_float (Cd.get_apy_percentage h) ^ "\t")
           (c + 1)
   in
-  print_cd_helper his_lst lst num term apy c
+  print_cd_helper his_lst lst num term maturity apy c
 
 let view com u =
   try
@@ -93,18 +100,13 @@ let view com u =
         else
           let term = int_of_string (List.nth invest 1) in
           let cdterm = checklegalterm term in
-          let p = User.getportfolio u in
-          let cd_h = Portfolio.get_cd_history p in
-          User.changecash_buycd u amt;
-          Cd_history.buy_cd cd_h amt cdterm;
-          print_string "You just bought cd and your cash has changed \n"
+          User.buy_cd u amt cdterm;
+          print_string
+            "You just bought a cd and your cash has changed \n"
     | SellCD invest ->
-        let p = User.getportfolio u in
-        let cd_h = Portfolio.get_cd_history p in
-        let i = int_of_string (List.hd invest) in
-        let amt = Cd_history.collect_cd_value cd_h i in
-        Cd_history.remove_cd cd_h i;
-        User.changecash_sellcd u amt;
+        let n = int_of_string (List.hd invest) in
+        let i = n - 1 in
+        User.sell_cd u i;
         print_string "You just sold cd and your cash has changed \n"
     | Help -> print_string Init.instructions
     | Cash ->

@@ -1,6 +1,7 @@
 type term = SixMonths | OneYear | ThreeYears
 
 type t = {
+  (* [apy] is represented in decimal form. Ex) 10% => 0.10*)
   apy : float;
   monthly_rate : float;
   starting_month_index : int;
@@ -8,6 +9,8 @@ type t = {
   amount : float;
   mutable current_value : float;
 }
+
+let get_apy_percentage cd = cd.apy *. 100.
 
 let get_apy cd = cd.apy
 
@@ -17,31 +20,38 @@ let get_length cd = cd.length
 
 let get_current_value cd = cd.current_value
 
-(* [match_new_rate l r] is the new rate based on the rate for 1 year
-   [r], and the length of the cd [l]. *)
 let match_new_rate l r =
   match l with
-  | SixMonths -> if r -. 1. < 0. then r else r -. 1.
+  | SixMonths -> if r -. 0.01 < 0. then r else r -. 0.01
   | OneYear -> r
-  | ThreeYears -> r +. 1.
+  | ThreeYears -> r +. 0.01
 
 (* [term_to_months l] is the length of a cd in terms of months. *)
 let term_to_months l =
   match l with SixMonths -> 6 | OneYear -> 12 | ThreeYears -> 36
 
-let is_cd_matured cd =
+(* [get_current_month_index ()] is a helper function to get the current
+   month index from the starting time of the game. *)
+let get_current_month_index () =
   let current_time = Unix.time () in
   let start_time = Game.get_start_time () in
   let time = int_of_float (current_time -. start_time) in
   let current_month_index = time / Game.s_per_month in
+  current_month_index
+
+let months_until_maturity cd =
+  let current_month_index = get_current_month_index () in
+  let current_term = current_month_index - cd.starting_month_index in
+  let months_left = cd.length - current_term in
+  if months_left < 0 then 0 else months_left
+
+let is_cd_matured cd =
+  let current_month_index = get_current_month_index () in
   let current_term = current_month_index - cd.starting_month_index in
   current_term >= cd.length
 
 let update_current_value cd =
-  let current_time = Unix.time () in
-  let start_time = Game.get_start_time () in
-  let time = int_of_float (current_time -. start_time) in
-  let current_month_index = time / Game.s_per_month in
+  let current_month_index = get_current_month_index () in
   let current_term = current_month_index - cd.starting_month_index in
   if current_term < cd.length then (
     let r = cd.monthly_rate ** float_of_int current_term in

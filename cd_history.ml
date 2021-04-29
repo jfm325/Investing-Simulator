@@ -1,11 +1,7 @@
 open Cd
 open Game
 
-type t = {
-  interest_rates : float array;
-  mutable cds_owned : int;
-  mutable cd_lst : Cd.t list;
-}
+type t = { interest_rates : float array; mutable cd_lst : Cd.t list }
 
 let get_current_apy cd_h =
   let current_time = Unix.time () in
@@ -17,7 +13,7 @@ let get_current_apy cd_h =
 
 let get_cd_lst cd_hist = cd_hist.cd_lst
 
-let get_cds_owned cd_hist = cd_hist.cds_owned
+let get_cds_owned cd_hist = List.length cd_hist.cd_lst
 
 let update_cd_lst_values cd_hist =
   let new_lst = List.map Cd.update_current_value cd_hist.cd_lst in
@@ -34,11 +30,11 @@ let collect_cd_value cd_hist i =
       if Cd.is_cd_matured new_cd then value else value *. 0.9
 
 let remove_cd cd_hist i =
-  if i < cd_hist.cds_owned && i >= 0 then (
+  let cds_owned = get_cds_owned cd_hist in
+  if i < cds_owned && i >= 0 then
     let f index cd = not (index = i) in
     let new_cd_lst = List.filteri f cd_hist.cd_lst in
-    cd_hist.cd_lst <- new_cd_lst;
-    cd_hist.cds_owned <- cd_hist.cds_owned - 1 )
+    cd_hist.cd_lst <- new_cd_lst
   else raise (Failure "Index out of bounds in [collect_cd].")
 
 let buy_cd cd_hist amt l =
@@ -50,8 +46,7 @@ let buy_cd cd_hist amt l =
   let rate = cd_hist.interest_rates.(i) in
   let new_cd = Cd.create_cd rate l amt in
   let new_lst = new_cd :: cd_hist.cd_lst in
-  cd_hist.cd_lst <- new_lst;
-  cd_hist.cds_owned <- cd_hist.cds_owned + 1
+  cd_hist.cd_lst <- new_lst
 
 (*cd_hist*)
 
@@ -75,4 +70,4 @@ let create_rates_arr filename n =
 
 let create_cd_history filename =
   let rates_arr = create_rates_arr filename 20 in
-  { interest_rates = rates_arr; cds_owned = 0; cd_lst = [] }
+  { interest_rates = rates_arr; cd_lst = [] }

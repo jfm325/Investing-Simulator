@@ -140,3 +140,21 @@ let checkindex (stock_t : Stock.t) (stock : Index_history.i) =
 let changecash_buycd s f = s.cash <- s.cash -. f
 
 let changecash_sellcd s f = s.cash <- s.cash +. f
+
+let buy_cd u amt t =
+  let cd_h = Portfolio.get_cd_history u.portfolio in
+  let cds_owned = Cd_history.get_cds_owned cd_h in
+  if cds_owned >= 3 then
+    raise (Failure "You can only have 3 cds at a time.")
+  else (
+    changecash_buycd u amt;
+    Cd_history.buy_cd cd_h amt t )
+
+let sell_cd u i =
+  let cd_h = Portfolio.get_cd_history u.portfolio in
+  let amt = Cd_history.collect_cd_value cd_h i in
+  let cds_owned = Cd_history.get_cds_owned cd_h in
+  if i >= 0 && i < cds_owned then (
+    Cd_history.remove_cd cd_h i;
+    changecash_sellcd u amt )
+  else raise (Failure "Invalid cd to sell.")
