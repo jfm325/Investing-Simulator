@@ -44,7 +44,7 @@ let instructions =
    Commands:\n\
    See stocks:         s\n\
    See cd info :       cd\n\
-   See index_funds:    view_cd \n\
+   See index_funds:    view_index \n\
    See networth:       networth\n\
    See on-hand cash:   cash\n\
    See specific stock: checkstock [ticker_symbol]\n\
@@ -52,7 +52,8 @@ let instructions =
    Sell_index shares:  sell_index [ticker_symbol] [# of shares]\n\
    Buy shares:         buy_s [ticker_symbol] [# of shares]\n\
    Sell shares:        sell_s [ticker_symbol] [# of shares]\n\
-   Buy cd:             buy_cd [amt] [term of 6,12 or 36 months]\n\
+   Buy cd:             buy_cd [amt] [term of 1/2/3]\n\
+  \ where 1 ~ 6 months, 2 ~ 12 months, 3 ~ 36 months\n\
    Sell cd:            sell_cd [index # in cd_history list] \n\
    View bought cd:     view_cd \n\
    View commands again: help\n\n"
