@@ -113,11 +113,14 @@ let view com u =
         let c = string_of_float (User.get_cash u) in
         print_string ("Your current cash is " ^ c ^ "\n")
     | Networth ->
+        Stock.update_current_prices stocks (Game.get_start_time ());
+        Stock.update_current_prices index (Game.get_start_time ());
         let n =
           string_of_float (User.get_net_worth u Init.stocks index)
         in
         print_string ("Your current networth is " ^ n ^ "\n")
     | Buy_S invest ->
+        Stock.update_current_prices stocks (Game.get_start_time ());
         let s = List.hd invest in
         (*let g = legal_stock_history new_stock_history s in*)
         let n = int_of_string (List.nth invest 1) in
@@ -133,6 +136,7 @@ let view com u =
           print_string
             "You just bought stocks and your cash has changed \n" )
     | Sell_S invest ->
+        Stock.update_current_prices stocks (Game.get_start_time ());
         let s = List.hd invest in
         (*let g = legal_stock_history new_stock_history s in*)
         let n = int_of_string (List.nth invest 1) in
@@ -149,6 +153,7 @@ let view com u =
           User.sell s n u st;
           print_string "You just sold shares \n" )
     | Buy_Index invest ->
+        Stock.update_current_prices index (Game.get_start_time ());
         let s = List.hd invest in
         (*let g = legal_stock_history new_stock_history s in*)
         let n = int_of_string (List.nth invest 1) in
@@ -165,6 +170,7 @@ let view com u =
           print_string
             "You just bought stocks and your cash has changed \n" )
     | Sell_Index invest ->
+        Stock.update_current_prices index (Game.get_start_time ());
         let s = List.hd invest in
         (*let g = legal_stock_history new_stock_history s in*)
         let n = int_of_string (List.nth invest 1) in
@@ -181,6 +187,7 @@ let view com u =
           User.sell_index s n u st;
           print_string "You just sold shares \n" )
     | Checkstock invest ->
+        Stock.update_current_prices stocks (Game.get_start_time ());
         let s = List.hd invest in
         let st = legal stocks s in
         let b = legal_stock_history stock_history_lst s in
