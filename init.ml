@@ -3,6 +3,7 @@ open Stock_history
 open User
 open Cd_history
 open Real_estate_history
+open Bot
 
 (* Will later randomize selection of stocks *)
 let stocks : Stock.t list =
@@ -40,6 +41,8 @@ let cd_history = Cd_history.create_cd_history "cd_rates1995.txt"
 let user : User.t =
   User.create_user 20000. stock_history_lst index_history_lst cd_history
     re_history_lst
+
+let bot : Bot.t = Bot.create_bot
 
 let intro_string =
   "\n\

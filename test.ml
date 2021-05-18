@@ -3,11 +3,22 @@ open Stock
 open User
 open Interaction
 open Cd_history
+open Init
+open Cd
+open Portfolio
 
 (* Printers *)
 
 (* [string_of_s s] is the printer for string [s]. *)
 let string_of_s s = s
+
+let user =
+  User.create_user 20000. stock_history_lst index_history_lst cd_history
+    re_history_lst
+
+let user2 =
+  User.create_user 20000. stock_history_lst index_history_lst cd_history
+    re_history_lst
 
 (* [cd_test] is the test for module CD. *)
 let cd_test test_name (cd : Cd.t) expected_apy expected_monthly_rate
@@ -34,21 +45,31 @@ let stock_test test_name (stock : Stock.t) (name : string)
   assert_equal price (get_price stock index) ~printer:string_of_float
 
 let interaction_tests =
+  let p = getportfolio user in
+  let stck_lst = get_stock_history p in
+
+  let com1 = parse "buy_s COKE 7 " user in
+  let com2 = parse "buy_s AAPL 9" user in
+  let com3 = parse "sell_s AAPL 2" user in
+  let st1 = List.hd stck_lst in
+  let st2 = List.nth stck_lst 1 in
+  let ticker1 = Stock_history.get_ticker st1 in
+  let ticker2 = Stock_history.get_ticker st2 in
+  let n = Stock_history.get_shares st2 in
   [
-    (* Added tests for the Interaction module here *)
-    ( "Testing for buying shares" >:: fun _ ->
-      assert_equal (Buy [ "COKE"; "50" ]) (parse "buy COKE 50") );
-    ( "Testing for selling shares" >:: fun _ ->
-      assert_equal (Sell [ "COKE"; "50" ]) (parse "sell COKE 50") );
-    ("Testing for cash" >:: fun _ -> assert_equal Cash (parse "cash"));
-    ( "Testing for networth" >:: fun _ ->
-      assert_equal Networth (parse "networth") );
-    ( "Testing for Empty" >:: fun _ ->
-      assert_raises EmptyCommand (fun () -> parse "") );
-    ( "Testing for Empty" >:: fun _ ->
-      assert_raises EmptyCommand (fun () -> parse " ") );
-    ( "Testing for Malformed" >:: fun _ ->
-      assert_raises BadCommand (fun () -> parse "hi i am confused") );
+    (*Added tests for the Interaction module here*)
+    ( "testing initial cash " >:: fun _ ->
+      assert_equal 20000. (get_cash user2) ~printer:string_of_float );
+    ( "Testing legal term for Cd" >:: fun _ ->
+      assert_equal SixMonths (checklegalterm 1) );
+    ( "Testing legal term for Cd" >:: fun _ ->
+      assert_equal OneYear (checklegalterm 2) );
+    ( "Testing legal term for Cd" >:: fun _ ->
+      assert_equal ThreeYears (checklegalterm 3) );
+    ("Testing sell" >:: fun _ -> assert_equal 7 n);
+    (*testing stock purchase*)
+    ("Testing Stock purchase" >:: fun _ -> assert_equal "COKE" ticker1);
+    ("Testing Stock purchase" >:: fun _ -> assert_equal "AAPL" ticker2);
   ]
 
 let stock_tests =

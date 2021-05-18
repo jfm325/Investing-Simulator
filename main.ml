@@ -88,7 +88,7 @@ let rec prompt_input () =
         prompt_input ()
     | line -> (
         try
-          Interaction.parse line user;
+          Interaction.parse line user bot;
           prompt_input ()
         with _ ->
           print_endline "Invalid Command";
