@@ -12,6 +12,8 @@ type command =
   | Sell_Index of invest
   | Buy_S of invest
   | Sell_S of invest
+  | Buy_Re of invest
+  | Sell_Re of invest
   | Cash
   | Networth
   (*| My_stockhistory*)
@@ -115,8 +117,9 @@ let view com u =
     | Networth ->
         Stock.update_current_prices stocks (Game.get_start_time ());
         Stock.update_current_prices index (Game.get_start_time ());
+        Stock.update_current_prices re (Game.get_start_time ());
         let n =
-          string_of_float (User.get_net_worth u Init.stocks index)
+          string_of_float (User.get_net_worth u Init.stocks index re)
         in
         print_string ("Your current networth is " ^ n ^ "\n")
     | Buy_S invest ->
@@ -186,6 +189,40 @@ let view com u =
         else (
           User.sell_index s n u st;
           print_string "You just sold shares \n" )
+    | Buy_Re invest ->
+        Stock.update_current_prices index (Game.get_start_time ());
+        let s = List.hd invest in
+        (*let g = legal_stock_history new_stock_history s in*)
+        let n = int_of_string (List.nth invest 1) in
+        let st = legal index s in
+        if s <> "SPY" then print_string "this is not an index_fund \n"
+        else if
+          User.get_cash u -. (float n *. Stock.get_current_price st)
+          <= 0.0
+        then
+          print_string
+            "You do not have enough cash to purchase this stock \n"
+        else (
+          User.buy_re s n u st;
+          print_string
+            "You just bought stocks and your cash has changed \n" )
+    | Sell_Re invest ->
+        Stock.update_current_prices index (Game.get_start_time ());
+        let s = List.hd invest in
+        (*let g = legal_stock_history new_stock_history s in*)
+        let n = int_of_string (List.nth invest 1) in
+        let user_portfolio = User.getportfolio u in
+        let st = legal index s in
+        if
+          Real_estate_history.get_shares
+            (User.legal_re_history
+               (Portfolio.get_re_history user_portfolio)
+               s)
+          < n
+        then print_string "You do not have enough shares \n"
+        else (
+          User.sell_re s n u st;
+          print_string "You just sold shares \n" )
     | Checkstock invest ->
         Stock.update_current_prices stocks (Game.get_start_time ());
         let s = List.hd invest in
@@ -219,6 +256,10 @@ let parse str u =
         view (Sell_Index invest) u
       else if h = "buy_index" && invest <> [ "" ] then
         view (Buy_Index invest) u
+      else if h = "sell_re" && invest <> [ "" ] then
+        view (Sell_Re invest) u
+      else if h = "buy_re" && invest <> [ "" ] then
+        view (Buy_Re invest) u
       else if h = "sell_s" && invest <> [ "" ] then
         view (Sell_S invest) u
       else if h = "buy_s" && invest <> [ "" ] then view (Buy_S invest) u

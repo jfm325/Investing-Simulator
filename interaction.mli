@@ -22,6 +22,8 @@ type command =
   | Sell_Index of invest
   | Buy_S of invest
   | Sell_S of invest
+  | Buy_Re of invest
+  | Sell_Re of invest
   | Cash
   | Networth
   | Checkstock of invest

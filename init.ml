@@ -2,6 +2,7 @@ open Stock
 open Stock_history
 open User
 open Cd_history
+open Real_estate_history
 
 (* Will later randomize selection of stocks *)
 let stocks : Stock.t list =
@@ -14,6 +15,9 @@ let stocks : Stock.t list =
 let index : Stock.t list =
   [ Stock.create_stock "SPY" "SPY" "spy_index1995.txt" ]
 
+let re : Stock.t list =
+  [ Stock.create_stock "SPY" "SPY" "spy_index1995.txt" ]
+
 let coke_history = Stock_history.create_stock_history "COKE"
 
 let aapl_history = Stock_history.create_stock_history "AAPL"
@@ -24,13 +28,18 @@ let stock_history_lst = [ coke_history; aapl_history; msft_history ]
 
 let index_spy_history = Index_history.create_index_history "SPY"
 
+let re_spy_history = Real_estate_history.create_re_history "SPY"
+
 let index_history_lst = [ index_spy_history ]
+
+let re_history_lst = [ re_spy_history ]
 
 let cd_history = Cd_history.create_cd_history "cd_rates1995.txt"
 
 (* Will later send in stock history to user *)
 let user : User.t =
   User.create_user 20000. stock_history_lst index_history_lst cd_history
+    re_history_lst
 
 let intro_string =
   "\n\
@@ -50,6 +59,8 @@ let instructions =
    See specific stock: checkstock [ticker_symbol]\n\
    Buy_index shares:   buy_index [ticker_symbol] [# of shares]\n\
    Sell_index shares:  sell_index [ticker_symbol] [# of shares]\n\
+   Buy_re shares:      buy_re [ticker_symbol] [# of shares]\n\
+   Sell_re shares:     sell_re [ticker_symbol] [# of shares]\n\
    Buy shares:         buy_s [ticker_symbol] [# of shares]\n\
    Sell shares:        sell_s [ticker_symbol] [# of shares]\n\
    Buy cd:             buy_cd [amt] [term of 1/2/3]\n\

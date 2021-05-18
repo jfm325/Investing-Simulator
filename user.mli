@@ -13,10 +13,12 @@ val create_user :
   Stock_history.t list ->
   Index_history.i list ->
   Cd_history.t ->
+  Real_estate_history.r list ->
   t
 
 (*[get_net_worth u stocks_lst] return the net worth of the user. *)
-val get_net_worth : t -> Stock.t list -> Stock.t list -> float
+val get_net_worth :
+  t -> Stock.t list -> Stock.t list -> Stock.t list -> float
 
 (*[get_cash u] return the cash of the user*)
 val get_cash : t -> float
@@ -39,11 +41,20 @@ val legal_stock_history :
 val legal_index_history :
   Index_history.i list -> string -> Index_history.i
 
+val legal_re_history :
+  Real_estate_history.r list -> string -> Real_estate_history.r
+
 val buy_index : string -> int -> t -> Stock.t -> unit
 
 val sell_index : string -> int -> t -> Stock.t -> unit
 
 val checkindex : Stock.t -> Index_history.i -> float
+
+val buy_re : string -> int -> t -> Stock.t -> unit
+
+val sell_re : string -> int -> t -> Stock.t -> unit
+
+val checkre : Stock.t -> Real_estate_history.r -> float
 
 val changecash_buycd : t -> float -> unit
 
