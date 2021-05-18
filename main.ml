@@ -23,6 +23,41 @@ let print_cd apy =
   print_endline ("APY:     " ^ apy_str);
   print_endline bar
 
+let print_index (s_lst : Stock.t list) (history : Index_history.i list)
+    =
+  let bar = "*******************************************" in
+  let shares = "Shares: " in
+  let ticker = "Ticker: " in
+  let prices = "Price:  " in
+  let user_stock_performance = "P/L:    " in
+  let rec print_stocks_helper (his_lst : Index_history.i list)
+      (lst : Stock.t list) n p g z =
+    match lst with
+    | [] ->
+        print_endline bar;
+        print_endline n;
+        print_endline p;
+        print_endline g;
+        print_endline z;
+        print_endline bar
+    | h :: t ->
+        print_stocks_helper his_lst t
+          (n ^ Stock.get_ticker h ^ "\t")
+          (p ^ string_of_float (get_current_price h) ^ "\t")
+          ( g
+          ^ string_of_int
+              (Index_history.get_shares
+                 (legal_index_history his_lst (Stock.get_ticker h)))
+          ^ "\t" )
+          ( z
+          ^ string_of_float
+              (checkindex h
+                 (legal_index_history his_lst (Stock.get_ticker h)))
+          ^ "\t" )
+  in
+  print_stocks_helper history s_lst ticker prices shares
+    user_stock_performance
+
 (* [print_stocks s_lst] prints the stocks in [s_lst]. *)
 let print_stocks (s_lst : Stock.t list) (history : Stock_history.t list)
     =
@@ -59,6 +94,40 @@ let print_stocks (s_lst : Stock.t list) (history : Stock_history.t list)
   print_stocks_helper history s_lst ticker prices shares
     user_stock_performance
 
+    let print_re (s_lst : Stock.t list) (history : Real_estate_history.r list)
+    =
+  let bar = "*******************************************" in
+  let shares = "Shares: " in
+  let ticker = "Ticker: " in
+  let prices = "Price:  " in
+  let user_stock_performance = "P/L:    " in
+  let rec print_stocks_helper (his_lst : Real_estate_history.r list)
+      (lst : Stock.t list) n p g z =
+    match lst with
+    | [] ->
+        print_endline bar;
+        print_endline n;
+        print_endline p;
+        print_endline g;
+        print_endline z;
+        print_endline bar
+    | h :: t ->
+        print_stocks_helper his_lst t
+          (n ^ Stock.get_ticker h ^ "\t")
+          (p ^ string_of_float (get_current_price h) ^ "\t")
+          ( g
+          ^ string_of_int
+              (Real_estate_history.get_shares
+                 (legal_re_history his_lst (Stock.get_ticker h)))
+          ^ "\t" )
+          ( z
+          ^ string_of_float
+              (checkre h
+                 (legal_re_history his_lst (Stock.get_ticker h)))
+          ^ "\t" )
+  in
+  print_stocks_helper history s_lst ticker prices shares
+    user_stock_performance
 (** [has_game_ended s] returns true when in-game time has reached or
     passed year 20 (nmonth 240). *)
 let has_game_ended s =
@@ -86,6 +155,14 @@ let rec prompt_input () =
         Stock.update_current_prices stocks !start_time;
         print_stocks stocks stock_history_lst;
         prompt_input ()
+    | line when line = "i" ->
+        Stock.update_current_prices index !start_time;
+        print_index index index_history_lst;
+        prompt_input ()
+    | line when line = "re" ->
+          Stock.update_current_prices re !start_time;
+          print_re re re_history_lst;
+          prompt_input ()
     | line -> (
         try
           Interaction.parse line user;
