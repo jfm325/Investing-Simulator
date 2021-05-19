@@ -186,11 +186,8 @@ let view com u =
         Stock.update_current_prices index (Game.get_start_time ());
         let n = int_of_string (List.hd invest) in
         let index_fund = legal index "SPY" in
-        if
-          User.get_cash u
-          -. (float n *. Stock.get_current_price index_fund)
-          <= 0.0
-        then
+        let cost = float n *. Stock.get_current_price index_fund in
+        if User.get_cash u -. cost <= 0.0 then
           print_string
             "TRANSACTION ERROR: You do not have enough cash to \
              purchase this stock \n"
