@@ -16,16 +16,14 @@ let print_cd apy =
   let apy_str =
     apy_str_6mnth ^ "%\t\t" ^ apy_str_1yr ^ "%\t\t" ^ apy_str_3yrs ^ "%"
   in
-  let bar = "*****************************************************" in
   let terms = "CD Term: 6 months(1)\t1 year(2)\t3 years(3)" in
-  print_endline bar;
+  print_endline Init.bar;
   print_endline terms;
   print_endline ("APY:     " ^ apy_str);
-  print_endline bar
+  print_endline Init.bar
 
 let print_index (s_lst : Stock.t list) (history : Index_history.i list)
     =
-  let bar = "*******************************************" in
   let shares = "Shares: " in
   let ticker = "Ticker: " in
   let prices = "Price:  " in
@@ -34,12 +32,12 @@ let print_index (s_lst : Stock.t list) (history : Index_history.i list)
       (lst : Stock.t list) n p g z =
     match lst with
     | [] ->
-        print_endline bar;
+        print_endline Init.bar;
         print_endline n;
         print_endline p;
         print_endline g;
         print_endline z;
-        print_endline bar
+        print_endline Init.bar
     | h :: t ->
         print_stocks_helper his_lst t
           (n ^ Stock.get_ticker h ^ "\t")
@@ -61,7 +59,6 @@ let print_index (s_lst : Stock.t list) (history : Index_history.i list)
 (* [print_stocks s_lst] prints the stocks in [s_lst]. *)
 let print_stocks (s_lst : Stock.t list) (history : Stock_history.t list)
     =
-  let bar = "*******************************************" in
   let shares = "Shares: " in
   let ticker = "Ticker: " in
   let prices = "Price:  " in
@@ -70,12 +67,12 @@ let print_stocks (s_lst : Stock.t list) (history : Stock_history.t list)
       (lst : Stock.t list) n p g z =
     match lst with
     | [] ->
-        print_endline bar;
+        print_endline Init.bar;
         print_endline n;
         print_endline p;
         print_endline g;
         print_endline z;
-        print_endline bar
+        print_endline Init.bar
     | h :: t ->
         print_stocks_helper his_lst t
           (n ^ Stock.get_ticker h ^ "\t")
@@ -94,9 +91,8 @@ let print_stocks (s_lst : Stock.t list) (history : Stock_history.t list)
   print_stocks_helper history s_lst ticker prices shares
     user_stock_performance
 
-    let print_re (s_lst : Stock.t list) (history : Real_estate_history.r list)
-    =
-  let bar = "*******************************************" in
+let print_re (s_lst : Stock.t list)
+    (history : Real_estate_history.r list) =
   let shares = "Shares: " in
   let ticker = "Ticker: " in
   let prices = "Price:  " in
@@ -105,12 +101,12 @@ let print_stocks (s_lst : Stock.t list) (history : Stock_history.t list)
       (lst : Stock.t list) n p g z =
     match lst with
     | [] ->
-        print_endline bar;
+        print_endline Init.bar;
         print_endline n;
         print_endline p;
         print_endline g;
         print_endline z;
-        print_endline bar
+        print_endline Init.bar
     | h :: t ->
         print_stocks_helper his_lst t
           (n ^ Stock.get_ticker h ^ "\t")
@@ -128,6 +124,7 @@ let print_stocks (s_lst : Stock.t list) (history : Stock_history.t list)
   in
   print_stocks_helper history s_lst ticker prices shares
     user_stock_performance
+
 (** [has_game_ended s] returns true when in-game time has reached or
     passed year 20 (nmonth 240). *)
 let has_game_ended s =
@@ -138,38 +135,39 @@ let has_game_ended s =
 let end_game_function () =
   print_endline "TODO: End of game functionality"
 
+let parse_input_helper () =
+  match read_line () with
+  | exception End_of_file -> ()
+  | line when line = "quit" -> exit 0
+  | line when line = "cd" ->
+      let p = getportfolio user in
+      let cd_h = Portfolio.get_cd_history p in
+      print_cd (Cd_history.get_current_apy cd_h)
+  | line when line = "s" ->
+      Stock.update_current_prices stocks !start_time;
+      print_stocks stocks stock_history_lst
+  | line when line = "i" ->
+      Stock.update_current_prices index !start_time;
+      print_index index index_history_lst
+  | line when line = "re" ->
+      Stock.update_current_prices re !start_time;
+      print_re re re_history_lst
+  | line -> (
+      try Interaction.parse line user
+      with _ -> print_endline "Invalid Command" )
+
 (** [prompt_input] prompts user for input during the simulation. *)
 let rec prompt_input () =
   if has_game_ended Game.s_per_month then end_game_function ()
   else (
     print_string prompt_str;
-    match read_line () with
-    | exception End_of_file -> ()
-    | line when line = "quit" -> exit 0
-    | line when line = "cd" ->
-        let p = getportfolio user in
-        let cd_h = Portfolio.get_cd_history p in
-        print_cd (Cd_history.get_current_apy cd_h);
-        prompt_input ()
-    | line when line = "s" ->
-        Stock.update_current_prices stocks !start_time;
-        print_stocks stocks stock_history_lst;
-        prompt_input ()
-    | line when line = "i" ->
-        Stock.update_current_prices index !start_time;
-        print_index index index_history_lst;
-        prompt_input ()
-    | line when line = "re" ->
-          Stock.update_current_prices re !start_time;
-          print_re re re_history_lst;
-          prompt_input ()
-    | line -> (
-        try
-          Interaction.parse line user;
-          prompt_input ()
-        with _ ->
-          print_endline "Invalid Command";
-          prompt_input () ) )
+    parse_input_helper ();
+    let time_elapsed =
+      int_of_float (Unix.time () -. Game.get_start_time ())
+    in
+    print_endline (Game.str_of_year_month time_elapsed);
+    print_endline Init.bar;
+    prompt_input () )
 
 (** [prompt_for_start] trims the user input and starts the game if the
     user types "start", quits the game if user types "quit". If neither,

@@ -41,6 +41,8 @@ let user : User.t =
   User.create_user 20000. stock_history_lst index_history_lst cd_history
     re_history_lst
 
+let bar = "*******************************************"
+
 let intro_string =
   "\n\
    *************************\n\
