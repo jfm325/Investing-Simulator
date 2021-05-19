@@ -16,6 +16,14 @@ val index_history_lst : Index_history.i list
 
 val bar : string
 
+val shares_str : string
+
+val ticker_str : string
+
+val prices_str : string
+
+val profit_loss_str : string
+
 val intro_string : string
 
 val instructions : string

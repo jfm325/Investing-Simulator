@@ -34,7 +34,9 @@ val get_length_re_history : Real_estate_history.r list -> int -> int
 
 val getportfolio : t -> Portfolio.t
 
-val checkstock : Stock.t -> Stock_history.t -> float
+(** [get_stocks_pl stock sh] is the profit/loss of stock [stock]
+    compared to the buy-in value from shares owned in stock history [sh]*)
+val get_stocks_pl : Stock.t -> Stock_history.t -> float
 
 val find : 'a -> 'a list -> int
 
@@ -59,7 +61,9 @@ val buy_index : string -> int -> t -> Stock.t -> unit
 
 val sell_index : string -> int -> t -> Stock.t -> unit
 
-val checkindex : Stock.t -> Index_history.i -> float
+(** [get_index_pl stock ih] is the profit/loss of stock [stock] compared
+    to the buy-in value from shares owned in index history [ih] *)
+val get_index_pl : Stock.t -> Index_history.i -> float
 
 val buy_re : string -> int -> t -> Stock.t -> unit
 
