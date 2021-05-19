@@ -178,22 +178,16 @@ let view com u =
           < n
         then
           print_string
-            "TRANSACTION ERROR: You do not have enough shares \n"
+            "TRANSACTION ERROR: You do not have enough shares\n"
         else (
           User.sell s n u st;
-          print_string "You just sold shares \n" )
+          print_string "You just sold shares\n" )
     | Buy_Index invest ->
         Stock.update_current_prices index (Game.get_start_time ());
-        let s = List.hd invest in
-        (*let g = legal_stock_history new_stock_history s in*)
-        let n = int_of_string (List.nth invest 1) in
-        let st = legal index s in
-        if s <> "SPY" then
-          print_string "TRANSACTION ERROR: this is not an index_fund \n"
-        else if
-          User.get_cash u -. (float n *. Stock.get_current_price st)
-          <= 0.0
-        then
+        let n = int_of_string (List.hd invest) in
+        let index_fund = legal index "SPY" in
+        let cost = float n *. Stock.get_current_price index_fund in
+        if User.get_cash u -. cost <= 0.0 then
           print_string
             "TRANSACTION ERROR: You do not have enough cash to \
              purchase this stock \n"
@@ -202,27 +196,26 @@ let view com u =
             "TRANSACTION ERROR: You have to buy a positive number of \
              shares \n"
         else (
-          User.buy_index s n u st;
+          User.buy_index "SPY" n u index_fund;
           print_string
-            "You just bought stocks and your cash has changed \n" )
+            "You just bought into an index fund and your cash has \
+             changed\n" )
     | Sell_Index invest ->
         Stock.update_current_prices index (Game.get_start_time ());
-        let s = List.hd invest in
-        (*let g = legal_stock_history new_stock_history s in*)
-        let n = int_of_string (List.nth invest 1) in
+        let n = int_of_string (List.hd invest) in
         let user_portfolio = User.getportfolio u in
-        let st = legal index s in
-        if
+        let index_fund = legal index "SPY" in
+        let etfs_owned =
           Index_history.get_shares
             (User.legal_index_history
                (Portfolio.get_index_history user_portfolio)
-               s)
-          < n
-        then
+               "SPY")
+        in
+        if etfs_owned < n then
           print_string
             "TRANSACTION ERROR: You do not have enough shares \n"
         else (
-          User.sell_index s n u st;
+          User.sell_index "SPY" n u index_fund;
           print_string "You just sold shares \n" )
     | Buy_Re invest ->
         Stock.update_current_prices index (Game.get_start_time ());
@@ -272,7 +265,7 @@ let view com u =
         let s = List.hd invest in
         let st = legal stocks s in
         let b = legal_stock_history stock_history_lst s in
-        let c = string_of_float (User.checkstock st b) in
+        let c = string_of_float (User.get_stocks_pl st b) in
         if float_of_string c < 0. then
           print_string
             ("Your stocks currently has a loss $" ^ c ^ " dollars \n")

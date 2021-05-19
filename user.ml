@@ -153,11 +153,15 @@ let rec lookup (k : (float * int) list) (acc : float) =
 let rec lookup_shares (k : (float * int) list) (acc : int) =
   match k with [] -> acc | (k, v) :: t -> lookup_shares t (acc + v)
 
-let checkstock (stock_t : Stock.t) (stock : Stock_history.t) =
-  Stock.get_current_price stock_t
-  *. float_of_int
-       (lookup_shares (Stock_history.get_buy_in_prices stock) 0)
-  -. lookup (Stock_history.get_buy_in_prices stock) 0.
+let get_stocks_pl stock sh =
+  let shares_owned =
+    float_of_int (lookup_shares (Stock_history.get_buy_in_prices sh) 0)
+  in
+  let current_value = Stock.get_current_price stock *. shares_owned in
+  let value_at_buy_in =
+    lookup (Stock_history.get_buy_in_prices sh) 0.
+  in
+  current_value -. value_at_buy_in
 
 (*let get_stock_history stockhistory: Stock_history.t = *)
 let buy_index (stock_name : string) (shares : int) (user : t)
@@ -173,11 +177,15 @@ let sell_index (stock_name : string) (shares : int) (user : t)
     shares;
   change_cash_sell user shares stock
 
-let checkindex (stock_t : Stock.t) (stock : Index_history.i) =
-  Stock.get_current_price stock_t
-  *. float_of_int
-       (lookup_shares (Index_history.get_buy_in_prices stock) 0)
-  -. lookup (Index_history.get_buy_in_prices stock) 0.
+let get_index_pl stock ih =
+  let shares_owned =
+    float_of_int (lookup_shares (Index_history.get_buy_in_prices ih) 0)
+  in
+  let current_value = Stock.get_current_price stock *. shares_owned in
+  let value_at_buy_in =
+    lookup (Index_history.get_buy_in_prices ih) 0.
+  in
+  current_value -. value_at_buy_in
 
 let buy_re (stock_name : string) (shares : int) (user : t)
     (stock : Stock.t) =

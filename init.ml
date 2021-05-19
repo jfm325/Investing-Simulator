@@ -43,6 +43,14 @@ let user : User.t =
 
 let bar = "*******************************************"
 
+let shares_str = "Shares: "
+
+let ticker_str = "Ticker: "
+
+let prices_str = "Price:  "
+
+let profit_loss_str = "P/L:    "
+
 let intro_string =
   "\n\
    *************************\n\
