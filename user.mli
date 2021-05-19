@@ -23,6 +23,14 @@ val get_net_worth :
 (*[get_cash u] return the cash of the user*)
 val get_cash : t -> float
 
+val get_length_stock_history : Stock_history.t list -> int -> int
+
+val get_length_index_history : Index_history.i list -> int -> int
+
+val get_length_re_history : Real_estate_history.r list -> int -> int
+
+val getportfolio : t -> Portfolio.t
+
 val checkstock : Stock.t -> Stock_history.t -> float
 
 val find : 'a -> 'a list -> int

@@ -133,7 +133,12 @@ let view com u =
           <= 0.0
         then
           print_string
-            "You do not have enough cash to purchase this stock \n"
+            "TRANSACTION ERROR: You do not have enough cash to \
+             purchase this stock \n"
+        else if n <= 0 then
+          print_string
+            "TRANSACTION ERROR: You have to buy a positive number of \
+             shares \n"
         else (
           User.buy s n u st;
           print_string
@@ -151,7 +156,9 @@ let view com u =
                (Portfolio.get_stock_history user_portfolio)
                s)
           < n
-        then print_string "You do not have enough shares \n"
+        then
+          print_string
+            "TRANSACTION ERROR: You do not have enough shares \n"
         else (
           User.sell s n u st;
           print_string "You just sold shares \n" )
@@ -161,13 +168,19 @@ let view com u =
         (*let g = legal_stock_history new_stock_history s in*)
         let n = int_of_string (List.nth invest 1) in
         let st = legal index s in
-        if s <> "SPY" then print_string "this is not an index_fund \n"
+        if s <> "SPY" then
+          print_string "TRANSACTION ERROR: this is not an index_fund \n"
         else if
           User.get_cash u -. (float n *. Stock.get_current_price st)
           <= 0.0
         then
           print_string
-            "You do not have enough cash to purchase this stock \n"
+            "TRANSACTION ERROR: You do not have enough cash to \
+             purchase this stock \n"
+        else if n <= 0 then
+          print_string
+            "TRANSACTION ERROR: You have to buy a positive number of \
+             shares \n"
         else (
           User.buy_index s n u st;
           print_string
@@ -185,7 +198,9 @@ let view com u =
                (Portfolio.get_index_history user_portfolio)
                s)
           < n
-        then print_string "You do not have enough shares \n"
+        then
+          print_string
+            "TRANSACTION ERROR: You do not have enough shares \n"
         else (
           User.sell_index s n u st;
           print_string "You just sold shares \n" )
@@ -195,13 +210,20 @@ let view com u =
         (*let g = legal_stock_history new_stock_history s in*)
         let n = int_of_string (List.nth invest 1) in
         let st = legal index s in
-        if s <> "SPY" then print_string "this is not an index_fund \n"
+        if s <> "SPY" then
+          print_string
+            "TRANSACTION ERROR: this is not an real_estate stock \n"
         else if
           User.get_cash u -. (float n *. Stock.get_current_price st)
           <= 0.0
         then
           print_string
-            "You do not have enough cash to purchase this stock \n"
+            "TRANSACTION ERROR: You do not have enough cash to \
+             purchase this stock \n"
+        else if n <= 0 then
+          print_string
+            "TRANSACTION ERROR: You have to buy a positive number of \
+             shares \n"
         else (
           User.buy_re s n u st;
           print_string
@@ -219,7 +241,9 @@ let view com u =
                (Portfolio.get_re_history user_portfolio)
                s)
           < n
-        then print_string "You do not have enough shares \n"
+        then
+          print_string
+            "TRANSACTION ERROR: You do not have enough shares \n"
         else (
           User.sell_re s n u st;
           print_string "You just sold shares \n" )

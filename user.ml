@@ -67,6 +67,27 @@ let get_net_worth u stocks_lst index_lst re_lst =
 
 let get_cash u = u.cash
 
+let rec get_length_stock_history sh_lst counter =
+  match sh_lst with
+  | [] -> counter
+  | h :: t ->
+      let value = Stock_history.get_shares h in
+      get_length_stock_history t (counter + value)
+
+let rec get_length_index_history sh_lst counter =
+  match sh_lst with
+  | [] -> counter
+  | h :: t ->
+      let value = Index_history.get_shares h in
+      get_length_index_history t (counter + value)
+
+let rec get_length_re_history sh_lst counter =
+  match sh_lst with
+  | [] -> counter
+  | h :: t ->
+      let value = Real_estate_history.get_shares h in
+      get_length_re_history t (counter + value)
+
 let rec legal_index_history list symb =
   match list with
   | [] -> raise Not_found
@@ -97,10 +118,6 @@ let create_user c sh_lst i_lst cd_h re_list =
   }
 
 let getportfolio u = u.portfolio
-
-let getindexsize u = Portfolio.get_index_history
-
-let getresize u = Portfolio.get_re_history
 
 let rec find x lst =
   match lst with

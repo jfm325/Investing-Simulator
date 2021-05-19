@@ -23,3 +23,6 @@ val buy_re : t -> Stock.t -> int -> t
 val get_stock_history : t -> Stock_history.t list
 val get_index_history : t -> Index_history.i list
 val get_re_history : t -> Real_estate_history.r list
+val get_stock_history_size: t -> int
+val get_re_history_size: t -> int
+val get_index_history_size: t -> int

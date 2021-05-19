@@ -3,7 +3,7 @@
 (**********************************************************************
  
  **********************************************************************)
-
+val legal : Stock.t list -> Stock.ticker_symbol -> Stock.t
 (** The type [invest] represents the purchase/sale of shares that can be
     part of a player command, where, no element of the list should
     contain any leading, internal, or trailing spaces. The list is in
