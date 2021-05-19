@@ -135,6 +135,8 @@ let has_game_ended s =
 let end_game_function () =
   print_endline "TODO: End of game functionality"
 
+(** [parse_input_helper] reads the user input and calls corresponding
+    commands. *)
 let parse_input_helper () =
   match read_line () with
   | exception End_of_file -> ()

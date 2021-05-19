@@ -21,7 +21,7 @@ let str_of_year_month time_elapsed =
   if index >= 240 then "End of Game"
   else "Year " ^ year_str ^ " Month " ^ month_str
 
-let game_ended s =
+let game_ended () =
   let current_time = int_of_float (Unix.time () -. !start_time) in
-  let index = current_time / s in
+  let index = current_time / s_per_month in
   index >= 240

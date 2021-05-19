@@ -14,6 +14,8 @@ type t = {
   mutable string_stock_companies : string list;
 }
 
+let add_income_cash u amt = u.cash <- u.cash +. amt
+
 let rec legal list symb =
   match list with
   | [] -> raise Not_found
