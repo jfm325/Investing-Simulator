@@ -14,6 +14,8 @@ val re_history_lst : Real_estate_history.r list
 
 val index_history_lst : Index_history.i list
 
+val bar : string
+
 val intro_string : string
 
 val instructions : string
