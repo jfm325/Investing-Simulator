@@ -52,6 +52,8 @@ let instructions =
    with the goal of making the most of your salary.\n\n\
    Commands:\n\
    See stocks:         s\n\
+   See index:          i\n\
+   See real_estate:    re\n\
    See cd info :       cd\n\
    See index_funds:    view_index \n\
    See networth:       networth\n\
