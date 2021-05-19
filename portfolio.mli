@@ -15,7 +15,7 @@ val get_index_history_size: t -> int
 val get_re_history_size: t -> int
 
 (** [buy_stock p stock n] updates portfolio [p] with a buy order of [n]
-    shares of stock [stock]]. *)
+    shares of stock [stock]. *)
 val buy_stock : t -> Stock.t -> int -> t
 val buy_index : t -> Stock.t -> int -> t
 val buy_re : t -> Stock.t -> int -> t

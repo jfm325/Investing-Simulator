@@ -2,7 +2,7 @@
   
  ************************************************************)
 
-(** CS 3110 Spring 2021 M1 Stock Simulator
+(** CS 3110 Spring 2021 Stock Simulator
 
     @author Anushka Mukherjee (am2265) @author Joey Morquecho (jfm325)
     @author Josue Garcia (jg2287) *)
@@ -31,5 +31,5 @@
  ************************************************************)
 
 (* [hours_worked] is the number of hours worked during the current
-   sprint. *)
-val hours_worked : int
+   sprint for each author respectively. *)
+val hours_worked : int list
