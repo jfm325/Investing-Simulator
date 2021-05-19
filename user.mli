@@ -16,6 +16,9 @@ val create_user :
   Real_estate_history.r list ->
   t
 
+(** [add_income_cash u amt] adds income of [amt] to user [u]'s cash. *)
+val add_income_cash : t -> float -> unit
+
 (*[get_net_worth u stocks_lst] return the net worth of the user. *)
 val get_net_worth :
   t -> Stock.t list -> Stock.t list -> Stock.t list -> float

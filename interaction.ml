@@ -4,6 +4,7 @@ open User
 open Portfolio
 open Cd_history
 open Cd
+open Game
 
 type invest = string list
 
@@ -84,7 +85,26 @@ let print_cd his_lst lst count =
   in
   print_cd_helper his_lst lst num term maturity apy c
 
+(* [times_income_received] is the numer of times the user has received
+   their $10k income every 6 months. *)
+let times_income_received = ref 0
+
+let give_user_income_if_needed u =
+  let time_elapsed =
+    int_of_float (Unix.time () -. Game.get_start_time ())
+  in
+  let i = time_elapsed / Game.s_per_month in
+  (* [month] is the month index and caps at 240 months for 20yrs. *)
+  let month = if i > 240 then 240 else i + 1 in
+  let income_times = month / 6 in
+  let diff = float_of_int (income_times - !times_income_received) in
+  if diff > 0. then (
+    User.add_income_cash u (diff *. 10000.);
+    times_income_received := income_times )
+  else ()
+
 let view com u =
+  give_user_income_if_needed u;
   try
     match com with
     | ViewIndex ->

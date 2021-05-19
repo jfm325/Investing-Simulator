@@ -13,6 +13,6 @@ val get_start_time : unit -> float
     Month _" based on the current [elapsed_time] in the game. *)
 val str_of_year_month : int -> string
 
-(** [game_ended s] is true if the game has ended calculated based on the
-    number of seconds [s] in which stocks are updated. *)
-val game_ended : int -> bool
+(** [game_ended ()] is true if the game has ended calculated based
+    [s_per_month] in which stocks are updated. *)
+val game_ended : unit -> bool
