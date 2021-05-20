@@ -1,9 +1,6 @@
-(* Representation of investment history in stocks.
+(* Representation of investment history in real estate.*)
 
-   This module represents a user's investment history in stocks.
-   Includes buy-in prices and number of shares owned. *)
-
-(** The abstract type for a portfolio. *)
+(** The abstract type for investment history real estate. *)
 type r
 
 (** [create_re_history t] is the real estate history for a stock with

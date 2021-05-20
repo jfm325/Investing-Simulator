@@ -3,7 +3,7 @@
 
    This module represents a user's investment history in cds. *)
 
-(** The abstract type for a portfolio. *)
+(** The abstract type for investment history in cds. *)
 type t
 
 (** [get_current_apy cd_h] is the current APY from the interest rates in
