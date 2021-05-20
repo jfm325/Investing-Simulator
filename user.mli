@@ -13,24 +13,20 @@ val create_user :
   Stock_history.t list ->
   Index_history.i list ->
   Cd_history.t ->
-  Real_estate_history.r list ->
   t
 
 (** [add_income_cash u amt] adds income of [amt] to user [u]'s cash. *)
 val add_income_cash : t -> float -> unit
 
 (*[get_net_worth u stocks_lst] return the net worth of the user. *)
-val get_net_worth :
-  t -> Stock.t list -> Stock.t list -> Stock.t list -> float
+val get_net_worth : t -> Stock.t list -> Stock.t list -> float
 
-(*[get_cash u] return the cash of the user*)
+(* [get_cash u] return the cash of the user*)
 val get_cash : t -> float
 
 val get_length_stock_history : Stock_history.t list -> int -> int
 
 val get_length_index_history : Index_history.i list -> int -> int
-
-val get_length_re_history : Real_estate_history.r list -> int -> int
 
 val getportfolio : t -> Portfolio.t
 
@@ -54,9 +50,6 @@ val legal_stock_history :
 val legal_index_history :
   Index_history.i list -> string -> Index_history.i
 
-val legal_re_history :
-  Real_estate_history.r list -> string -> Real_estate_history.r
-
 val buy_index : string -> int -> t -> Stock.t -> unit
 
 val sell_index : string -> int -> t -> Stock.t -> unit
@@ -64,12 +57,6 @@ val sell_index : string -> int -> t -> Stock.t -> unit
 (** [get_index_pl stock ih] is the profit/loss of stock [stock] compared
     to the buy-in value from shares owned in index history [ih] *)
 val get_index_pl : Stock.t -> Index_history.i -> float
-
-val buy_re : string -> int -> t -> Stock.t -> unit
-
-val sell_re : string -> int -> t -> Stock.t -> unit
-
-val checkre : Stock.t -> Real_estate_history.r -> float
 
 val changecash_buycd : t -> float -> unit
 

@@ -1,4 +1,4 @@
-MODULES=author cd_history cd game index_history init interaction main portfolio	real_estate_history	stock_history stock user     
+MODULES=author cd_history cd game index_history init interaction main portfolio	stock_history stock user     
 TEST=test.byte
 MAIN=main.byte
 OBJECTS=$(MODULES:=.cmo)
