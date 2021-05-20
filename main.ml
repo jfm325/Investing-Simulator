@@ -166,7 +166,7 @@ let parse_input_helper () =
       Stock.update_current_prices re !start_time;
       print_re re re_history_lst
   | line -> (
-      try Interaction.parse line user
+      try Interaction.parse line user bot
       with _ -> print_endline "Invalid Command" )
 
 (** [prompt_input] prompts user for input during the simulation. *)

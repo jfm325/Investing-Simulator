@@ -42,6 +42,8 @@ let user : User.t =
   User.create_user 20000. stock_history_lst index_history_lst cd_history
     re_history_lst
 
+let bot : Bot.t = Bot.create_bot
+
 let bar = "*******************************************"
 
 let shares_str = "Shares: "
@@ -80,4 +82,5 @@ let instructions =
   \ where 1 ~ 6 months, 2 ~ 12 months, 3 ~ 36 months\n\
    Sell cd:            sell_cd [index # in cd_history list] \n\
    View bought cd:     view_cd \n\
+   See bot networth:   bot \n\
    View commands again: help\n\n"

@@ -53,7 +53,7 @@ val checklegalterm : int -> Cd.term
     exists in the market. Raises: [Not_Found] if the share being
     sold/bought does not exist i.e the company is not included in
     [stocks] Stock.t list in Init. *)
-val view : command -> User.t -> unit
+val view : command -> User.t -> Bot.t -> unit
 
 (** [parse str] parses a player's input into a [command], as follows.
     The first word (i.e., consecutive sequence of non-space characters)
@@ -69,4 +69,4 @@ val view : command -> User.t -> unit
     the verb is "cash" / "networth" and there is a non-empty invest
     list, or if the verb is "buy" / "sell" and there is an empty invest
     list.*)
-val parse : string -> User.t -> unit
+val parse : string -> User.t ->  Bot.t -> unit

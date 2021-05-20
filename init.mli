@@ -6,7 +6,7 @@ val index : Stock.t list
 
 val user : User.t
 
-(*val bot : Bot.t*)
+val bot : Bot.t
 
 val stock_history_lst : Stock_history.t list
 

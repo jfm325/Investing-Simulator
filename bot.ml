@@ -34,7 +34,7 @@ let create_bot =
 let get_index_price_lst bot = bot.index_price_arr
 
 let get_current_price bot =
-  let ended = Game.game_ended Game.s_per_month in
+  let ended = Game.game_ended () in
   let time = int_of_float (Unix.time () -. Game.get_start_time ()) in
   let i = if ended then 239 else time / Game.s_per_month in
   let price = (get_index_price_lst bot).(i) in
@@ -49,9 +49,6 @@ let rec calc_net_worth lst bot counter =
       let value = float_of_int bot.shares *. get_current_price bot in
       calc_net_worth t bot (counter +. value)
 
-let update_current_prices lst start_time =
-  Stock.update_current_prices lst start_time
-
 let buy_index_bot bot i =
   let price = (get_index_price_lst bot).(i) in
   let n = int_of_float (200000. /. price) in
@@ -62,7 +59,7 @@ let buy_index_bot bot i =
   bot.networth <- calc_net_worth bot.index_hist bot 0.
 
 let purchase_indexfunds bot =
-  let ended = Game.game_ended Game.s_per_month in
+  let ended = Game.game_ended () in
   let time = int_of_float (Unix.time () -. Game.get_start_time ()) in
   let i = if ended then 239 else time / Game.s_per_month in
   if i mod 6 = 0 then buy_index_bot bot i

@@ -104,14 +104,14 @@ let give_user_income_if_needed u =
     times_income_received := income_times )
   else ()
 
-let view com u =
+let view com u b =
   give_user_income_if_needed u;
   try
     match com with
     | BotNetworth ->
-        failwith "todo"
-        (* let botnw = string_of_float (Bot.get_net_worth bot) in
-           print_string ("The networth of the bot is " ^ botnw ^ "\n")*)
+        let r = Bot.purchase_indexfunds bot in
+        let botnw = string_of_float (Bot.get_net_worth bot) in
+        print_string ("The networth of the bot is " ^ botnw ^ "\n")
     | ViewIndex ->
         let p = User.getportfolio u in
         let in_h = Portfolio.get_index_history p in
@@ -283,35 +283,36 @@ let view com u =
   with Not_found ->
     print_string "Invalid stock not found in market. \n"
 
-let parse str u =
+let parse str u b =
   let lst = String.split_on_char ' ' str in
   match lst with
   | [] -> raise EmptyCommand
   | [ "" ] -> raise EmptyCommand
   | h :: invest ->
       if h = "" then raise EmptyCommand
-      else if h = "cash" then view Cash u
-      else if h = "bot" then view BotNetworth u
-      else if h = "view_index" then view ViewIndex u
-      else if h = "networth" then view Networth u
-      else if h = "help" then view Help u
+      else if h = "cash" then view Cash u b
+      else if h = "bot" then view BotNetworth u b
+      else if h = "view_index" then view ViewIndex u b
+      else if h = "networth" then view Networth u b
+      else if h = "help" then view Help u b
       else if h = "sell_index" && invest <> [ "" ] then
-        view (Sell_Index invest) u
+        view (Sell_Index invest) u b
       else if h = "buy_index" && invest <> [ "" ] then
-        view (Buy_Index invest) u
+        view (Buy_Index invest) u b
       else if h = "sell_re" && invest <> [ "" ] then
-        view (Sell_Re invest) u
+        view (Sell_Re invest) u b
       else if h = "buy_re" && invest <> [ "" ] then
-        view (Buy_Re invest) u
+        view (Buy_Re invest) u b
       else if h = "sell_s" && invest <> [ "" ] then
-        view (Sell_S invest) u
-      else if h = "buy_s" && invest <> [ "" ] then view (Buy_S invest) u
+        view (Sell_S invest) u b
+      else if h = "buy_s" && invest <> [ "" ] then
+        view (Buy_S invest) u b
       else if h = "buy_cd" && invest <> [ "" ] then
-        view (BuyCD invest) u
+        view (BuyCD invest) u b
       else if h = "sell_cd" && invest <> [ "" ] then
-        view (SellCD invest) u
-      else if h = "view_cd" then view ViewCD u
+        view (SellCD invest) u b
+      else if h = "view_cd" then view ViewCD u b
       else if h = "checkstock" && invest <> [ "" ] then
-        view (Checkstock invest) u
+        view (Checkstock invest) u b
         (*else if h = "my_stockhistory" then My_stockhistory*)
       else raise BadCommand
