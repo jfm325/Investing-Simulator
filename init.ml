@@ -62,8 +62,11 @@ let intro_string =
 
 let instructions =
   "You will be able to buy/sell individual stock shares\n\
-   with the goal of making the most of your salary.\n\n\
-   Commands:\n\
+   with the goal of making the most of your salary.\n\n\n\
+  \   \n\
+   There is also a competing bot so try and beat it by earning a \
+   higher networth\n\n\n\
+  \   Commands:\n\
    See stocks:         s\n\
    See index:          i\n\
    See real_estate:    re\n\

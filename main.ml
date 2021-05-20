@@ -144,7 +144,16 @@ let has_game_ended s =
   month >= 240
 
 let end_game_function () =
-  print_endline "TODO: End of game functionality"
+  let b = Bot.get_net_worth bot in
+  Stock.update_current_prices stocks (Game.get_start_time ());
+  Stock.update_current_prices index (Game.get_start_time ());
+  Stock.update_current_prices re (Game.get_start_time ());
+  let n = User.get_net_worth user Init.stocks index re in
+  print_string ("Bot : " ^ string_of_float b ^ "\n");
+  print_string ("User : " ^ string_of_float n ^ "\n");
+  if b > n then
+    ANSITerminal.print_string [ ANSITerminal.red ] "Bot wins \n"
+  else ANSITerminal.print_string [ ANSITerminal.green ] "User wins \n"
 
 (** [parse_input_helper] reads the user input and calls corresponding
     commands. *)
@@ -173,6 +182,7 @@ let parse_input_helper () =
 let rec prompt_input () =
   if has_game_ended Game.s_per_month then end_game_function ()
   else (
+    Bot.purchase_indexfunds bot;
     print_string prompt_str;
     parse_input_helper ();
     let time_elapsed =

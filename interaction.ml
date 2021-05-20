@@ -109,7 +109,6 @@ let view com u b =
   try
     match com with
     | BotNetworth ->
-        let r = Bot.purchase_indexfunds bot in
         let botnw = string_of_float (Bot.get_net_worth bot) in
         print_string ("The networth of the bot is " ^ botnw ^ "\n")
     | ViewIndex ->
