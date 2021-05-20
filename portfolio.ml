@@ -12,6 +12,8 @@ type t = {
 
 let get_re_history_size u = List.length u.re_history
 
+let get_stock_history_size u = List.length u.stock_history
+
 let get_index_history_size u = List.length u.index_history
 
 let get_stock_history p = p.stock_history

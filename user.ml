@@ -14,6 +14,8 @@ type t = {
   mutable string_stock_companies : string list;
 }
 
+let add_income_cash u amt = u.cash <- u.cash +. amt
+
 let rec legal list symb =
   match list with
   | [] -> raise Not_found
@@ -67,6 +69,27 @@ let get_net_worth u stocks_lst index_lst re_lst =
 
 let get_cash u = u.cash
 
+let rec get_length_stock_history sh_lst counter =
+  match sh_lst with
+  | [] -> counter
+  | h :: t ->
+      let value = Stock_history.get_shares h in
+      get_length_stock_history t (counter + value)
+
+let rec get_length_index_history sh_lst counter =
+  match sh_lst with
+  | [] -> counter
+  | h :: t ->
+      let value = Index_history.get_shares h in
+      get_length_index_history t (counter + value)
+
+let rec get_length_re_history sh_lst counter =
+  match sh_lst with
+  | [] -> counter
+  | h :: t ->
+      let value = Real_estate_history.get_shares h in
+      get_length_re_history t (counter + value)
+
 let rec legal_index_history list symb =
   match list with
   | [] -> raise Not_found
@@ -97,10 +120,6 @@ let create_user c sh_lst i_lst cd_h re_list =
   }
 
 let getportfolio u = u.portfolio
-
-let getindexsize u = Portfolio.get_index_history
-
-let getresize u = Portfolio.get_re_history
 
 let rec find x lst =
   match lst with
@@ -134,11 +153,15 @@ let rec lookup (k : (float * int) list) (acc : float) =
 let rec lookup_shares (k : (float * int) list) (acc : int) =
   match k with [] -> acc | (k, v) :: t -> lookup_shares t (acc + v)
 
-let checkstock (stock_t : Stock.t) (stock : Stock_history.t) =
-  Stock.get_current_price stock_t
-  *. float_of_int
-       (lookup_shares (Stock_history.get_buy_in_prices stock) 0)
-  -. lookup (Stock_history.get_buy_in_prices stock) 0.
+let get_stocks_pl stock sh =
+  let shares_owned =
+    float_of_int (lookup_shares (Stock_history.get_buy_in_prices sh) 0)
+  in
+  let current_value = Stock.get_current_price stock *. shares_owned in
+  let value_at_buy_in =
+    lookup (Stock_history.get_buy_in_prices sh) 0.
+  in
+  current_value -. value_at_buy_in
 
 (*let get_stock_history stockhistory: Stock_history.t = *)
 let buy_index (stock_name : string) (shares : int) (user : t)
@@ -154,11 +177,15 @@ let sell_index (stock_name : string) (shares : int) (user : t)
     shares;
   change_cash_sell user shares stock
 
-let checkindex (stock_t : Stock.t) (stock : Index_history.i) =
-  Stock.get_current_price stock_t
-  *. float_of_int
-       (lookup_shares (Index_history.get_buy_in_prices stock) 0)
-  -. lookup (Index_history.get_buy_in_prices stock) 0.
+let get_index_pl stock ih =
+  let shares_owned =
+    float_of_int (lookup_shares (Index_history.get_buy_in_prices ih) 0)
+  in
+  let current_value = Stock.get_current_price stock *. shares_owned in
+  let value_at_buy_in =
+    lookup (Index_history.get_buy_in_prices ih) 0.
+  in
+  current_value -. value_at_buy_in
 
 let buy_re (stock_name : string) (shares : int) (user : t)
     (stock : Stock.t) =

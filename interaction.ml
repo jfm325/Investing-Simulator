@@ -4,6 +4,7 @@ open User
 open Portfolio
 open Cd_history
 open Cd
+open Game
 
 type invest = string list
 
@@ -85,12 +86,32 @@ let print_cd his_lst lst count =
   in
   print_cd_helper his_lst lst num term maturity apy c
 
-let view com u b =
+(* [times_income_received] is the numer of times the user has received
+   their $10k income every 6 months. *)
+let times_income_received = ref 0
+
+let give_user_income_if_needed u =
+  let time_elapsed =
+    int_of_float (Unix.time () -. Game.get_start_time ())
+  in
+  let i = time_elapsed / Game.s_per_month in
+  (* [month] is the month index and caps at 240 months for 20yrs. *)
+  let month = if i > 240 then 240 else i + 1 in
+  let income_times = month / 6 in
+  let diff = float_of_int (income_times - !times_income_received) in
+  if diff > 0. then (
+    User.add_income_cash u (diff *. 10000.);
+    times_income_received := income_times )
+  else ()
+
+let view com u =
+  give_user_income_if_needed u;
   try
     match com with
     | BotNetworth ->
-        let botnw = string_of_float (Bot.get_net_worth bot) in
-        print_string ("The networth of the bot is " ^ botnw ^ "\n")
+        failwith "todo"
+        (* let botnw = string_of_float (Bot.get_net_worth bot) in
+           print_string ("The networth of the bot is " ^ botnw ^ "\n")*)
     | ViewIndex ->
         let p = User.getportfolio u in
         let in_h = Portfolio.get_index_history p in
@@ -137,7 +158,12 @@ let view com u b =
           <= 0.0
         then
           print_string
-            "You do not have enough cash to purchase this stock \n"
+            "TRANSACTION ERROR: You do not have enough cash to \
+             purchase this stock \n"
+        else if n <= 0 then
+          print_string
+            "TRANSACTION ERROR: You have to buy a positive number of \
+             shares \n"
         else (
           User.buy s n u st;
           print_string
@@ -155,43 +181,46 @@ let view com u b =
                (Portfolio.get_stock_history user_portfolio)
                s)
           < n
-        then print_string "You do not have enough shares \n"
-        else (
-          User.sell s n u st;
-          print_string "You just sold shares \n" )
-    | Buy_Index invest ->
-        Stock.update_current_prices index (Game.get_start_time ());
-        let s = List.hd invest in
-        (*let g = legal_stock_history new_stock_history s in*)
-        let n = int_of_string (List.nth invest 1) in
-        let st = legal index s in
-        if s <> "SPY" then print_string "this is not an index_fund \n"
-        else if
-          User.get_cash u -. (float n *. Stock.get_current_price st)
-          <= 0.0
         then
           print_string
-            "You do not have enough cash to purchase this stock \n"
+            "TRANSACTION ERROR: You do not have enough shares\n"
         else (
-          User.buy_index s n u st;
+          User.sell s n u st;
+          print_string "You just sold shares\n" )
+    | Buy_Index invest ->
+        Stock.update_current_prices index (Game.get_start_time ());
+        let n = int_of_string (List.hd invest) in
+        let index_fund = legal index "SPY" in
+        let cost = float n *. Stock.get_current_price index_fund in
+        if User.get_cash u -. cost <= 0.0 then
           print_string
-            "You just bought stocks and your cash has changed \n" )
+            "TRANSACTION ERROR: You do not have enough cash to \
+             purchase this stock \n"
+        else if n <= 0 then
+          print_string
+            "TRANSACTION ERROR: You have to buy a positive number of \
+             shares \n"
+        else (
+          User.buy_index "SPY" n u index_fund;
+          print_string
+            "You just bought into an index fund and your cash has \
+             changed\n" )
     | Sell_Index invest ->
         Stock.update_current_prices index (Game.get_start_time ());
-        let s = List.hd invest in
-        (*let g = legal_stock_history new_stock_history s in*)
-        let n = int_of_string (List.nth invest 1) in
+        let n = int_of_string (List.hd invest) in
         let user_portfolio = User.getportfolio u in
-        let st = legal index s in
-        if
+        let index_fund = legal index "SPY" in
+        let etfs_owned =
           Index_history.get_shares
             (User.legal_index_history
                (Portfolio.get_index_history user_portfolio)
-               s)
-          < n
-        then print_string "You do not have enough shares \n"
+               "SPY")
+        in
+        if etfs_owned < n then
+          print_string
+            "TRANSACTION ERROR: You do not have enough shares \n"
         else (
-          User.sell_index s n u st;
+          User.sell_index "SPY" n u index_fund;
           print_string "You just sold shares \n" )
     | Buy_Re invest ->
         Stock.update_current_prices index (Game.get_start_time ());
@@ -199,13 +228,20 @@ let view com u b =
         (*let g = legal_stock_history new_stock_history s in*)
         let n = int_of_string (List.nth invest 1) in
         let st = legal index s in
-        if s <> "SPY" then print_string "this is not an index_fund \n"
+        if s <> "SPY" then
+          print_string
+            "TRANSACTION ERROR: this is not an real_estate stock \n"
         else if
           User.get_cash u -. (float n *. Stock.get_current_price st)
           <= 0.0
         then
           print_string
-            "You do not have enough cash to purchase this stock \n"
+            "TRANSACTION ERROR: You do not have enough cash to \
+             purchase this stock \n"
+        else if n <= 0 then
+          print_string
+            "TRANSACTION ERROR: You have to buy a positive number of \
+             shares \n"
         else (
           User.buy_re s n u st;
           print_string
@@ -223,7 +259,9 @@ let view com u b =
                (Portfolio.get_re_history user_portfolio)
                s)
           < n
-        then print_string "You do not have enough shares \n"
+        then
+          print_string
+            "TRANSACTION ERROR: You do not have enough shares \n"
         else (
           User.sell_re s n u st;
           print_string "You just sold shares \n" )
@@ -232,7 +270,7 @@ let view com u b =
         let s = List.hd invest in
         let st = legal stocks s in
         let b = legal_stock_history stock_history_lst s in
-        let c = string_of_float (User.checkstock st b) in
+        let c = string_of_float (User.get_stocks_pl st b) in
         if float_of_string c < 0. then
           print_string
             ("Your stocks currently has a loss $" ^ c ^ " dollars \n")
@@ -245,36 +283,35 @@ let view com u b =
   with Not_found ->
     print_string "Invalid stock not found in market. \n"
 
-let parse str u b =
+let parse str u =
   let lst = String.split_on_char ' ' str in
   match lst with
   | [] -> raise EmptyCommand
   | [ "" ] -> raise EmptyCommand
   | h :: invest ->
       if h = "" then raise EmptyCommand
-      else if h = "cash" then view Cash u b
-      else if h = "bot" then view BotNetworth u b
-      else if h = "view_index" then view ViewIndex u b
-      else if h = "networth" then view Networth u b
-      else if h = "help" then view Help u b
+      else if h = "cash" then view Cash u
+      else if h = "bot" then view BotNetworth u
+      else if h = "view_index" then view ViewIndex u
+      else if h = "networth" then view Networth u
+      else if h = "help" then view Help u
       else if h = "sell_index" && invest <> [ "" ] then
-        view (Sell_Index invest) u b
+        view (Sell_Index invest) u
       else if h = "buy_index" && invest <> [ "" ] then
-        view (Buy_Index invest) u b
+        view (Buy_Index invest) u
       else if h = "sell_re" && invest <> [ "" ] then
-        view (Sell_Re invest) u b
+        view (Sell_Re invest) u
       else if h = "buy_re" && invest <> [ "" ] then
-        view (Buy_Re invest) u b
+        view (Buy_Re invest) u
       else if h = "sell_s" && invest <> [ "" ] then
-        view (Sell_S invest) u b
-      else if h = "buy_s" && invest <> [ "" ] then
-        view (Buy_S invest) u b
+        view (Sell_S invest) u
+      else if h = "buy_s" && invest <> [ "" ] then view (Buy_S invest) u
       else if h = "buy_cd" && invest <> [ "" ] then
-        view (BuyCD invest) u b
+        view (BuyCD invest) u
       else if h = "sell_cd" && invest <> [ "" ] then
-        view (SellCD invest) u b
-      else if h = "view_cd" then view ViewCD u b
+        view (SellCD invest) u
+      else if h = "view_cd" then view ViewCD u
       else if h = "checkstock" && invest <> [ "" ] then
-        view (Checkstock invest) u b
+        view (Checkstock invest) u
         (*else if h = "my_stockhistory" then My_stockhistory*)
       else raise BadCommand

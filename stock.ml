@@ -19,17 +19,12 @@ let get_price s i = s.prices.(i)
 
 let get_current_price s = s.current_price
 
-(* NEW IMPLEMENTATION BELOW?*)
-(* let ended = Game.game_ended Game.s_per_month in let time =
-   int_of_float (Unix.time () -. Game.get_start_time ()) in let i = if
-   ended then 239 else time / Game.s_per_month in get_price s i *)
-
 let update_current_prices lst start_time =
-  let ended = Game.game_ended Game.s_per_month in
   let time = int_of_float (Unix.time () -. start_time) in
-  let i = if ended then 239 else time / Game.s_per_month in
+  let i = time / Game.s_per_month in
+  let i' = if i > 239 then 239 else i in
   let update_price (stock : t) =
-    stock.current_price <- get_price stock i
+    stock.current_price <- get_price stock i'
   in
   List.iter update_price lst
 

@@ -16,6 +16,9 @@ val create_user :
   Real_estate_history.r list ->
   t
 
+(** [add_income_cash u amt] adds income of [amt] to user [u]'s cash. *)
+val add_income_cash : t -> float -> unit
+
 (*[get_net_worth u stocks_lst] return the net worth of the user. *)
 val get_net_worth :
   t -> Stock.t list -> Stock.t list -> Stock.t list -> float
@@ -23,7 +26,17 @@ val get_net_worth :
 (*[get_cash u] return the cash of the user*)
 val get_cash : t -> float
 
-val checkstock : Stock.t -> Stock_history.t -> float
+val get_length_stock_history : Stock_history.t list -> int -> int
+
+val get_length_index_history : Index_history.i list -> int -> int
+
+val get_length_re_history : Real_estate_history.r list -> int -> int
+
+val getportfolio : t -> Portfolio.t
+
+(** [get_stocks_pl stock sh] is the profit/loss of stock [stock]
+    compared to the buy-in value from shares owned in stock history [sh]*)
+val get_stocks_pl : Stock.t -> Stock_history.t -> float
 
 val find : 'a -> 'a list -> int
 
@@ -48,7 +61,9 @@ val buy_index : string -> int -> t -> Stock.t -> unit
 
 val sell_index : string -> int -> t -> Stock.t -> unit
 
-val checkindex : Stock.t -> Index_history.i -> float
+(** [get_index_pl stock ih] is the profit/loss of stock [stock] compared
+    to the buy-in value from shares owned in index history [ih] *)
+val get_index_pl : Stock.t -> Index_history.i -> float
 
 val buy_re : string -> int -> t -> Stock.t -> unit
 

@@ -7,6 +7,7 @@ open User
 
 let prompt_str = "> "
 
+(* [print_cd apy] pretty-prints info of a cd based on APY [apy]. *)
 let print_cd apy =
   let six_month_apy = Cd.match_new_rate Cd.SixMonths apy in
   let three_yr_apy = Cd.match_new_rate Cd.ThreeYears apy in
@@ -16,44 +17,120 @@ let print_cd apy =
   let apy_str =
     apy_str_6mnth ^ "%\t\t" ^ apy_str_1yr ^ "%\t\t" ^ apy_str_3yrs ^ "%"
   in
-  let bar = "*****************************************************" in
   let terms = "CD Term: 6 months(1)\t1 year(2)\t3 years(3)" in
-  print_endline bar;
+  print_endline Init.bar;
   print_endline terms;
   print_endline ("APY:     " ^ apy_str);
-  print_endline bar
+  print_endline Init.bar
 
-(* [print_stocks s_lst] prints the stocks in [s_lst]. *)
-let print_stocks (s_lst : Stock.t list) (history : Stock_history.t list)
-    =
-  let bar = "*******************************************" in
+(** [print_profit_loss_helper lst] prints every float in [lst] with a
+    color red for negative floats, green for positive floats, and white
+    for zero. *)
+let rec print_profit_loss_helper lst =
+  match lst with
+  | [] -> ()
+  | h :: t ->
+      let pl = string_of_float h in
+      let color =
+        match h with
+        | h' when h' < 0. -> ANSITerminal.red
+        | h' when h' > 0. -> ANSITerminal.green
+        | _ -> ANSITerminal.default
+      in
+      ANSITerminal.print_string [ color ] (pl ^ "\t");
+      print_profit_loss_helper t
+
+(* [pp_print_stocks ticker_str price_str shares_str pl_lst]
+   pretty-prints all stock information. Note: [pl_lst] is a reversed
+   list of the profit/losses.*)
+let pp_print_stocks ticker_str price_str shares_str pl_lst =
+  let pl_rev_lst = List.rev pl_lst in
+  print_endline Init.bar;
+  print_endline ticker_str;
+  print_endline price_str;
+  print_endline shares_str;
+  print_string Init.profit_loss_str;
+  print_profit_loss_helper pl_rev_lst;
+  print_endline ("\n" ^ Init.bar)
+
+(* [print_stocks_helper stock_lst ticker_str price_str shares_str
+   pl_lst] is the helper function to go through [stock_lst] and fill in
+   the strings for stock info. *)
+let rec print_stocks_helper stock_lst ticker_str price_str shares_str
+    pl_lst =
+  match stock_lst with
+  | [] -> pp_print_stocks ticker_str price_str shares_str pl_lst
+  | h :: t ->
+      let sh =
+        legal_stock_history Init.stock_history_lst (Stock.get_ticker h)
+      in
+      let num_shares = get_shares sh in
+      let pl = User.get_stocks_pl h sh in
+      print_stocks_helper t
+        (ticker_str ^ Stock.get_ticker h ^ "\t")
+        (price_str ^ string_of_float (get_current_price h) ^ "\t")
+        (shares_str ^ string_of_int num_shares ^ "\t")
+        (pl :: pl_lst)
+
+(* [print_stocks s_lst] prints the stocks and stock info in [s_lst]. *)
+let print_stocks (s_lst : Stock.t list) =
+  print_stocks_helper s_lst Init.ticker_str Init.prices_str
+    Init.shares_str []
+
+(* [print_index_helper index_lst ticker_str price_str shares_str pl_lst]
+   is the helper function to go through [index_lst] and fill in the
+   strings for index fund info. *)
+let rec print_index_helper index_lst ticker_str price_str shares_str
+    pl_lst =
+  match index_lst with
+  | [] -> pp_print_stocks ticker_str price_str shares_str pl_lst
+  | h :: t ->
+      let sh =
+        legal_index_history Init.index_history_lst (Stock.get_ticker h)
+      in
+      let num_shares = Index_history.get_shares sh in
+      let pl = User.get_index_pl h sh in
+      print_stocks_helper t
+        (ticker_str ^ Stock.get_ticker h ^ "\t")
+        (price_str ^ string_of_float (get_current_price h) ^ "\t")
+        (shares_str ^ string_of_int num_shares ^ "\t")
+        (pl :: pl_lst)
+
+(* [print_index index_lst] prints the index fund info and performance in
+   [index_lst]. *)
+let print_index index_lst =
+  print_index_helper index_lst Init.ticker_str Init.prices_str
+    Init.shares_str []
+
+let print_re (s_lst : Stock.t list)
+    (history : Real_estate_history.r list) =
   let shares = "Shares: " in
   let ticker = "Ticker: " in
   let prices = "Price:  " in
   let user_stock_performance = "P/L:    " in
-  let rec print_stocks_helper (his_lst : Stock_history.t list)
+  let rec print_stocks_helper (his_lst : Real_estate_history.r list)
       (lst : Stock.t list) n p g z =
     match lst with
     | [] ->
-        print_endline bar;
+        print_endline Init.bar;
         print_endline n;
         print_endline p;
         print_endline g;
         print_endline z;
-        print_endline bar
+        print_endline Init.bar
     | h :: t ->
         print_stocks_helper his_lst t
           (n ^ Stock.get_ticker h ^ "\t")
           (p ^ string_of_float (get_current_price h) ^ "\t")
           ( g
           ^ string_of_int
-              (get_shares
-                 (legal_stock_history his_lst (Stock.get_ticker h)))
+              (Real_estate_history.get_shares
+                 (legal_re_history his_lst (Stock.get_ticker h)))
           ^ "\t" )
           ( z
           ^ string_of_float
-              (checkstock h
-                 (legal_stock_history his_lst (Stock.get_ticker h)))
+              (checkre h
+                 (legal_re_history his_lst (Stock.get_ticker h)))
           ^ "\t" )
   in
   print_stocks_helper history s_lst ticker prices shares
@@ -69,30 +146,41 @@ let has_game_ended s =
 let end_game_function () =
   print_endline "TODO: End of game functionality"
 
+(** [parse_input_helper] reads the user input and calls corresponding
+    commands. *)
+let parse_input_helper () =
+  match read_line () with
+  | exception End_of_file -> ()
+  | line when line = "quit" -> exit 0
+  | line when line = "cd" ->
+      let p = getportfolio user in
+      let cd_h = Portfolio.get_cd_history p in
+      print_cd (Cd_history.get_current_apy cd_h)
+  | line when line = "s" ->
+      Stock.update_current_prices stocks !start_time;
+      print_stocks stocks
+  | line when line = "i" ->
+      Stock.update_current_prices index !start_time;
+      print_index index
+  | line when line = "re" ->
+      Stock.update_current_prices re !start_time;
+      print_re re re_history_lst
+  | line -> (
+      try Interaction.parse line user
+      with _ -> print_endline "Invalid Command" )
+
 (** [prompt_input] prompts user for input during the simulation. *)
 let rec prompt_input () =
   if has_game_ended Game.s_per_month then end_game_function ()
   else (
     print_string prompt_str;
-    match read_line () with
-    | exception End_of_file -> ()
-    | line when line = "quit" -> exit 0
-    | line when line = "cd" ->
-        let p = getportfolio user in
-        let cd_h = Portfolio.get_cd_history p in
-        print_cd (Cd_history.get_current_apy cd_h);
-        prompt_input ()
-    | line when line = "s" ->
-        Stock.update_current_prices stocks !start_time;
-        print_stocks stocks stock_history_lst;
-        prompt_input ()
-    | line -> (
-        try
-          Interaction.parse line user bot;
-          prompt_input ()
-        with _ ->
-          print_endline "Invalid Command";
-          prompt_input () ) )
+    parse_input_helper ();
+    let time_elapsed =
+      int_of_float (Unix.time () -. Game.get_start_time ())
+    in
+    print_endline (Game.str_of_year_month time_elapsed);
+    print_endline Init.bar;
+    prompt_input () )
 
 (** [prompt_for_start] trims the user input and starts the game if the
     user types "start", quits the game if user types "quit". If neither,
@@ -111,7 +199,7 @@ let rec prompt_for_start () =
       else prompt_for_start ()
 
 let main () =
-  print_endline Init.intro_string;
+  ANSITerminal.print_string [ ANSITerminal.green ] Init.intro_string;
   print_endline Init.instructions;
   prompt_for_start ()
 

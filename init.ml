@@ -42,7 +42,15 @@ let user : User.t =
   User.create_user 20000. stock_history_lst index_history_lst cd_history
     re_history_lst
 
-let bot : Bot.t = Bot.create_bot
+let bar = "*******************************************"
+
+let shares_str = "Shares: "
+
+let ticker_str = "Ticker: "
+
+let prices_str = "Price:  "
+
+let profit_loss_str = "P/L:    "
 
 let intro_string =
   "\n\
@@ -55,6 +63,8 @@ let instructions =
    with the goal of making the most of your salary.\n\n\
    Commands:\n\
    See stocks:         s\n\
+   See index:          i\n\
+   See real_estate:    re\n\
    See cd info :       cd\n\
    See index_funds:    view_index \n\
    See networth:       networth\n\

@@ -1,5 +1,6 @@
 #directory "_build";;
 #require "oUnit2";;
+#require "ANSITerminal";;
 #load "stock.cmo" ;;
 #load "init.cmo" ;;
 #load "user.cmo" ;;
