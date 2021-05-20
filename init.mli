@@ -1,6 +1,6 @@
 val stocks : Stock.t list
 
-val re : Stock.t list
+(* val re : Stock.t list *)
 
 val index : Stock.t list
 
@@ -11,8 +11,6 @@ val bot : Bot.t
 val stock_history_lst : Stock_history.t list
 
 val cd_history : Cd_history.t
-
-val re_history_lst : Real_estate_history.r list
 
 val index_history_lst : Index_history.i list
 

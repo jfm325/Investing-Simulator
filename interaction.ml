@@ -13,8 +13,6 @@ type command =
   | Sell_Index of invest
   | Buy_S of invest
   | Sell_S of invest
-  | Buy_Re of invest
-  | Sell_Re of invest
   | Cash
   | Networth
   (*| My_stockhistory*)
@@ -141,9 +139,8 @@ let view com u b =
     | Networth ->
         Stock.update_current_prices stocks (Game.get_start_time ());
         Stock.update_current_prices index (Game.get_start_time ());
-        Stock.update_current_prices re (Game.get_start_time ());
         let n =
-          string_of_float (User.get_net_worth u Init.stocks index re)
+          string_of_float (User.get_net_worth u Init.stocks index)
         in
         print_string ("Your current networth is " ^ n ^ "\n")
     | Buy_S invest ->
@@ -221,49 +218,6 @@ let view com u b =
         else (
           User.sell_index "SPY" n u index_fund;
           print_string "You just sold shares \n" )
-    | Buy_Re invest ->
-        Stock.update_current_prices index (Game.get_start_time ());
-        let s = List.hd invest in
-        (*let g = legal_stock_history new_stock_history s in*)
-        let n = int_of_string (List.nth invest 1) in
-        let st = legal index s in
-        if s <> "SPY" then
-          print_string
-            "TRANSACTION ERROR: this is not an real_estate stock \n"
-        else if
-          User.get_cash u -. (float n *. Stock.get_current_price st)
-          <= 0.0
-        then
-          print_string
-            "TRANSACTION ERROR: You do not have enough cash to \
-             purchase this stock \n"
-        else if n <= 0 then
-          print_string
-            "TRANSACTION ERROR: You have to buy a positive number of \
-             shares \n"
-        else (
-          User.buy_re s n u st;
-          print_string
-            "You just bought stocks and your cash has changed \n" )
-    | Sell_Re invest ->
-        Stock.update_current_prices index (Game.get_start_time ());
-        let s = List.hd invest in
-        (*let g = legal_stock_history new_stock_history s in*)
-        let n = int_of_string (List.nth invest 1) in
-        let user_portfolio = User.getportfolio u in
-        let st = legal index s in
-        if
-          Real_estate_history.get_shares
-            (User.legal_re_history
-               (Portfolio.get_re_history user_portfolio)
-               s)
-          < n
-        then
-          print_string
-            "TRANSACTION ERROR: You do not have enough shares \n"
-        else (
-          User.sell_re s n u st;
-          print_string "You just sold shares \n" )
     | Checkstock invest ->
         Stock.update_current_prices stocks (Game.get_start_time ());
         let s = List.hd invest in
@@ -298,10 +252,6 @@ let parse str u b =
         view (Sell_Index invest) u b
       else if h = "buy_index" && invest <> [ "" ] then
         view (Buy_Index invest) u b
-      else if h = "sell_re" && invest <> [ "" ] then
-        view (Sell_Re invest) u b
-      else if h = "buy_re" && invest <> [ "" ] then
-        view (Buy_Re invest) u b
       else if h = "sell_s" && invest <> [ "" ] then
         view (Sell_S invest) u b
       else if h = "buy_s" && invest <> [ "" ] then
