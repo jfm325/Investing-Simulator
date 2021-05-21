@@ -15,7 +15,6 @@ type command =
   | Sell_S of invest
   | Cash
   | Networth
-  (*| My_stockhistory*)
   | Checkstock of invest
   | Help
   | BuyCD of invest
@@ -24,9 +23,44 @@ type command =
   | ViewIndex
   | BotNetworth
 
+type currency =
+  | USD
+  | CAD
+  | EUR
+  | GBP
+  | CHF
+  | NZD
+  | AUD
+  | JPY
+  | Illegal
+
 exception EmptyCommand
 
 exception BadCommand
+
+let curr_symb curr =
+  match curr with
+  | USD -> "$"
+  | CAD -> "C$"
+  | EUR -> "€"
+  | GBP -> "£"
+  | CHF -> "SFr."
+  | NZD -> "NZ$"
+  | AUD -> "A$"
+  | JPY -> "¥"
+  | Illegal -> "Illegal Currency"
+
+let match_type_curr str =
+  match str with
+  | "USD" -> USD
+  | "CAD" -> CAD
+  | "EUR" -> EUR
+  | "GBP" -> GBP
+  | "CHF" -> CHF
+  | "NZD" -> NZD
+  | "AUD" -> AUD
+  | "JPY" -> JPY
+  | _ -> Illegal
 
 let print_in indexlist =
   match indexlist with
@@ -102,13 +136,14 @@ let give_user_income_if_needed u =
     times_income_received := income_times )
   else ()
 
-let view com u b =
+let view com u (curr : string) =
   give_user_income_if_needed u;
   try
     match com with
     | BotNetworth ->
         let botnw = string_of_float (Bot.get_net_worth bot) in
-        print_string ("The networth of the bot is " ^ botnw ^ "\n")
+        print_string
+          ("The networth of the bot is " ^ curr ^ botnw ^ "\n")
     | ViewIndex ->
         let p = User.getportfolio u in
         let in_h = Portfolio.get_index_history p in
@@ -135,7 +170,7 @@ let view com u b =
     | Help -> print_string Init.instructions
     | Cash ->
         let c = string_of_float (User.get_cash u) in
-        print_string ("Your current cash is " ^ c ^ "\n")
+        print_string ("Your current cash is " ^ curr ^ c ^ "\n")
     | Networth ->
         Stock.update_current_prices Init.stocks (Game.get_start_time ());
         Stock.update_current_prices Init.index_funds
@@ -144,7 +179,7 @@ let view com u b =
           string_of_float
             (User.get_net_worth u Init.stocks Init.index_funds)
         in
-        print_string ("Your current networth is " ^ n ^ "\n")
+        print_string ("Your current networth is " ^ curr ^ n ^ "\n")
     | Buy_S invest ->
         Stock.update_current_prices stocks (Game.get_start_time ());
         let s = List.hd invest in
@@ -221,38 +256,36 @@ let view com u b =
         else
           print_string
             ("Your stocks currently has a gain $" ^ c ^ " dollars \n")
-    (*| My_stockhistory -> let n = string_of_float (User.get_net_worth u
-      Init.stocks) in print_string ("Your current networth is " ^ n ^
-      "\n")*)
   with Not_found ->
     print_string "Invalid stock not found in market. \n"
 
-let parse str u b =
+let helper_parse player instr invest curr =
+  if instr = "" then raise EmptyCommand
+  else if instr = "cash" then view Cash player curr
+  else if instr = "bot" then view BotNetworth player curr
+  else if instr = "view_index" then view ViewIndex player curr
+  else if instr = "networth" then view Networth player curr
+  else if instr = "help" then view Help player curr
+  else if instr = "sell_index" && invest <> [ "" ] then
+    view (Sell_Index invest) player curr
+  else if instr = "buy_index" && invest <> [ "" ] then
+    view (Buy_Index invest) player curr
+  else if instr = "sell_s" && invest <> [ "" ] then
+    view (Sell_S invest) player curr
+  else if instr = "buy_s" && invest <> [ "" ] then
+    view (Buy_S invest) player curr
+  else if instr = "buy_cd" && invest <> [ "" ] then
+    view (BuyCD invest) player curr
+  else if instr = "sell_cd" && invest <> [ "" ] then
+    view (SellCD invest) player curr
+  else if instr = "view_cd" then view ViewCD player curr
+  else if instr = "checkstock" && invest <> [ "" ] then
+    view (Checkstock invest) player curr
+  else raise BadCommand
+
+let parse str u symb =
   let lst = String.split_on_char ' ' str in
   match lst with
   | [] -> raise EmptyCommand
   | [ "" ] -> raise EmptyCommand
-  | h :: invest ->
-      if h = "" then raise EmptyCommand
-      else if h = "cash" then view Cash u b
-      else if h = "bot" then view BotNetworth u b
-      else if h = "view_index" then view ViewIndex u b
-      else if h = "networth" then view Networth u b
-      else if h = "help" then view Help u b
-      else if h = "sell_index" && invest <> [ "" ] then
-        view (Sell_Index invest) u b
-      else if h = "buy_index" && invest <> [ "" ] then
-        view (Buy_Index invest) u b
-      else if h = "sell_s" && invest <> [ "" ] then
-        view (Sell_S invest) u b
-      else if h = "buy_s" && invest <> [ "" ] then
-        view (Buy_S invest) u b
-      else if h = "buy_cd" && invest <> [ "" ] then
-        view (BuyCD invest) u b
-      else if h = "sell_cd" && invest <> [ "" ] then
-        view (SellCD invest) u b
-      else if h = "view_cd" then view ViewCD u b
-      else if h = "checkstock" && invest <> [ "" ] then
-        view (Checkstock invest) u b
-        (*else if h = "my_stockhistory" then My_stockhistory*)
-      else raise BadCommand
+  | h :: invest -> helper_parse u h invest symb

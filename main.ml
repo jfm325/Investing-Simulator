@@ -7,6 +7,8 @@ open User
 
 let prompt_str = "> "
 
+let currency_symbol = ref ""
+
 (* [print_cd apy] pretty-prints info of a cd based on APY [apy]. *)
 let print_cd apy =
   let six_month_apy = Cd.match_new_rate Cd.SixMonths apy in
@@ -164,7 +166,8 @@ let parse_input_helper () =
       Stock.update_current_prices Init.index_funds !start_time;
       print_index Init.index_funds
   | line -> (
-      try Interaction.parse line user bot
+      let symbcurr = !currency_symbol in
+      try Interaction.parse line user symbcurr
       with _ -> print_endline "Invalid Command" )
 
 (** [prompt_input] prompts user for input during the simulation. *)
@@ -181,6 +184,20 @@ let rec prompt_input () =
     print_endline Init.bar;
     prompt_input () )
 
+let rec prompt_curr () =
+  print_string "Enter currency \n";
+  print_string
+    "\n USD \n CAD \n EUR \n GBP \n CHF \n NZD \n AUD \n JPY \n";
+  match read_line () with
+  | exception End_of_file -> ()
+  | line ->
+      let trimmed = String.trim line in
+      let curr_s = Interaction.match_type_curr trimmed in
+      if curr_s = Illegal then (
+        print_endline "Illegal Currency, Choose again";
+        prompt_curr () )
+      else currency_symbol := Interaction.curr_symb curr_s
+
 (** [prompt_for_start] trims the user input and starts the game if the
     user types "start", quits the game if user types "quit". If neither,
     the user is prompted to again to choose. *)
@@ -193,6 +210,7 @@ let rec prompt_for_start () =
       let trimmed = String.trim line in
       if trimmed = "start" then (
         Game.update_start_time (Unix.time ());
+        prompt_curr ();
         prompt_input () )
       else if trimmed = "quit" then exit 0
       else prompt_for_start ()
