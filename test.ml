@@ -71,36 +71,53 @@ let the_cash_test test_name (user : User.t) (cash : float) =
   test_name >:: fun _ ->
   assert_equal cash (User.get_cash user) ~printer:string_of_float
 
-let the_buy_stock_test test_name (user : User.t) (stock_name : string)
+let the_buy_stock_test test_name (user : User.t) (stock_n : int)
     (shares : int) (length : int) =
   test_name >:: fun _ ->
   Stock.update_current_prices stocks (Game.get_start_time ());
-  User.buy stock_name shares user (legal stocks stock_name);
+  let stock = List.nth Init.stocks stock_n in
+  let cost = float shares *. Stock.get_current_price stock in
+  if User.get_cash user -. cost < 0.0 || shares < 0 then
+    print_endline
+      "TRANSACTION ERROR: You do not have enough cash to purchase this \
+       stock \n"
+  else User.buy_stock shares user stock;
   assert_equal length
-    (User.get_length_stock_history
-       (Portfolio.get_stock_history (User.getportfolio user))
+    (User.get_shares_sh_lst
+       (Portfolio.get_stock_history (User.get_portfolio user))
        0)
     ~printer:string_of_int
 
 let the_buy_index_test test_name (user : User.t) (stock_name : string)
     (shares : int) (length : int) =
   test_name >:: fun _ ->
-  Stock.update_current_prices Init.index_funds (Game.get_start_time ());
-  User.buy_index stock_name shares user (legal index stock_name);
+  Stock.update_current_prices index_funds (Game.get_start_time ());
+  let stock = legal index_funds stock_name in
+  let cost = float shares *. Stock.get_current_price stock in
+  if User.get_cash user -. cost < 0.0 || shares < 0 then
+    print_endline
+      "TRANSACTION ERROR: You do not have enough cash to purchase this \
+       stock \n"
+  else User.buy_index shares user (legal index_funds stock_name);
   assert_equal length
-    (User.get_length_index_history
+    (User.get_shares_ih_lst
        (Portfolio.get_index_history (User.get_portfolio user))
        0)
     ~printer:string_of_int
 
-let the_sell_stock_test test_name (user : User.t) (stock_name : string)
+let the_sell_stock_test test_name (user : User.t) (nums : int)
     (shares : int) (length : int) =
   test_name >:: fun _ ->
   Stock.update_current_prices stocks (Game.get_start_time ());
-  User.sell stock_name shares user (legal stocks stock_name);
+  if shares < 0 then
+    print_endline
+      "TRANSACTION ERROR: You do not have enough cash to purchase this \
+       stock \n"
+  else
+    User.sell_stock shares user (List.nth Init.stocks nums) (nums : int);
   assert_equal length
-    (User.get_length_stock_history
-       (Portfolio.get_stock_history (User.getportfolio user))
+    (User.get_shares_sh_lst
+       (Portfolio.get_stock_history (User.get_portfolio user))
        0)
     ~printer:string_of_int
 
@@ -108,12 +125,13 @@ let the_sell_index_test test_name (user : User.t) (shares : int)
     (num : int) (length : int) =
   test_name >:: fun _ ->
   Stock.update_current_prices index_funds (Game.get_start_time ());
-  User.sell_index shares user (List.nth Init.index_funds num) num;
-  let shares =
-    Index_history.get_shares (List.nth Init.index_history_lst 0)
-  in
+  if shares < 0 then
+    print_endline
+      "TRANSACTION ERROR: You do not have enough cash to purchase this \
+       stock \n"
+  else User.sell_index shares user (List.nth Init.index_funds num) num;
   assert_equal length
-    (User.get_length_index_history Init.index_history_lst 0)
+    (User.get_shares_ih_lst Init.index_history_lst 0)
     ~printer:string_of_int
 
 let the_networth_test test_name (user : User.t) (networth : float) =
@@ -134,35 +152,74 @@ let (user_tests : OUnit2.test list) =
     the_networth_test "testing for networth with no purchased stocks"
       bob 20000.;
     the_buy_stock_test
-      "testing to see that buy method works with one stock" bob "COKE" 1
-      1;
+      "testing to see that buy method works with one stock" bob 1 1 1;
+    the_buy_stock_test
+      "testing to see that buy method works with no stock" bob 1 0 1;
     the_buy_stock_test
       "testing to see that buy method works after buying the same stock"
-      bob "COKE" 4 5;
+      bob 1 4 5;
     the_buy_stock_test
       "testing to see that buy method works after buying the different \
        stock"
-      bob "AAPL" 1 6;
+      bob 2 1 6;
     the_sell_stock_test
-      "testing to see that sell method works with one stock" bob "COKE"
-      1 5;
+      "testing to see that sell method works with one stock" bob 1 1 5;
     the_sell_stock_test
       "testing to see that sell method works after selling the same \
        stock"
-      bob "COKE" 3 2;
+      bob 1 3 2;
     the_sell_stock_test
       "testing to see that sell method works after selling the \
        different stock"
-      bob "AAPL" 1 1;
+      bob 2 1 1;
+    the_sell_stock_test
+      "testing to see that sell method returns a message when you sell \
+       too much stock\n\
+      \      selling the same  stock" bob 1 10 1;
+    the_sell_stock_test
+      "testing to see that sell method when you sell no stock\n\
+      \       no stock\n"
+      bob 1 0 1;
     the_buy_index_test
       "testing to see that buy method works with one index" bob "S&P500"
       1 1;
+    the_buy_index_test
+      "testing to see that buy method when you buy no index\n       "
+      bob "S&P500" 0 1;
     the_buy_index_test
       "testing to see that buy method works after buying the same index"
       bob "S&P500" 3 4;
     the_sell_index_test
       "testing to see that sell method works after\n\
       \      selling the same  stock" bob 1 0 3;
+    the_sell_index_test
+      "testing to see that sell method returns a message when you sell \
+       too much index\n\
+      \      selling the same  stock" bob 10 0 3;
+    the_sell_index_test
+      "testing to see that sell method when you sell no stock\n\
+      \       no stock\n"
+      bob 0 0 3;
+    the_buy_stock_test
+      "testing to see that buy method does not buy when you do not \
+       have enough cash"
+      bob 1 9999999999999 1;
+    the_buy_index_test
+      "testing to see that buy index method does not buy when you to \
+       buy negative shares have enough cash"
+      bob "S&P500" (-1) 3;
+    the_sell_index_test
+      "testing to see that buy index method does not buy when you try \
+       to sell negative shares"
+      bob (-1) 0 3;
+    the_buy_stock_test
+      "testing to see that buy stock method does not buy when you to \
+       buy negative shares have enough cash"
+      bob 0 (-1) 1;
+    the_sell_stock_test
+      "testing to see that buy stock method does not buy when you try \
+       to sell negative shares"
+      bob 0 (-1) 1;
   ]
 
 let suite = "test suite 1" >::: List.flatten [ stock_tests; user_tests ]
