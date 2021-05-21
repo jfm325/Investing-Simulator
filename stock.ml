@@ -9,7 +9,7 @@ type t = {
   ticker : ticker_symbol;
   prices : float array;
   mutable current_price : float;
-  mutable percent_stock : float;
+  mutable percent_change : float;
 }
 
 let get_name s = s.name
@@ -18,7 +18,7 @@ let get_ticker s = s.ticker
 
 let get_price s i = s.prices.(i)
 
-let get_percent_change s = s.percent_stock
+let get_percent_change s = s.percent_change
 
 let get_current_price s = s.current_price
 
@@ -29,10 +29,12 @@ let update_current_prices lst start_time =
   let prev = if i' <= 0 then 0 else i' - 1 in
   let update_price (stock : t) =
     stock.current_price <- get_price stock i';
-    let oper = stock.current_price -. get_price stock prev in
-    let round2 n = Float.round (n *. 100.) /. 100. in
-    let newpercent = round2 (oper /. stock.current_price *. 100.0) in
-    stock.percent_stock <- newpercent
+    let diff = stock.current_price -. get_price stock prev in
+    let round_to_2 n = Float.round (n *. 100.) /. 100. in
+    let new_percent =
+      round_to_2 (diff /. stock.current_price *. 100.0)
+    in
+    stock.percent_change <- new_percent
   in
   List.iter update_price lst
 
@@ -59,5 +61,5 @@ let create_stock n t file =
     ticker = t;
     prices = prices_arr;
     current_price = prices_arr.(0);
-    percent_stock = 0.;
+    percent_change = 0.;
   }

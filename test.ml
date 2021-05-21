@@ -85,8 +85,13 @@ let the_buy_stock_test test_name (user : User.t) (stock_name : string)
 let the_buy_index_test test_name (user : User.t) (stock_name : string)
     (shares : int) (length : int) =
   test_name >:: fun _ ->
+<<<<<<< HEAD
   Stock.update_current_prices index_funds (Game.get_start_time ());
   User.buy_index shares user (legal index_funds stock_name);
+=======
+  Stock.update_current_prices Init.index_funds (Game.get_start_time ());
+  User.buy_index stock_name shares user (legal index stock_name);
+>>>>>>> 3467b6f68eae65c625a691ffd7a21360894d8886
   assert_equal length
     (User.get_length_index_history
        (Portfolio.get_index_history (User.getportfolio user))

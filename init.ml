@@ -18,23 +18,22 @@ let index_funds : Stock.t list =
     Stock.create_stock "RE" "RE" "spy_index1995.txt";
   ]
 
-let coke_history = Stock_history.create_stock_history "COKE"
+let stock_history_lst =
+  let coke_history = Stock_history.create_stock_history "COKE" in
 
-let aapl_history = Stock_history.create_stock_history "AAPL"
+  let aapl_history = Stock_history.create_stock_history "AAPL" in
 
-let msft_history = Stock_history.create_stock_history "MSFT"
+  let msft_history = Stock_history.create_stock_history "MSFT" in
+  [ coke_history; aapl_history; msft_history ]
 
-let stock_history_lst = [ coke_history; aapl_history; msft_history ]
+let index_history_lst =
+  let index_spy_history = Index_history.create_index_history "S&P500" in
 
-let index_spy_history = Index_history.create_index_history "S&P500"
-
-let index_re_history = Index_history.create_index_history "RE"
-
-let index_history_lst = [ index_spy_history; index_re_history ]
+  let index_re_history = Index_history.create_index_history "RE" in
+  [ index_spy_history; index_re_history ]
 
 let cd_history = Cd_history.create_cd_history "cd_rates1995.txt"
 
-(* Will later send in stock history to user *)
 let user : User.t =
   User.create_user 20000. stock_history_lst index_history_lst cd_history
 
@@ -74,8 +73,8 @@ let instructions =
    See networth:       networth\n\
    See on-hand cash:   cash\n\
    See specific stock: checkstock [ticker_symbol]\n\
-   Buy_index shares:   buy_index [ticker_symbol] [# of shares]\n\
-   Sell_index shares:  sell_index [ticker_symbol] [# of shares]\n\
+   Buy_index:   buy_index [index_fund_#] [# of shares]\n\
+   Sell_index:  sell_index [index_fund_#] [# of shares]\n\
    Buy shares:         buy_s [ticker_symbol] [# of shares]\n\
    Sell shares:        sell_s [ticker_symbol] [# of shares]\n\
    Buy cd:             buy_cd [amt] [term of 1/2/3]\n\
