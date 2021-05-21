@@ -50,9 +50,9 @@ val legal_stock_history :
 val legal_index_history :
   Index_history.i list -> string -> Index_history.i
 
-val buy_index : string -> int -> t -> Stock.t -> unit
+val buy_index : int -> t -> Stock.t -> unit
 
-val sell_index : string -> int -> t -> Stock.t -> unit
+val sell_index : int -> t -> Stock.t -> int -> unit
 
 (** [get_index_pl stock ih] is the profit/loss of stock [stock] compared
     to the buy-in value from shares owned in index history [ih] *)

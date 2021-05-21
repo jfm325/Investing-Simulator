@@ -2,7 +2,7 @@ val stocks : Stock.t list
 
 (* val re : Stock.t list *)
 
-val index : Stock.t list
+val index_funds : Stock.t list
 
 val user : User.t
 

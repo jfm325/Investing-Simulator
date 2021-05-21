@@ -12,7 +12,7 @@ let stocks : Stock.t list =
     Stock.create_stock "Microsoft Corporation" "MSFT" "msft1995.txt";
   ]
 
-let index : Stock.t list =
+let index_funds : Stock.t list =
   [
     Stock.create_stock "SPY" "SPY" "spy_index1995.txt";
     Stock.create_stock "RE" "RE" "spy_index1995.txt";

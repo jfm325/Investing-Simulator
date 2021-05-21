@@ -136,18 +136,25 @@ let get_stocks_pl stock sh =
   current_value -. value_at_buy_in
 
 (*let get_stock_history stockhistory: Stock_history.t = *)
-let buy_index (stock_name : string) (shares : int) (user : t)
-    (stock : Stock.t) =
-  user.portfolio <- Portfolio.buy_index user.portfolio stock shares;
-  change_cash_buy user shares stock
+let buy_index (shares : int) (user : t) (index_fund : Stock.t) =
+  user.portfolio <- Portfolio.buy_index user.portfolio index_fund shares;
+  change_cash_buy user shares index_fund
 
-let sell_index (stock_name : string) (shares : int) (user : t)
-    (stock : Stock.t) =
+let sell_index shares user index_fund index =
   let p = user.portfolio in
-  Index_history.sell
-    (legal_index_history (Portfolio.get_index_history p) stock_name)
-    shares;
-  change_cash_sell user shares stock
+  let index_hist_lst = Portfolio.get_index_history p in
+  let num_of_index_funds = List.length index_hist_lst in
+  if index < 0 || index >= num_of_index_funds then
+    print_string "TRANSACTION ERROR: Invalid index fund number.\n"
+  else
+    let index_fund_hist = List.nth index_hist_lst index in
+    let shares_owned = Index_history.get_shares index_fund_hist in
+    if shares < 0 || shares > shares_owned then
+      print_string "TRANSACTION ERROR: You do not have enough shares\n"
+    else (
+      Index_history.sell index_fund_hist shares;
+      change_cash_sell user shares index_fund;
+      print_string "You just sold shares \n" )
 
 let get_index_pl stock ih =
   let shares_owned =
@@ -179,4 +186,4 @@ let sell_cd u i =
   if i >= 0 && i < cds_owned then (
     Cd_history.remove_cd cd_h i;
     changecash_sellcd u amt )
-  else raise (Failure "Invalid cd to sell.")
+  else print_endline "Invalid cd to sell."
