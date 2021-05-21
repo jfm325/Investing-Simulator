@@ -85,8 +85,8 @@ let the_buy_stock_test test_name (user : User.t) (stock_name : string)
 let the_buy_index_test test_name (user : User.t) (stock_name : string)
     (shares : int) (length : int) =
   test_name >:: fun _ ->
-  Stock.update_current_prices index (Game.get_start_time ());
-  User.buy_index stock_name shares user (legal index stock_name);
+  Stock.update_current_prices index_funds (Game.get_start_time ());
+  User.buy_index shares user (legal index_funds stock_name);
   assert_equal length
     (User.get_length_index_history
        (Portfolio.get_index_history (User.getportfolio user))
@@ -104,23 +104,24 @@ let the_sell_stock_test test_name (user : User.t) (stock_name : string)
        0)
     ~printer:string_of_int
 
-let the_sell_index_test test_name (user : User.t) (stock_name : string)
-    (shares : int) (length : int) =
+let the_sell_index_test test_name (user : User.t) (shares : int)
+    (num : int) (length : int) =
   test_name >:: fun _ ->
-  Stock.update_current_prices index (Game.get_start_time ());
-  User.sell_index stock_name shares user (legal index stock_name);
+  Stock.update_current_prices index_funds (Game.get_start_time ());
+  User.sell_index shares user (List.nth Init.index_funds num) num;
+  let shares =
+    Index_history.get_shares (List.nth Init.index_history_lst 0)
+  in
   assert_equal length
-    (User.get_length_index_history
-       (Portfolio.get_index_history (User.getportfolio user))
-       0)
+    (User.get_length_index_history Init.index_history_lst 0)
     ~printer:string_of_int
 
 let the_networth_test test_name (user : User.t) (networth : float) =
   test_name >:: fun _ ->
   Stock.update_current_prices stocks (Game.get_start_time ());
-  Stock.update_current_prices index (Game.get_start_time ());
+  Stock.update_current_prices index_funds (Game.get_start_time ());
   assert_equal networth
-    (User.get_net_worth user Init.stocks index)
+    (User.get_net_worth user Init.stocks index_funds)
     ~printer:string_of_float
 
 let (user_tests : OUnit2.test list) =
@@ -154,15 +155,14 @@ let (user_tests : OUnit2.test list) =
        different stock"
       bob "AAPL" 1 1;
     the_buy_index_test
-      "testing to see that buy method works with one index" bob "SPY" 1
-      1;
+      "testing to see that buy method works with one index" bob "S&P500"
+      1 1;
     the_buy_index_test
       "testing to see that buy method works after buying the same index"
-      bob "SPY" 3 4;
+      bob "S&P500" 3 4;
     the_sell_index_test
-      "testing to see that sell method works after selling the same \
-       stock"
-      bob "SPY" 1 3;
+      "testing to see that sell method works after\n\
+      \      selling the same  stock" bob 1 0 3;
   ]
 
 let suite = "test suite 1" >::: List.flatten [ stock_tests; user_tests ]
