@@ -7,7 +7,7 @@
 (** The abstract type for a stock. *)
 type t
 
-(** The type for a stock names in-game. *)
+(** The type for a stock name in-game. *)
 type stock_name = string
 
 (** The type for a stock's ticker symbol. *)
@@ -27,6 +27,8 @@ val get_price : t -> int -> float
 (* [get_current_price s] is the current price of the stock [s]. *)
 val get_current_price : t -> float
 
+(* [get_percent_change s] is the current percent change of the stock
+   [s]. *)
 val get_percent_change : t -> float
 
 (* [update_current_prices lst start_time] updates the current prices of
