@@ -27,6 +27,6 @@ let rec update_sell sh n =
         update_sell sh (n - v) )
       else sh.buy_in_prices <- (k, v - n) :: t
 
-let sell sh n =
-  update_sell sh n;
-  sh.shares <- get_shares sh - n
+let sell ih n =
+  update_sell ih n;
+  ih.shares <- get_shares ih - n

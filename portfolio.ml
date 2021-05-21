@@ -33,9 +33,9 @@ let buy_stock portfolio stock n =
     (List.map f portfolio.stock_history)
     portfolio.index_history portfolio.cd_history
 
-let buy_index portfolio stock n =
-  let ticker = Stock.get_ticker stock in
-  let price = Stock.get_current_price stock in
+let buy_index portfolio index_fund n =
+  let ticker = Stock.get_ticker index_fund in
+  let price = Stock.get_current_price index_fund in
   let f sh =
     if ticker = Index_history.get_ticker sh then
       Index_history.buy sh price n

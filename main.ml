@@ -19,6 +19,9 @@ let print_cd apy =
   in
   let terms = "CD Term: 6 months(1)\t1 year(2)\t3 years(3)" in
   print_endline Init.bar;
+  ANSITerminal.print_string [ ANSITerminal.yellow ]
+    "Certificates of Deposit\n";
+  print_endline Init.bar;
   print_endline terms;
   print_endline ("APY:     " ^ apy_str);
   print_endline Init.bar
@@ -37,7 +40,7 @@ let rec print_profit_loss_helper lst =
         | h' when h' > 0. -> ANSITerminal.green
         | _ -> ANSITerminal.default
       in
-      ANSITerminal.print_string [ color ] (pl ^ "\t");
+      ANSITerminal.print_string [ color ] (pl ^ "\t\t");
       print_profit_loss_helper t
 
 (* [pp_print_stocks ticker_str price_str shares_str pl_lst]
@@ -47,9 +50,27 @@ let pp_print_stocks ticker_str price_str shares_str pl_lst per_lst =
   let pl_rev_lst = List.rev pl_lst in
   let per_rev_lst = List.rev per_lst in
   print_endline Init.bar;
+  ANSITerminal.print_string [ ANSITerminal.yellow ]
+    "INDIVIDUAL STOCKS\n";
+  print_endline Init.bar;
   print_endline ticker_str;
   print_endline price_str;
-  print_string (Init.percent_str ^ "\t");
+  print_string Init.percent_str;
+  print_profit_loss_helper per_rev_lst;
+  print_endline ("\n" ^ shares_str);
+  print_string Init.profit_loss_str;
+  print_profit_loss_helper pl_rev_lst;
+  print_endline ("\n" ^ Init.bar)
+
+let pp_print_index ticker_str price_str shares_str pl_lst per_lst =
+  let pl_rev_lst = List.rev pl_lst in
+  let per_rev_lst = List.rev per_lst in
+  print_endline Init.bar;
+  ANSITerminal.print_string [ ANSITerminal.yellow ] "INDEX FUNDS\n";
+  print_endline Init.bar;
+  print_endline ticker_str;
+  print_endline price_str;
+  print_string Init.percent_str;
   print_profit_loss_helper per_rev_lst;
   print_endline ("\n" ^ shares_str);
   print_string Init.profit_loss_str;
@@ -71,9 +92,9 @@ let rec print_stocks_helper stock_lst ticker_str price_str shares_str
       let pl = User.get_stocks_pl h sh in
       let per = Stock.get_percent_change h in
       print_stocks_helper t
-        (ticker_str ^ Stock.get_ticker h ^ "\t")
-        (price_str ^ string_of_float (get_current_price h) ^ "\t")
-        (shares_str ^ string_of_int num_shares ^ "\t")
+        (ticker_str ^ Stock.get_ticker h ^ "\t\t")
+        (price_str ^ string_of_float (get_current_price h) ^ "\t\t")
+        (shares_str ^ string_of_int num_shares ^ "\t\t")
         (pl :: pl_lst) (per :: per_lst)
 
 (* [print_stocks s_lst] prints the stocks and stock info in [s_lst]. *)
@@ -85,9 +106,9 @@ let print_stocks (s_lst : Stock.t list) =
    is the helper function to go through [index_lst] and fill in the
    strings for index fund info. *)
 let rec print_index_helper index_lst ticker_str price_str shares_str
-    pl_lst per_lst =
+    pl_lst per_lst acc =
   match index_lst with
-  | [] -> pp_print_stocks ticker_str price_str shares_str pl_lst per_lst
+  | [] -> pp_print_index ticker_str price_str shares_str pl_lst per_lst
   | h :: t ->
       let sh =
         legal_index_history Init.index_history_lst (Stock.get_ticker h)
@@ -95,17 +116,18 @@ let rec print_index_helper index_lst ticker_str price_str shares_str
       let num_shares = Index_history.get_shares sh in
       let pl = User.get_index_pl h sh in
       let per = Stock.get_percent_change h in
+      let index_fund_num = "(" ^ string_of_int acc ^ ")" in
       print_index_helper t
-        (ticker_str ^ Stock.get_ticker h ^ "\t")
-        (price_str ^ string_of_float (get_current_price h) ^ "\t")
-        (shares_str ^ string_of_int num_shares ^ "\t")
-        (pl :: pl_lst) (per :: per_lst)
+        (ticker_str ^ Stock.get_ticker h ^ index_fund_num ^ "\t")
+        (price_str ^ string_of_float (get_current_price h) ^ "\t\t")
+        (shares_str ^ string_of_int num_shares ^ "\t\t")
+        (pl :: pl_lst) (per :: per_lst) (acc + 1)
 
 (* [print_index index_lst] prints the index fund info and performance in
    [index_lst]. *)
 let print_index index_lst =
   print_index_helper index_lst Init.ticker_str Init.prices_str
-    Init.shares_str [] []
+    Init.shares_str [] [] 1
 
 (** [has_game_ended s] returns true when in-game time has reached or
     passed year 20 (nmonth 240). *)
@@ -116,9 +138,9 @@ let has_game_ended s =
 
 let end_game_function () =
   let b = Bot.get_net_worth bot in
-  Stock.update_current_prices stocks (Game.get_start_time ());
-  Stock.update_current_prices index (Game.get_start_time ());
-  let n = User.get_net_worth user Init.stocks index in
+  Stock.update_current_prices Init.stocks (Game.get_start_time ());
+  Stock.update_current_prices Init.index_funds (Game.get_start_time ());
+  let n = User.get_net_worth user Init.stocks Init.index_funds in
   print_string ("Bot : " ^ string_of_float b ^ "\n");
   print_string ("User : " ^ string_of_float n ^ "\n");
   if b > n then
@@ -139,8 +161,8 @@ let parse_input_helper () =
       Stock.update_current_prices stocks !start_time;
       print_stocks stocks
   | line when line = "i" ->
-      Stock.update_current_prices index !start_time;
-      print_index index
+      Stock.update_current_prices Init.index_funds !start_time;
+      print_index Init.index_funds
   | line -> (
       try Interaction.parse line user bot
       with _ -> print_endline "Invalid Command" )

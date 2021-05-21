@@ -12,9 +12,9 @@ let stocks : Stock.t list =
     Stock.create_stock "Microsoft Corporation" "MSFT" "msft1995.txt";
   ]
 
-let index : Stock.t list =
+let index_funds : Stock.t list =
   [
-    Stock.create_stock "SPY" "SPY" "spy_index1995.txt";
+    Stock.create_stock "S&P500" "S&P500" "spy_index1995.txt";
     Stock.create_stock "RE" "RE" "spy_index1995.txt";
   ]
 
@@ -26,7 +26,7 @@ let msft_history = Stock_history.create_stock_history "MSFT"
 
 let stock_history_lst = [ coke_history; aapl_history; msft_history ]
 
-let index_spy_history = Index_history.create_index_history "SPY"
+let index_spy_history = Index_history.create_index_history "S&P500"
 
 let index_re_history = Index_history.create_index_history "RE"
 
@@ -42,15 +42,17 @@ let bot : Bot.t = Bot.create_bot
 
 let bar = "*******************************************"
 
-let shares_str = "Shares: "
+let shares_str = "Shares:\t\t"
 
-let percent_str = "%: "
+let index_fund_str = "Index Fund:\t"
 
-let ticker_str = "Ticker: "
+let percent_str = "%" ^ "Change:\t"
 
-let prices_str = "Price:  "
+let ticker_str = "Ticker:\t\t"
 
-let profit_loss_str = "P/L:    "
+let prices_str = "Price:\t\t"
+
+let profit_loss_str = "P/L:\t\t"
 
 let intro_string =
   "\n\
