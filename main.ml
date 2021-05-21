@@ -43,12 +43,15 @@ let rec print_profit_loss_helper lst =
 (* [pp_print_stocks ticker_str price_str shares_str pl_lst]
    pretty-prints all stock information. Note: [pl_lst] is a reversed
    list of the profit/losses.*)
-let pp_print_stocks ticker_str price_str shares_str pl_lst =
+let pp_print_stocks ticker_str price_str shares_str pl_lst per_lst =
   let pl_rev_lst = List.rev pl_lst in
+  let per_rev_lst = List.rev per_lst in
   print_endline Init.bar;
   print_endline ticker_str;
   print_endline price_str;
-  print_endline shares_str;
+  print_string (Init.percent_str ^ "\t");
+  print_profit_loss_helper per_rev_lst;
+  print_endline ("\n" ^ shares_str);
   print_string Init.profit_loss_str;
   print_profit_loss_helper pl_rev_lst;
   print_endline ("\n" ^ Init.bar)
@@ -57,84 +60,52 @@ let pp_print_stocks ticker_str price_str shares_str pl_lst =
    pl_lst] is the helper function to go through [stock_lst] and fill in
    the strings for stock info. *)
 let rec print_stocks_helper stock_lst ticker_str price_str shares_str
-    pl_lst =
+    pl_lst per_lst =
   match stock_lst with
-  | [] -> pp_print_stocks ticker_str price_str shares_str pl_lst
+  | [] -> pp_print_stocks ticker_str price_str shares_str pl_lst per_lst
   | h :: t ->
       let sh =
         legal_stock_history Init.stock_history_lst (Stock.get_ticker h)
       in
       let num_shares = get_shares sh in
       let pl = User.get_stocks_pl h sh in
+      let per = Stock.get_percent_change h in
       print_stocks_helper t
         (ticker_str ^ Stock.get_ticker h ^ "\t")
         (price_str ^ string_of_float (get_current_price h) ^ "\t")
         (shares_str ^ string_of_int num_shares ^ "\t")
-        (pl :: pl_lst)
+        (pl :: pl_lst) (per :: per_lst)
 
 (* [print_stocks s_lst] prints the stocks and stock info in [s_lst]. *)
 let print_stocks (s_lst : Stock.t list) =
   print_stocks_helper s_lst Init.ticker_str Init.prices_str
-    Init.shares_str []
+    Init.shares_str [] []
 
 (* [print_index_helper index_lst ticker_str price_str shares_str pl_lst]
    is the helper function to go through [index_lst] and fill in the
    strings for index fund info. *)
 let rec print_index_helper index_lst ticker_str price_str shares_str
-    pl_lst =
+    pl_lst per_lst =
   match index_lst with
-  | [] -> pp_print_stocks ticker_str price_str shares_str pl_lst
+  | [] -> pp_print_stocks ticker_str price_str shares_str pl_lst per_lst
   | h :: t ->
       let sh =
         legal_index_history Init.index_history_lst (Stock.get_ticker h)
       in
       let num_shares = Index_history.get_shares sh in
       let pl = User.get_index_pl h sh in
-      print_stocks_helper t
+      let per = Stock.get_percent_change h in
+      print_index_helper t
         (ticker_str ^ Stock.get_ticker h ^ "\t")
         (price_str ^ string_of_float (get_current_price h) ^ "\t")
         (shares_str ^ string_of_int num_shares ^ "\t")
-        (pl :: pl_lst)
+        (pl :: pl_lst) (per :: per_lst)
 
 (* [print_index index_lst] prints the index fund info and performance in
    [index_lst]. *)
 let print_index index_lst =
   print_index_helper index_lst Init.ticker_str Init.prices_str
-    Init.shares_str []
-
-let print_re (s_lst : Stock.t list)
-    (history : Real_estate_history.r list) =
-  let shares = "Shares: " in
-  let ticker = "Ticker: " in
-  let prices = "Price:  " in
-  let user_stock_performance = "P/L:    " in
-  let rec print_stocks_helper (his_lst : Real_estate_history.r list)
-      (lst : Stock.t list) n p g z =
-    match lst with
-    | [] ->
-        print_endline Init.bar;
-        print_endline n;
-        print_endline p;
-        print_endline g;
-        print_endline z;
-        print_endline Init.bar
-    | h :: t ->
-        print_stocks_helper his_lst t
-          (n ^ Stock.get_ticker h ^ "\t")
-          (p ^ string_of_float (get_current_price h) ^ "\t")
-          ( g
-          ^ string_of_int
-              (Real_estate_history.get_shares
-                 (legal_re_history his_lst (Stock.get_ticker h)))
-          ^ "\t" )
-          ( z
-          ^ string_of_float
-              (checkre h
-                 (legal_re_history his_lst (Stock.get_ticker h)))
-          ^ "\t" )
-  in
-  print_stocks_helper history s_lst ticker prices shares
-    user_stock_performance
+    Init.shares_str [] []
 
 (** [has_game_ended s] returns true when in-game time has reached or
     passed year 20 (nmonth 240). *)
@@ -147,8 +118,7 @@ let end_game_function () =
   let b = Bot.get_net_worth bot in
   Stock.update_current_prices stocks (Game.get_start_time ());
   Stock.update_current_prices index (Game.get_start_time ());
-  Stock.update_current_prices re (Game.get_start_time ());
-  let n = User.get_net_worth user Init.stocks index re in
+  let n = User.get_net_worth user Init.stocks index in
   print_string ("Bot : " ^ string_of_float b ^ "\n");
   print_string ("User : " ^ string_of_float n ^ "\n");
   if b > n then
@@ -171,9 +141,6 @@ let parse_input_helper () =
   | line when line = "i" ->
       Stock.update_current_prices index !start_time;
       print_index index
-  | line when line = "re" ->
-      Stock.update_current_prices re !start_time;
-      print_re re re_history_lst
   | line -> (
       try Interaction.parse line user bot
       with _ -> print_endline "Invalid Command" )

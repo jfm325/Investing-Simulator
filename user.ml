@@ -43,28 +43,14 @@ let rec index_calculate_net_worth sh_lst stocks_lst counter =
       in
       index_calculate_net_worth t stocks_lst (counter +. value)
 
-let rec re_calculate_net_worth sh_lst stocks_lst counter =
-  match sh_lst with
-  | [] -> counter
-  | h :: t ->
-      let stock = legal stocks_lst (Real_estate_history.get_ticker h) in
-      let value =
-        float_of_int (Real_estate_history.get_shares h)
-        *. Stock.get_current_price stock
-      in
-      re_calculate_net_worth t stocks_lst (counter +. value)
-
-let get_net_worth u stocks_lst index_lst re_lst =
+let get_net_worth u stocks_lst index_lst =
   let sh_lst = Portfolio.get_stock_history u.portfolio in
   let in_list = Portfolio.get_index_history u.portfolio in
-  let re_list = Portfolio.get_re_history u.portfolio in
   let cd_h = Portfolio.get_cd_history u.portfolio in
   let cds_value = Cd_history.get_investment_value cd_h in
   let index_value = index_calculate_net_worth in_list index_lst 0. in
   let stocks_value = calculate_net_worth sh_lst stocks_lst 0. in
-  let re_value = re_calculate_net_worth re_list re_lst 0. in
-  u.net_worth <-
-    u.cash +. stocks_value +. index_value +. cds_value +. re_value;
+  u.net_worth <- u.cash +. stocks_value +. index_value +. cds_value;
   u.net_worth
 
 let get_cash u = u.cash
@@ -83,26 +69,12 @@ let rec get_length_index_history sh_lst counter =
       let value = Index_history.get_shares h in
       get_length_index_history t (counter + value)
 
-let rec get_length_re_history sh_lst counter =
-  match sh_lst with
-  | [] -> counter
-  | h :: t ->
-      let value = Real_estate_history.get_shares h in
-      get_length_re_history t (counter + value)
-
 let rec legal_index_history list symb =
   match list with
   | [] -> raise Not_found
   | h :: t ->
       if Index_history.get_ticker h = symb then h
       else legal_index_history t symb
-
-let rec legal_re_history list symb =
-  match list with
-  | [] -> raise Not_found
-  | h :: t ->
-      if Real_estate_history.get_ticker h = symb then h
-      else legal_re_history t symb
 
 let rec legal_stock_history list symb =
   match list with
@@ -111,11 +83,11 @@ let rec legal_stock_history list symb =
       if Stock_history.get_ticker h = symb then h
       else legal_stock_history t symb
 
-let create_user c sh_lst i_lst cd_h re_list =
+let create_user c sh_lst i_lst cd_h =
   {
     net_worth = c;
     cash = c;
-    portfolio = Portfolio.create_portfolio sh_lst i_lst cd_h re_list;
+    portfolio = Portfolio.create_portfolio sh_lst i_lst cd_h;
     string_stock_companies = [];
   }
 
@@ -186,25 +158,6 @@ let get_index_pl stock ih =
     lookup (Index_history.get_buy_in_prices ih) 0.
   in
   current_value -. value_at_buy_in
-
-let buy_re (stock_name : string) (shares : int) (user : t)
-    (stock : Stock.t) =
-  user.portfolio <- Portfolio.buy_re user.portfolio stock shares;
-  change_cash_buy user shares stock
-
-let sell_re (stock_name : string) (shares : int) (user : t)
-    (stock : Stock.t) =
-  let p = user.portfolio in
-  Real_estate_history.sell
-    (legal_re_history (Portfolio.get_re_history p) stock_name)
-    shares;
-  change_cash_sell user shares stock
-
-let checkre (stock_t : Stock.t) (stock : Real_estate_history.r) =
-  Stock.get_current_price stock_t
-  *. float_of_int
-       (lookup_shares (Real_estate_history.get_buy_in_prices stock) 0)
-  -. lookup (Real_estate_history.get_buy_in_prices stock) 0.
 
 let changecash_buycd s f = s.cash <- s.cash -. f
 
