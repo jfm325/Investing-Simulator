@@ -27,6 +27,8 @@ val get_price : t -> int -> float
 (* [get_current_price s] is the current price of the stock [s]. *)
 val get_current_price : t -> float
 
+val get_percent_change : t -> float
+
 (* [update_current_prices lst start_time] updates the current prices of
    stocks in [lst] based on the current time.*)
 val update_current_prices : t list -> float -> unit

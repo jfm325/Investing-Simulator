@@ -12,11 +12,9 @@ let string_of_s s = s
 
 let user =
   User.create_user 20000. stock_history_lst index_history_lst cd_history
-    re_history_lst
 
 let user2 =
   User.create_user 20000. stock_history_lst index_history_lst cd_history
-    re_history_lst
 
 (* [cd_test] is the test for module CD. *)
 let cd_test test_name (cd : Cd.t) expected_apy expected_monthly_rate
@@ -95,17 +93,6 @@ let the_buy_index_test test_name (user : User.t) (stock_name : string)
        0)
     ~printer:string_of_int
 
-let the_buy_re_test test_name (user : User.t) (stock_name : string)
-    (shares : int) (length : int) =
-  test_name >:: fun _ ->
-  Stock.update_current_prices re (Game.get_start_time ());
-  User.buy_re stock_name shares user (legal re stock_name);
-  assert_equal length
-    (User.get_length_re_history
-       (Portfolio.get_re_history (User.getportfolio user))
-       0)
-    ~printer:string_of_int
-
 let the_sell_stock_test test_name (user : User.t) (stock_name : string)
     (shares : int) (length : int) =
   test_name >:: fun _ ->
@@ -128,30 +115,18 @@ let the_sell_index_test test_name (user : User.t) (stock_name : string)
        0)
     ~printer:string_of_int
 
-let the_sell_re_test test_name (user : User.t) (stock_name : string)
-    (shares : int) (length : int) =
-  test_name >:: fun _ ->
-  Stock.update_current_prices re (Game.get_start_time ());
-  User.sell_re stock_name shares user (legal re stock_name);
-  assert_equal length
-    (User.get_length_re_history
-       (Portfolio.get_re_history (User.getportfolio user))
-       0)
-    ~printer:string_of_int
-
 let the_networth_test test_name (user : User.t) (networth : float) =
   test_name >:: fun _ ->
   Stock.update_current_prices stocks (Game.get_start_time ());
   Stock.update_current_prices index (Game.get_start_time ());
-  Stock.update_current_prices re (Game.get_start_time ());
   assert_equal networth
-    (User.get_net_worth user Init.stocks index re)
+    (User.get_net_worth user Init.stocks index)
     ~printer:string_of_float
 
 let (user_tests : OUnit2.test list) =
   let bob =
     User.create_user 20000. stock_history_lst index_history_lst
-      cd_history re_history_lst
+      cd_history
   in
   [
     the_cash_test "testing for default cash" bob 20000.;
@@ -188,16 +163,6 @@ let (user_tests : OUnit2.test list) =
       "testing to see that sell method works after selling the same \
        stock"
       bob "SPY" 1 3;
-    the_buy_re_test
-      "testing to see that buy method works with one real estate stock"
-      bob "SPY" 1 1;
-    the_buy_re_test
-      "testing to see that buy method works after buying\n\
-      \      the same real  estate stock" bob "SPY" 3 4;
-    the_sell_re_test
-      "testing to see that sell method works after selling the same \
-       real estate stock"
-      bob "SPY" 2 2;
   ]
 
 let suite = "test suite 1" >::: List.flatten [ stock_tests; user_tests ]

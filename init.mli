@@ -18,6 +18,8 @@ val bar : string
 
 val shares_str : string
 
+val percent_str : string
+
 val ticker_str : string
 
 val index_fund_str : string

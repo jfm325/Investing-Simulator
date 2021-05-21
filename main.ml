@@ -46,27 +46,33 @@ let rec print_profit_loss_helper lst =
 (* [pp_print_stocks ticker_str price_str shares_str pl_lst]
    pretty-prints all stock information. Note: [pl_lst] is a reversed
    list of the profit/losses.*)
-let pp_print_stocks ticker_str price_str shares_str pl_lst =
+let pp_print_stocks ticker_str price_str shares_str pl_lst per_lst =
   let pl_rev_lst = List.rev pl_lst in
+  let per_rev_lst = List.rev per_lst in
   print_endline Init.bar;
   ANSITerminal.print_string [ ANSITerminal.yellow ]
     "INDIVIDUAL STOCKS\n";
   print_endline Init.bar;
   print_endline ticker_str;
   print_endline price_str;
-  print_endline shares_str;
+  print_string Init.percent_str;
+  print_profit_loss_helper per_rev_lst;
+  print_endline ("\n" ^ shares_str);
   print_string Init.profit_loss_str;
   print_profit_loss_helper pl_rev_lst;
   print_endline ("\n" ^ Init.bar)
 
-let pp_print_index ticker_str price_str shares_str pl_lst =
+let pp_print_index ticker_str price_str shares_str pl_lst per_lst =
   let pl_rev_lst = List.rev pl_lst in
+  let per_rev_lst = List.rev per_lst in
   print_endline Init.bar;
   ANSITerminal.print_string [ ANSITerminal.yellow ] "INDEX FUNDS\n";
   print_endline Init.bar;
   print_endline ticker_str;
   print_endline price_str;
-  print_endline shares_str;
+  print_string Init.percent_str;
+  print_profit_loss_helper per_rev_lst;
+  print_endline ("\n" ^ shares_str);
   print_string Init.profit_loss_str;
   print_profit_loss_helper pl_rev_lst;
   print_endline ("\n" ^ Init.bar)
@@ -75,51 +81,53 @@ let pp_print_index ticker_str price_str shares_str pl_lst =
    pl_lst] is the helper function to go through [stock_lst] and fill in
    the strings for stock info. *)
 let rec print_stocks_helper stock_lst ticker_str price_str shares_str
-    pl_lst =
+    pl_lst per_lst =
   match stock_lst with
-  | [] -> pp_print_stocks ticker_str price_str shares_str pl_lst
+  | [] -> pp_print_stocks ticker_str price_str shares_str pl_lst per_lst
   | h :: t ->
       let sh =
         legal_stock_history Init.stock_history_lst (Stock.get_ticker h)
       in
       let num_shares = get_shares sh in
       let pl = User.get_stocks_pl h sh in
+      let per = Stock.get_percent_change h in
       print_stocks_helper t
         (ticker_str ^ Stock.get_ticker h ^ "\t\t")
         (price_str ^ string_of_float (get_current_price h) ^ "\t\t")
         (shares_str ^ string_of_int num_shares ^ "\t\t")
-        (pl :: pl_lst)
+        (pl :: pl_lst) (per :: per_lst)
 
 (* [print_stocks s_lst] prints the stocks and stock info in [s_lst]. *)
 let print_stocks (s_lst : Stock.t list) =
   print_stocks_helper s_lst Init.ticker_str Init.prices_str
-    Init.shares_str []
+    Init.shares_str [] []
 
 (* [print_index_helper index_lst ticker_str price_str shares_str pl_lst]
    is the helper function to go through [index_lst] and fill in the
    strings for index fund info. *)
 let rec print_index_helper index_lst ticker_str price_str shares_str
-    pl_lst acc =
+    pl_lst per_lst acc =
   match index_lst with
-  | [] -> pp_print_index ticker_str price_str shares_str pl_lst
+  | [] -> pp_print_index ticker_str price_str shares_str pl_lst per_lst
   | h :: t ->
       let sh =
         legal_index_history Init.index_history_lst (Stock.get_ticker h)
       in
       let num_shares = Index_history.get_shares sh in
       let pl = User.get_index_pl h sh in
+      let per = Stock.get_percent_change h in
       let index_fund_num = "(" ^ string_of_int acc ^ ")" in
       print_index_helper t
         (ticker_str ^ Stock.get_ticker h ^ index_fund_num ^ "\t")
         (price_str ^ string_of_float (get_current_price h) ^ "\t\t")
         (shares_str ^ string_of_int num_shares ^ "\t\t")
-        (pl :: pl_lst) (acc + 1)
+        (pl :: pl_lst) (per :: per_lst) (acc + 1)
 
 (* [print_index index_lst] prints the index fund info and performance in
    [index_lst]. *)
 let print_index index_lst =
-  print_index_helper index_lst Init.index_fund_str Init.prices_str
-    Init.shares_str [] 1
+  print_index_helper index_lst Init.ticker_str Init.prices_str
+    Init.shares_str [] [] 1
 
 (** [has_game_ended s] returns true when in-game time has reached or
     passed year 20 (nmonth 240). *)
