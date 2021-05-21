@@ -145,11 +145,11 @@ let view com u (curr : string) =
         print_string
           ("The networth of the bot is " ^ curr ^ botnw ^ "\n")
     | ViewIndex ->
-        let p = User.getportfolio u in
+        let p = User.get_portfolio u in
         let in_h = Portfolio.get_index_history p in
         print_in in_h
     | ViewCD ->
-        let p = User.getportfolio u in
+        let p = User.get_portfolio u in
         let cd_h = Portfolio.get_cd_history p in
         let c_lst = Cd_history.get_cd_lst cd_h in
         print_cd cd_h c_lst 1
@@ -181,43 +181,35 @@ let view com u (curr : string) =
         in
         print_string ("Your current networth is " ^ curr ^ n ^ "\n")
     | Buy_S invest ->
-        Stock.update_current_prices stocks (Game.get_start_time ());
-        let s = List.hd invest in
-        let n = int_of_string (List.nth invest 1) in
-        let st = legal stocks s in
-        if
-          User.get_cash u -. (float n *. Stock.get_current_price st)
-          <= 0.0
-        then
-          print_string
-            "TRANSACTION ERROR: You do not have enough cash to \
-             purchase this stock \n"
-        else if n <= 0 then
-          print_string
-            "TRANSACTION ERROR: You have to buy a positive number of \
-             shares \n"
-        else (
-          User.buy s n u st;
-          print_string
-            "You just bought stocks and your cash has changed \n" )
+        (* Stock.update_current_prices stocks (Game.get_start_time ());
+           let s = List.hd invest in let n = int_of_string (List.nth
+           invest 1) in let stock = legal stocks s in if User.get_cash u
+           -. (float n *. Stock.get_current_price stock) <= 0.0 then
+           print_string "TRANSACTION ERROR: You do not have enough cash
+           to \ purchase this stock \n" else if n <= 0 then print_string
+           "TRANSACTION ERROR: You have to buy a positive number of \
+           shares \n" else ( User.buy_stock n u stock; print_string "You
+           just bought stocks and your cash has changed \n" ) *)
+        let stock_n = int_of_string (List.hd invest) - 1 in
+        let num_of_stocks = List.length Init.stocks in
+        if stock_n < 0 || stock_n >= num_of_stocks then
+          print_string "TRANSACTION ERROR: Invalid stock number.\n"
+        else
+          let shares = int_of_string (List.nth invest 1) in
+          let stock = List.nth Init.stocks stock_n in
+          let curr_price = Stock.get_current_price stock in
+          let cost = float shares *. curr_price in
+          if User.get_cash u -. cost < 0.0 then
+            print_endline
+              "TRANSACTION ERROR: You do not have enough cash to \
+               purchase this stock \n"
+          else User.buy_stock shares u stock
     | Sell_S invest ->
-        Stock.update_current_prices stocks (Game.get_start_time ());
-        let s = List.hd invest in
-        let n = int_of_string (List.nth invest 1) in
-        let user_portfolio = User.getportfolio u in
-        let st = legal stocks s in
-        if
-          Stock_history.get_shares
-            (User.legal_stock_history
-               (Portfolio.get_stock_history user_portfolio)
-               s)
-          < n
-        then
-          print_string
-            "TRANSACTION ERROR: You do not have enough shares\n"
-        else (
-          User.sell s n u st;
-          print_string "You just sold shares\n" )
+        Stock.update_current_prices Init.stocks (Game.get_start_time ());
+        let stock_n = int_of_string (List.hd invest) - 1 in
+        let shares = int_of_string (List.nth invest 1) in
+        let stock = List.nth Init.stocks stock_n in
+        User.sell_stock shares u stock stock_n
     | Buy_Index invest ->
         let index_n = int_of_string (List.hd invest) - 1 in
         let num_of_index_funds = List.length Init.index_funds in

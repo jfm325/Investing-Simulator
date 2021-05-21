@@ -83,53 +83,52 @@ let pp_print_index ticker_str price_str shares_str pl_lst per_lst =
    pl_lst] is the helper function to go through [stock_lst] and fill in
    the strings for stock info. *)
 let rec print_stocks_helper stock_lst ticker_str price_str shares_str
-    pl_lst per_lst =
+    pl_lst per_lst index =
   match stock_lst with
   | [] -> pp_print_stocks ticker_str price_str shares_str pl_lst per_lst
   | h :: t ->
-      let sh =
-        legal_stock_history Init.stock_history_lst (Stock.get_ticker h)
-      in
+      let sh = List.nth Init.stock_history_lst index in
+      let ticker = Stock.get_ticker h in
       let num_shares = get_shares sh in
       let pl = User.get_stocks_pl h sh in
       let per = Stock.get_percent_change h in
+      let index_fund_num = "(" ^ string_of_int (index + 1) ^ ")" in
       print_stocks_helper t
-        (ticker_str ^ Stock.get_ticker h ^ "\t\t")
+        (ticker_str ^ ticker ^ index_fund_num ^ "\t\t")
         (price_str ^ string_of_float (get_current_price h) ^ "\t\t")
         (shares_str ^ string_of_int num_shares ^ "\t\t")
-        (pl :: pl_lst) (per :: per_lst)
+        (pl :: pl_lst) (per :: per_lst) (index + 1)
 
 (* [print_stocks s_lst] prints the stocks and stock info in [s_lst]. *)
 let print_stocks (s_lst : Stock.t list) =
   print_stocks_helper s_lst Init.ticker_str Init.prices_str
-    Init.shares_str [] []
+    Init.shares_str [] [] 0
 
 (* [print_index_helper index_lst ticker_str price_str shares_str pl_lst]
    is the helper function to go through [index_lst] and fill in the
    strings for index fund info. *)
 let rec print_index_helper index_lst ticker_str price_str shares_str
-    pl_lst per_lst acc =
+    pl_lst per_lst index =
   match index_lst with
   | [] -> pp_print_index ticker_str price_str shares_str pl_lst per_lst
   | h :: t ->
-      let sh =
-        legal_index_history Init.index_history_lst (Stock.get_ticker h)
-      in
+      let sh = List.nth Init.index_history_lst index in
+      let ticker = Stock.get_ticker h in
       let num_shares = Index_history.get_shares sh in
       let pl = User.get_index_pl h sh in
       let per = Stock.get_percent_change h in
-      let index_fund_num = "(" ^ string_of_int acc ^ ")" in
+      let index_fund_num = "(" ^ string_of_int (index + 1) ^ ")" in
       print_index_helper t
-        (ticker_str ^ Stock.get_ticker h ^ index_fund_num ^ "\t")
+        (ticker_str ^ ticker ^ index_fund_num ^ "\t")
         (price_str ^ string_of_float (get_current_price h) ^ "\t\t")
         (shares_str ^ string_of_int num_shares ^ "\t\t")
-        (pl :: pl_lst) (per :: per_lst) (acc + 1)
+        (pl :: pl_lst) (per :: per_lst) (index + 1)
 
 (* [print_index index_lst] prints the index fund info and performance in
    [index_lst]. *)
 let print_index index_lst =
   print_index_helper index_lst Init.ticker_str Init.prices_str
-    Init.shares_str [] [] 1
+    Init.shares_str [] [] 0
 
 (** [has_game_ended s] returns true when in-game time has reached or
     passed year 20 (nmonth 240). *)
@@ -156,7 +155,7 @@ let parse_input_helper () =
   | exception End_of_file -> ()
   | line when line = "quit" -> exit 0
   | line when line = "cd" ->
-      let p = getportfolio user in
+      let p = get_portfolio user in
       let cd_h = Portfolio.get_cd_history p in
       print_cd (Cd_history.get_current_apy cd_h)
   | line when line = "s" ->

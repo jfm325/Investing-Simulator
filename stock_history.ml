@@ -1,7 +1,11 @@
+type num_of_shares = int
+
+type price = float
+
 type t = {
   stock_ticker : string;
   mutable shares : int;
-  mutable buy_in_prices : (float * int) list;
+  mutable buy_in_prices : (price * num_of_shares) list;
 }
 
 let create_stock_history t =
@@ -18,15 +22,15 @@ let buy sh price n =
   sh.shares <- get_shares sh + n;
   sh
 
-let rec update_sell sh n =
+let rec remove_shares_from_hist sh n =
   match sh.buy_in_prices with
   | [] -> sh.buy_in_prices <- []
-  | (k, v) :: t ->
-      if v <= n then (
+  | (price, shares) :: t ->
+      if shares < n then (
         sh.buy_in_prices <- t;
-        update_sell sh (n - v) )
-      else sh.buy_in_prices <- (k, v - n) :: t
+        remove_shares_from_hist sh (n - shares) )
+      else sh.buy_in_prices <- (price, shares - n) :: t
 
 let sell sh n =
-  update_sell sh n;
+  remove_shares_from_hist sh n;
   sh.shares <- get_shares sh - n
