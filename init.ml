@@ -18,12 +18,6 @@ let index : Stock.t list =
     Stock.create_stock "RE" "RE" "spy_index1995.txt";
   ]
 
-<<<<<<< HEAD
-=======
-(* let re : Stock.t list = [ Stock.create_stock "SPY" "SPY"
-   "spy_index1995.txt" ] *)
-
->>>>>>> refs/remotes/origin/master
 let coke_history = Stock_history.create_stock_history "COKE"
 
 let aapl_history = Stock_history.create_stock_history "AAPL"
@@ -34,15 +28,10 @@ let stock_history_lst = [ coke_history; aapl_history; msft_history ]
 
 let index_spy_history = Index_history.create_index_history "SPY"
 
-<<<<<<< HEAD
-let index_history_lst = [ index_spy_history ]
+let index_re_history = Index_history.create_index_history "RE"
 
-=======
-let real_estate_history = Index_history.create_index_history "RE"
+let index_history_lst = [ index_spy_history; index_re_history ]
 
-let index_history_lst = [ index_spy_history; real_estate_history ]
-
->>>>>>> refs/remotes/origin/master
 let cd_history = Cd_history.create_cd_history "cd_rates1995.txt"
 
 (* Will later send in stock history to user *)
