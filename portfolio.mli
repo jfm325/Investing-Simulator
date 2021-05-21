@@ -17,7 +17,10 @@ val get_index_history_size: t -> int
     shares of stock [stock]. *)
 val buy_stock : t -> Stock.t -> int -> t
 val buy_index : t -> Stock.t -> int -> t
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/origin/master
 (** [get_stock_history p] is the stock history list in portfolio [p]. *)
 val get_stock_history : t -> Stock_history.t list
 val get_index_history : t -> Index_history.i list

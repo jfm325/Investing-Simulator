@@ -1,5 +1,10 @@
 val stocks : Stock.t list
 
+<<<<<<< HEAD
+=======
+(* val re : Stock.t list *)
+
+>>>>>>> refs/remotes/origin/master
 val index : Stock.t list
 
 val user : User.t

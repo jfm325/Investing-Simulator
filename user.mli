@@ -21,7 +21,7 @@ val add_income_cash : t -> float -> unit
 (*[get_net_worth u stocks_lst] return the net worth of the user. *)
 val get_net_worth : t -> Stock.t list -> Stock.t list -> float
 
-(*[get_cash u] return the cash of the user*)
+(* [get_cash u] return the cash of the user*)
 val get_cash : t -> float
 
 val get_length_stock_history : Stock_history.t list -> int -> int

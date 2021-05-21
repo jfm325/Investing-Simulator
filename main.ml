@@ -94,7 +94,10 @@ let rec print_index_helper index_lst ticker_str price_str shares_str
       in
       let num_shares = Index_history.get_shares sh in
       let pl = User.get_index_pl h sh in
+<<<<<<< HEAD
       let per = Stock.get_percent_change h in
+=======
+>>>>>>> refs/remotes/origin/master
       print_index_helper t
         (ticker_str ^ Stock.get_ticker h ^ "\t")
         (price_str ^ string_of_float (get_current_price h) ^ "\t")
@@ -105,7 +108,11 @@ let rec print_index_helper index_lst ticker_str price_str shares_str
    [index_lst]. *)
 let print_index index_lst =
   print_index_helper index_lst Init.ticker_str Init.prices_str
+<<<<<<< HEAD
     Init.shares_str [] []
+=======
+    Init.shares_str []
+>>>>>>> refs/remotes/origin/master
 
 (** [has_game_ended s] returns true when in-game time has reached or
     passed year 20 (nmonth 240). *)
