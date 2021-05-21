@@ -20,6 +20,8 @@ val shares_str : string
 
 val ticker_str : string
 
+val index_fund_str : string
+
 val prices_str : string
 
 val profit_loss_str : string
