@@ -38,7 +38,13 @@ val is_cd_matured : t -> bool
     investment for cd [cd]. *)
 val update_current_value : t -> unit
 
+(** [match_monthly_rate l r] is the monthly rate given by APY [r] and
+    based on the length of the cd [l]. Output is in decimal form with 1
+    in front. Ex) 1.02 *)
+val match_monthly_rate : term -> float -> float
+
 (** [create_cd rate length amt] is the cd with interest rate [rate],
     length til maturity [length], amount placed of [amt], and the month
-    it was bought in (given by current time). *)
+    it was bought in (given by current time). Requires: [rate] is in
+    decimal form. Ex) 0.05 *)
 val create_cd : float -> term -> float -> t

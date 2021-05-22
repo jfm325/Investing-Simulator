@@ -186,7 +186,8 @@ let rec prompt_input () =
     let time_elapsed =
       int_of_float (Unix.time () -. Game.get_start_time ())
     in
-    print_endline (Game.str_of_year_month time_elapsed);
+    let time_str = Game.str_of_year_month time_elapsed in
+    print_endline time_str;
     print_endline Init.bar;
     prompt_input () )
 
