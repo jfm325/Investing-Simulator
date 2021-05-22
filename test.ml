@@ -16,19 +16,76 @@ let user =
 let user2 =
   User.create_user 20000. stock_history_lst index_history_lst cd_history
 
-(* [cd_test] is the test for module CD. *)
+(* [cd_monthly_rate_test] is the test for the correct conversion from
+   APY to monthly rate in the function [Cd.match_monthly_rate]. *)
+let cd_monthly_rate_test test_name term rate expected_monthly_rate =
+  "[match_monthly_rate] test: " ^ test_name >:: fun _ ->
+  assert_equal expected_monthly_rate
+    (Cd.match_monthly_rate term rate)
+    ~printer:string_of_float
+
+let cd_math_tests =
+  [
+    cd_monthly_rate_test "6months, Rate: 0.024 -> Monthly Rate: 1.00198"
+      SixMonths 0.024 1.00198;
+    cd_monthly_rate_test "6months, Rate: 0.10 -> Monthly Rate: 1.00797"
+      SixMonths 0.10 1.00797;
+    cd_monthly_rate_test "6months, Rate: 0.013 -> Monthly Rate: 1.00108"
+      SixMonths 0.013 1.00108;
+    cd_monthly_rate_test "6months, Rate: 0.5 -> Monthly Rate: 1.03437"
+      SixMonths 0.5 1.03437;
+    cd_monthly_rate_test "1yr, Rate: 0.024 -> Monthly Rate: 1.00198"
+      OneYear 0.024 1.00198;
+    cd_monthly_rate_test "1yr, Rate: 0.10 -> Monthly Rate: 1.00797"
+      OneYear 0.10 1.00797;
+    cd_monthly_rate_test "1yr, Rate: 0.011 -> Monthly Rate: 1.00091"
+      OneYear 0.011 1.00091;
+    cd_monthly_rate_test "1yr, Rate: 0.5 -> Monthly Rate: 1.03437"
+      OneYear 0.5 1.03437;
+    cd_monthly_rate_test "3yrs, Rate: 0.024 -> Monthly Rate: 1.00198"
+      ThreeYears 0.024 1.00198;
+    cd_monthly_rate_test "3yrs, Rate: 0.10 -> Monthly Rate: 1.00797"
+      ThreeYears 0.10 1.00797;
+    cd_monthly_rate_test "3yrs, Rate: 0.010 -> Monthly Rate: 1.00083"
+      ThreeYears 0.010 1.00083;
+    cd_monthly_rate_test "3yrs, Rate: 0.5 -> Monthly Rate: 1.03437"
+      ThreeYears 0.5 1.03437;
+  ]
+
+(* [cd_test] is the test for correct values in type t in module CD. *)
 let cd_test test_name (cd : Cd.t) expected_apy expected_monthly_rate
-    expected_length =
-  test_name >:: fun _ ->
+    expected_length expected_collection_value =
+  "CD Test: " ^ test_name >:: fun _ ->
   assert_equal expected_apy (Cd.get_apy cd) ~printer:string_of_float;
   assert_equal expected_monthly_rate
     (Cd.get_monthly_rate cd)
     ~printer:string_of_float;
-  assert_equal expected_length (Cd.get_length cd) ~printer:string_of_int
+  assert_equal expected_length (Cd.get_length cd) ~printer:string_of_int;
+  Cd.update_current_value cd;
+  assert_equal expected_collection_value
+    (Cd.get_current_value cd)
+    ~printer:string_of_float
 
 let cd_tests =
-  let cd_1 = Cd.create_cd 10. ThreeYears 1000. in
-  []
+  Game.update_start_time (Unix.time ());
+  let cd_1 = Cd.create_cd 0.10 ThreeYears 1000. in
+  let cd_2 = Cd.create_cd 0.02 SixMonths 1000. in
+  let cd_3 = Cd.create_cd 0.01 SixMonths 1000. in
+  let cd_4 = Cd.create_cd 0.08 OneYear 10000. in
+  let cd_5 = Cd.create_cd 0.12 ThreeYears 100000. in
+  let cd_6 = Cd.create_cd 0.013 ThreeYears 100000. in
+  let cd_7 = Cd.create_cd 0.019 SixMonths 100000. in
+  Game.update_start_time 0.;
+  [
+    cd_test "CD 1" cd_1 0.11 1.00873 36 1367.41;
+    cd_test "CD 2" cd_2 0.01 1.00083 6 1004.99;
+    cd_test "CD 3 (Edge Case: 0.1 APY should remain the same)" cd_3 0.01
+      1.00083 6 1004.99;
+    cd_test "CD 4" cd_4 0.08 1.00643 12 10799.48;
+    cd_test "CD 5" cd_5 0.13 1.01024 36 144305.93;
+    cd_test "CD 6" cd_6 0.023 1.00190 36 107072.41;
+    cd_test "CD 7" cd_7 0.009 1.00075 6 100450.84;
+  ]
 
 (* [stock_test] is the test for module Stock. [stock] is tested for
    expected values of stock name, ticker symbol, and price at index
@@ -40,17 +97,6 @@ let stock_test test_name (stock : Stock.t) (name : string)
   assert_equal ticker (get_ticker stock) ~printer:string_of_s;
   assert_equal price (get_price stock index) ~printer:string_of_float
 
-(*let interaction_tests = [ (* Added tests for the Interaction module
-  here *) ( "Testing for buying shares" >:: fun _ -> assert_equal (Buy [
-  "COKE"; "50" ]) (parse "buy COKE 50") ); ( "Testing for selling
-  shares" >:: fun _ -> assert_equal (Sell [ "COKE"; "50" ]) (parse "sell
-  COKE 50") ); ("Testing for cash" >:: fun _ -> assert_equal Cash (parse
-  "cash")); ( "Testing for networth" >:: fun _ -> assert_equal Networth
-  (parse "networth") ); ( "Testing for Empty" >:: fun _ -> assert_raises
-  EmptyCommand (fun () -> parse "") ); ( "Testing for Empty" >:: fun _
-  -> assert_raises EmptyCommand (fun () -> parse " ") ); ( "Testing for
-  Malformed" >:: fun _ -> assert_raises BadCommand (fun () -> parse "hi
-  i am confused") ); ] *)
 let stock_tests =
   let coke = Stock.create_stock "Coke" "COKE" "coke1995.txt" in
   [
@@ -63,15 +109,23 @@ let stock_tests =
       56.12 200;
   ]
 
-let the_cash_test test_name (user : User.t) (cash : float) =
+(*let interaction_tests = [ (* Added tests for the Interaction module
+  here *) ( "Testing for buying shares" >:: fun _ -> assert_equal (Buy [
+  "COKE"; "50" ]) (parse "buy COKE 50") ); ( "Testing for selling
+  shares" >:: fun _ -> assert_equal (Sell [ "COKE"; "50" ]) (parse "sell
+  COKE 50") ); ("Testing for cash" >:: fun _ -> assert_equal Cash (parse
+  "cash")); ( "Testing for networth" >:: fun _ -> assert_equal Networth
+  (parse "networth") ); ( "Testing for Empty" >:: fun _ -> assert_raises
+  EmptyCommand (fun () -> parse "") ); ( "Testing for Empty" >:: fun _
+  -> assert_raises EmptyCommand (fun () -> parse " ") ); ( "Testing for
+  Malformed" >:: fun _ -> assert_raises BadCommand (fun () -> parse "hi
+  i am confused") ); ] *)
+
+let cash_test test_name (user : User.t) (cash : float) =
   test_name >:: fun _ ->
   assert_equal cash (User.get_cash user) ~printer:string_of_float
 
-let the_cash_test test_name (user : User.t) (cash : float) =
-  test_name >:: fun _ ->
-  assert_equal cash (User.get_cash user) ~printer:string_of_float
-
-let the_buy_stock_test test_name (user : User.t) (stock_n : int)
+let buy_stock_test test_name (user : User.t) (stock_n : int)
     (shares : int) (length : int) =
   test_name >:: fun _ ->
   Stock.update_current_prices stocks (Game.get_start_time ());
@@ -88,7 +142,7 @@ let the_buy_stock_test test_name (user : User.t) (stock_n : int)
        0)
     ~printer:string_of_int
 
-let the_buy_index_test test_name (user : User.t) (stock_name : string)
+let buy_index_test test_name (user : User.t) (stock_name : string)
     (shares : int) (length : int) =
   test_name >:: fun _ ->
   Stock.update_current_prices index_funds (Game.get_start_time ());
@@ -105,7 +159,7 @@ let the_buy_index_test test_name (user : User.t) (stock_name : string)
        0)
     ~printer:string_of_int
 
-let the_sell_stock_test test_name (user : User.t) (nums : int)
+let sell_stock_test test_name (user : User.t) (nums : int)
     (shares : int) (length : int) =
   test_name >:: fun _ ->
   Stock.update_current_prices stocks (Game.get_start_time ());
@@ -121,8 +175,8 @@ let the_sell_stock_test test_name (user : User.t) (nums : int)
        0)
     ~printer:string_of_int
 
-let the_sell_index_test test_name (user : User.t) (shares : int)
-    (num : int) (length : int) =
+let sell_index_test test_name (user : User.t) (shares : int) (num : int)
+    (length : int) =
   test_name >:: fun _ ->
   Stock.update_current_prices index_funds (Game.get_start_time ());
   if shares < 0 then
@@ -134,7 +188,7 @@ let the_sell_index_test test_name (user : User.t) (shares : int)
     (User.get_shares_ih_lst Init.index_history_lst 0)
     ~printer:string_of_int
 
-let the_networth_test test_name (user : User.t) (networth : float) =
+let networth_test test_name (user : User.t) (networth : float) =
   test_name >:: fun _ ->
   Stock.update_current_prices stocks (Game.get_start_time ());
   Stock.update_current_prices index_funds (Game.get_start_time ());
@@ -148,80 +202,81 @@ let (user_tests : OUnit2.test list) =
       cd_history
   in
   [
-    the_cash_test "testing for default cash" bob 20000.;
-    the_networth_test "testing for networth with no purchased stocks"
-      bob 20000.;
-    the_buy_stock_test
-      "testing to see that buy method works with one stock" bob 1 1 1;
-    the_buy_stock_test
-      "testing to see that buy method works with no stock" bob 1 0 1;
-    the_buy_stock_test
+    cash_test "testing for default cash" bob 20000.;
+    networth_test "testing for networth with no purchased stocks" bob
+      20000.;
+    buy_stock_test "testing to see that buy method works with one stock"
+      bob 1 1 1;
+    buy_stock_test "testing to see that buy method works with no stock"
+      bob 1 0 1;
+    buy_stock_test
       "testing to see that buy method works after buying the same stock"
       bob 1 4 5;
-    the_buy_stock_test
+    buy_stock_test
       "testing to see that buy method works after buying the different \
        stock"
       bob 2 1 6;
-    the_sell_stock_test
+    sell_stock_test
       "testing to see that sell method works with one stock" bob 1 1 5;
-    the_sell_stock_test
+    sell_stock_test
       "testing to see that sell method works after selling the same \
        stock"
       bob 1 3 2;
-    the_sell_stock_test
+    sell_stock_test
       "testing to see that sell method works after selling the \
        different stock"
       bob 2 1 1;
-    the_sell_stock_test
+    sell_stock_test
       "testing to see that sell method returns a message when you sell \
        too much stock\n\
       \      selling the same  stock" bob 1 10 1;
-    the_sell_stock_test
+    sell_stock_test
       "testing to see that sell method when you sell no stock\n\
       \       no stock\n"
       bob 1 0 1;
-    the_buy_index_test
-      "testing to see that buy method works with one index" bob "S&P500"
-      1 1;
-    the_buy_index_test
+    buy_index_test "testing to see that buy method works with one index"
+      bob "S&P500" 1 1;
+    buy_index_test
       "testing to see that buy method when you buy no index\n       "
       bob "S&P500" 0 1;
-    the_buy_index_test
+    buy_index_test
       "testing to see that buy method works after buying the same index"
       bob "S&P500" 3 4;
-    the_sell_index_test
+    sell_index_test
       "testing to see that sell method works after\n\
       \      selling the same  stock" bob 1 0 3;
-    the_sell_index_test
+    sell_index_test
       "testing to see that sell method returns a message when you sell \
        too much index\n\
       \      selling the same  stock" bob 10 0 3;
-    the_sell_index_test
+    sell_index_test
       "testing to see that sell method when you sell no stock\n\
       \       no stock\n"
       bob 0 0 3;
-    the_buy_stock_test
+    buy_stock_test
       "testing to see that buy method does not buy when you do not \
        have enough cash"
       bob 1 9999999999999 1;
-    the_buy_index_test
+    buy_index_test
       "testing to see that buy index method does not buy when you to \
        buy negative shares have enough cash"
       bob "S&P500" (-1) 3;
-    the_sell_index_test
+    sell_index_test
       "testing to see that buy index method does not buy when you try \
        to sell negative shares"
       bob (-1) 0 3;
-    the_buy_stock_test
+    sell_index_test
       "testing to see that buy stock method does not buy when you to \
        buy negative shares have enough cash"
       bob 0 (-1) 1;
-    the_sell_stock_test
+    sell_index_test
       "testing to see that buy stock method does not buy when you try \
        to sell negative shares"
       bob 0 (-1) 1;
   ]
 
-let suite = "test suite 1" >::: List.flatten [ stock_tests; user_tests ]
+let suite =
+  "test suite 1"
+  >::: List.flatten [ cd_math_tests; cd_tests; stock_tests; user_tests ]
 
 let _ = run_test_tt_main suite
