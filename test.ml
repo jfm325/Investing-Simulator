@@ -75,6 +75,7 @@ let cd_tests =
   let cd_5 = Cd.create_cd 0.12 ThreeYears 100000. in
   let cd_6 = Cd.create_cd 0.013 ThreeYears 100000. in
   let cd_7 = Cd.create_cd 0.019 SixMonths 100000. in
+  let cd_8 = Cd.create_cd 0.15 OneYear 1000000. in
   Game.update_start_time 0.;
   [
     cd_test "CD 1" cd_1 0.11 1.00873 36 1367.41;
@@ -85,6 +86,7 @@ let cd_tests =
     cd_test "CD 5" cd_5 0.13 1.01024 36 144305.93;
     cd_test "CD 6" cd_6 0.023 1.00190 36 107072.41;
     cd_test "CD 7" cd_7 0.009 1.00075 6 100450.84;
+    cd_test "CD 8" cd_8 0.15 1.01171 12 1149932.93;
   ]
 
 (* [stock_test] is the test for module Stock. [stock] is tested for
@@ -99,14 +101,23 @@ let stock_test test_name (stock : Stock.t) (name : string)
 
 let stock_tests =
   let coke = Stock.create_stock "Coke" "COKE" "coke1995.txt" in
+  let spy = Stock.create_stock "S&P500" "S&P500" "spy_index1995.txt" in
   [
     stock_test "COKE: Price at index 0 = 28." coke "Coke" "COKE" 28. 0;
-    stock_test "COKE: Price at index 239 = 97.54" coke "Coke" "COKE"
-      97.54 239;
+    stock_test "COKE: Price at index 239 (Last Index) = 97.54" coke
+      "Coke" "COKE" 97.54 239;
     stock_test "COKE: Price at index 3 = 32.13" coke "Coke" "COKE" 32.13
       3;
     stock_test "COKE: Price at index 200 = 56.12" coke "Coke" "COKE"
       56.12 200;
+    stock_test "S&P500: Price at index 0 = 49.02" spy "S&P500" "S&P500"
+      49.02 0;
+    stock_test "S&P500: Price at index 50 = 123.56" spy "S&P500"
+      "S&P500" 133.25 50;
+    stock_test "S&P500: Price at index 200 = 125.50" spy "S&P500"
+      "S&P500" 125.50 200;
+    stock_test "S&P500: Price at index 239 (Last Index) = 199.45" spy
+      "S&P500" "S&P500" 199.45 239;
   ]
 
 (*let interaction_tests = [ (* Added tests for the Interaction module
@@ -265,11 +276,11 @@ let (user_tests : OUnit2.test list) =
       "testing to see that buy index method does not buy when you try \
        to sell negative shares"
       bob (-1) 0 3;
-    sell_index_test
+    buy_stock_test
       "testing to see that buy stock method does not buy when you to \
        buy negative shares have enough cash"
       bob 0 (-1) 1;
-    sell_index_test
+    sell_stock_test
       "testing to see that buy stock method does not buy when you try \
        to sell negative shares"
       bob 0 (-1) 1;

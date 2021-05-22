@@ -88,32 +88,39 @@ let checklegalterm t =
   else if t = 3 then ThreeYears
   else raise BadCommand
 
-let print_cd his_lst lst count =
+(* [pp_print_cd] is the helper function for [print_cd] to print info
+   about owned cds . *)
+let pp_print_cd num term_str maturity_str apy_str =
   let penalty_warning =
-    "** 10% penalty if collected before maturity **"
+    "** 10% penalty if collected before maturity **\n"
   in
-  let bar = "**********************************************" in
+  print_endline Init.bar;
+  ANSITerminal.print_string [ ANSITerminal.yellow ] "YOUR CDs";
+  print_endline ("\n" ^ Init.bar);
+  print_endline num;
+  print_endline term_str;
+  print_endline maturity_str;
+  print_endline apy_str;
+  print_endline bar;
+  ANSITerminal.print_string [ ANSITerminal.red ] penalty_warning
+
+(* [print_cd] prints info about cds owned. *)
+let print_cd his_lst lst count =
   let num = "Cd:                    " in
   let term = "Term (months):         " in
   let maturity = "Months until Maturity: " in
   let apy = "APY (%):               " in
   let c = 1 in
-  let rec print_cd_helper his_lst (lst : Cd.t list) num term mat f c =
+  let rec print_cd_helper his_lst (lst : Cd.t list) num term mat_str
+      apy_str c =
     match lst with
-    | [] ->
-        print_endline bar;
-        print_endline num;
-        print_endline term;
-        print_endline mat;
-        print_endline f;
-        print_endline bar;
-        print_endline penalty_warning
+    | [] -> pp_print_cd num term mat_str apy_str
     | h :: t ->
         print_cd_helper his_lst t
           (num ^ string_of_int c ^ "\t")
           (term ^ string_of_int (Cd.get_length h) ^ "\t")
-          (mat ^ string_of_int (Cd.months_until_maturity h) ^ "\t")
-          (f ^ string_of_float (Cd.get_apy_percentage h) ^ "\t")
+          (mat_str ^ string_of_int (Cd.months_until_maturity h) ^ "\t")
+          (apy_str ^ string_of_float (Cd.get_apy_percentage h) ^ "\t")
           (c + 1)
   in
   print_cd_helper his_lst lst num term maturity apy c
@@ -122,6 +129,8 @@ let print_cd his_lst lst count =
    their $10k income every 6 months. *)
 let times_income_received = ref 0
 
+(* [give_user_income_if_needed u] adds income to user [u]'s cash for
+   every 6 months passed. *)
 let give_user_income_if_needed u =
   let time_elapsed =
     int_of_float (Unix.time () -. Game.get_start_time ())
@@ -152,10 +161,10 @@ let displaycd u =
   print_cd cd_h c_lst 1
 
 let buy_cd u invest =
-  let amt = float_of_string (List.hd invest) in
+  let amt = float_of_string (List.nth invest 1) in
   if amt < 1000. then print_string "Amount not sufficient \n"
   else
-    let term = int_of_string (List.nth invest 1) in
+    let term = int_of_string (List.hd invest) in
     let cdterm = checklegalterm term in
     User.buy_cd u amt cdterm;
     print_string "You just bought a cd and your cash has changed \n"
@@ -175,15 +184,6 @@ let user_networth u curr =
   print_string ("Your current networth is " ^ curr ^ n ^ "\n")
 
 let buy_shares u invest =
-  (* Stock.update_current_prices stocks (Game.get_start_time ()); let s
-     = List.hd invest in let n = int_of_string (List.nth invest 1) in
-     let stock = legal stocks s in if User.get_cash u -. (float n *.
-     Stock.get_current_price stock) <= 0.0 then print_string
-     "TRANSACTION ERROR: You do not have enough cash to \ purchase this
-     stock \n" else if n <= 0 then print_string "TRANSACTION ERROR: You
-     have to buy a positive number of \ shares \n" else ( User.buy_stock
-     n u stock; print_string "You just bought stocks and your cash has
-     changed \n" ) *)
   let stock_n = int_of_string (List.hd invest) - 1 in
   let num_of_stocks = List.length Init.stocks in
   if stock_n < 0 || stock_n >= num_of_stocks then

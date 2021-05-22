@@ -77,9 +77,9 @@ let instructions =
    Sell_index:  sell_index [index_fund_#] [# of shares]\n\
    Buy shares:         buy_s [ticker_symbol] [# of shares]\n\
    Sell shares:        sell_s [ticker_symbol] [# of shares]\n\
-   Buy cd:             buy_cd [amt] [term of 1/2/3]\n\
+   Buy cd:             buy_cd [term of 1/2/3] [amt] \n\
   \ where 1 ~ 6 months, 2 ~ 12 months, 3 ~ 36 months\n\
-   Sell cd:            sell_cd [index # in cd_history list] \n\
+   Sell cd:            sell_cd [cd #] \n\
    View bought cd:     view_cd \n\
    See bot networth:   bot \n\
    View commands again: help\n\n"
