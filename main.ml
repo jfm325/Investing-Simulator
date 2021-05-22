@@ -137,6 +137,13 @@ let has_game_ended s =
   let month = current_time / s in
   month >= 240
 
+(*let display_percent () = let cd_cash = 2 in let stock_cash = 3 in let
+  index_cash = 4 in let cash = 5 in let total = cd_cash + stock_cash +
+  index_cash + cash in let cash_percent = cash / total in let
+  index_percent = index_cash / total in let cd_percent = cd_cash / total
+  in let stock_percent = stock_cash / total in print_endline "display
+  \n"*)
+
 let end_game_function () =
   let b = Bot.get_net_worth bot in
   Stock.update_current_prices Init.stocks (Game.get_start_time ());
