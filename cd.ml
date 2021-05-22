@@ -3,6 +3,8 @@ type term = SixMonths | OneYear | ThreeYears
 type t = {
   (* [apy] is represented in decimal form. Ex) 10% => 0.10*)
   apy : float;
+  (* [monthly_rate] is represented in decimal form and with 1 infront.
+     Ex) 10% => 1.10*)
   monthly_rate : float;
   starting_month_index : int;
   length : int;
@@ -18,11 +20,13 @@ let get_monthly_rate cd = cd.monthly_rate
 
 let get_length cd = cd.length
 
-let get_current_value cd = cd.current_value
+let get_current_value cd =
+  let round_to_2 n = Float.round (n *. 100.) /. 100. in
+  round_to_2 cd.current_value
 
 let match_new_rate l r =
   match l with
-  | SixMonths -> if r -. 0.01 < 0. then r else r -. 0.01
+  | SixMonths -> if r -. 0.01 <= 0. then r else r -. 0.01
   | OneYear -> r
   | ThreeYears -> r +. 0.01
 
@@ -60,13 +64,18 @@ let update_current_value cd =
     let r = cd.monthly_rate ** float_of_int cd.length in
     cd.current_value <- cd.amount *. r
 
-(* [match_monthly_rate l r] is the monthly rate given by APY [r] and
-   based on the length of the *)
 let match_monthly_rate l r =
+  let round_to_5 n = Float.round (n *. 100000.) /. 100000. in
   match l with
-  | SixMonths -> (r /. 6.) +. 1.
-  | OneYear -> (r /. 12.) +. 1.
-  | ThreeYears -> (r /. 36.) +. 1.
+  | SixMonths ->
+      let total_apy = (r +. 1.) ** (1. /. 2.) in
+      round_to_5 (total_apy ** (1. /. 6.))
+  | OneYear ->
+      let total_apy = r +. 1. in
+      round_to_5 (total_apy ** (1. /. 12.))
+  | ThreeYears ->
+      let total_apy = (r +. 1.) ** 3. in
+      round_to_5 (total_apy ** (1. /. 36.))
 
 let create_cd rate length amt =
   let current_time = Unix.time () in

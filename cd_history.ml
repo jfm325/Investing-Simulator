@@ -1,7 +1,12 @@
 open Cd
 open Game
 
-type t = { interest_rates : float array; mutable cd_lst : Cd.t list }
+type t = {
+  (* [interest_rates] is an array of interest rates in decimal form. Ex)
+     .10 *)
+  interest_rates : float array;
+  mutable cd_lst : Cd.t list;
+}
 
 let get_current_apy cd_h =
   let current_time = Unix.time () in
