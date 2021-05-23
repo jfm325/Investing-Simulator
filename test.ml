@@ -120,18 +120,6 @@ let stock_tests =
       "S&P500" "S&P500" 199.45 239;
   ]
 
-(*let interaction_tests = [ (* Added tests for the Interaction module
-  here *) ( "Testing for buying shares" >:: fun _ -> assert_equal (Buy [
-  "COKE"; "50" ]) (parse "buy COKE 50") ); ( "Testing for selling
-  shares" >:: fun _ -> assert_equal (Sell [ "COKE"; "50" ]) (parse "sell
-  COKE 50") ); ("Testing for cash" >:: fun _ -> assert_equal Cash (parse
-  "cash")); ( "Testing for networth" >:: fun _ -> assert_equal Networth
-  (parse "networth") ); ( "Testing for Empty" >:: fun _ -> assert_raises
-  EmptyCommand (fun () -> parse "") ); ( "Testing for Empty" >:: fun _
-  -> assert_raises EmptyCommand (fun () -> parse " ") ); ( "Testing for
-  Malformed" >:: fun _ -> assert_raises BadCommand (fun () -> parse "hi
-  i am confused") ); ] *)
-
 let cash_test test_name (user : User.t) (cash : float) =
   test_name >:: fun _ ->
   assert_equal cash (User.get_cash user) ~printer:string_of_float

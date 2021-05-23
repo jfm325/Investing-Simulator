@@ -188,14 +188,15 @@ let buy_shares u invest =
   let stock_n = int_of_string (List.hd invest) - 1 in
   let num_of_stocks = List.length Init.stocks in
   if stock_n < 0 || stock_n >= num_of_stocks then
-    print_string "TRANSACTION ERROR: Invalid stock number.\n"
+    ANSITerminal.print_string [ ANSITerminal.red ]
+      "TRANSACTION ERROR: Invalid stock number.\n"
   else
     let shares = int_of_string (List.nth invest 1) in
     let stock = List.nth Init.stocks stock_n in
     let curr_price = Stock.get_current_price stock in
     let cost = float shares *. curr_price in
     if User.get_cash u -. cost < 0.0 then
-      print_endline
+      ANSITerminal.print_string [ ANSITerminal.red ]
         "TRANSACTION ERROR: You do not have enough cash to purchase \
          this stock \n"
     else User.buy_stock shares u stock
@@ -211,14 +212,15 @@ let buy_index u invest =
   let index_n = int_of_string (List.hd invest) - 1 in
   let num_of_index_funds = List.length Init.index_funds in
   if index_n < 0 || index_n >= num_of_index_funds then
-    print_string "TRANSACTION ERROR: Invalid index fund number.\n"
+    ANSITerminal.print_string [ ANSITerminal.red ]
+      "TRANSACTION ERROR: Invalid index fund number.\n"
   else
     let shares = int_of_string (List.nth invest 1) in
     let index_fund = List.nth Init.index_funds index_n in
     let curr_price = Stock.get_current_price index_fund in
     let cost = float shares *. curr_price in
     if User.get_cash u -. cost < 0.0 then
-      print_endline
+      ANSITerminal.print_string [ ANSITerminal.red ]
         "TRANSACTION ERROR: You do not have enough cash to purchase \
          this stock \n"
     else (
@@ -241,10 +243,10 @@ let checkstock_helper invest =
   let b = legal_stock_history stock_history_lst s in
   let c = string_of_float (User.get_stocks_pl st b) in
   if float_of_string c < 0. then
-    print_string
+    ANSITerminal.print_string [ ANSITerminal.green ]
       ("Your stocks currently has a loss $" ^ c ^ " dollars \n")
   else
-    print_string
+    ANSITerminal.print_string [ ANSITerminal.red ]
       ("Your stocks currently has a gain $" ^ c ^ " dollars \n")
 
 let the_user_portfolio_percent u =
@@ -257,28 +259,36 @@ let the_user_portfolio_percent u =
          (User.get_portfolio_percent u Init.stocks Init.index_funds)
          0)
   in
-  print_string ("Cash: (" ^ percent_cash ^ "%)" ^ "\n");
+  ANSITerminal.print_string [ ANSITerminal.cyan ]
+    ("Cash: (" ^ percent_cash ^ "%)" ^ "\n");
   let percent_stock =
     string_of_float
       (List.nth
          (User.get_portfolio_percent u Init.stocks Init.index_funds)
          1)
   in
-  print_string ("Stock: (" ^ percent_stock ^ "%)" ^ "\n");
+  ANSITerminal.print_string [ ANSITerminal.cyan ]
+    ("Stock: (" ^ percent_stock ^ "%)" ^ "\n");
   let percent_index =
     string_of_float
       (List.nth
          (User.get_portfolio_percent u Init.stocks Init.index_funds)
          2)
   in
-  print_string ("Index: (" ^ percent_index ^ "%)" ^ "\n");
+  ANSITerminal.print_string [ ANSITerminal.cyan ]
+    ("Index: (" ^ percent_index ^ "%)" ^ "\n");
   let percent_cd =
     string_of_float
       (List.nth
          (User.get_portfolio_percent u Init.stocks Init.index_funds)
          3)
   in
-  print_string ("CD: (" ^ percent_cd ^ "%)" ^ "\n")
+  ANSITerminal.print_string [ ANSITerminal.cyan ]
+    ("CD: (" ^ percent_cd ^ "%)" ^ "\n")
+
+let display_cash u curr =
+  let c = string_of_float (User.get_cash u) in
+  print_string ("Your current cash is " ^ curr ^ c ^ "\n")
 
 let view com u (curr : string) =
   give_user_income_if_needed u;
@@ -290,9 +300,7 @@ let view com u (curr : string) =
     | BuyCD invest -> buy_cd u invest
     | SellCD invest -> sell_cd u invest
     | Help -> print_string Init.instructions
-    | Cash ->
-        let c = string_of_float (User.get_cash u) in
-        print_string ("Your current cash is " ^ curr ^ c ^ "\n")
+    | Cash -> display_cash u curr
     | Networth -> user_networth u curr
     | Buy_S invest -> buy_shares u invest
     | Sell_S invest -> sell_shares u invest

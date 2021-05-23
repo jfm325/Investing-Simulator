@@ -65,6 +65,8 @@ val checklegalterm : int -> Cd.term
   returns the stock*)
 val legal : Stock.t list -> Stock.ticker_symbol -> Stock.t
 
+val the_user_portfolio_percent : User.t -> unit
+
 (** [view com u] executes the parsed command that was the player's (u)
     input and displays on the command line. If the user tries to
     buy/sell a stock whose share doesn't exist in the market then
