@@ -18,4 +18,4 @@ val get_net_worth : t -> float
 
 (*makes the bot invest 200000. in index funds semi-annually until game
   ends*)
-val purchase_indexfunds : t -> unit
+(* val purchase_indexfunds : t -> unit *)

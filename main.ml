@@ -179,7 +179,7 @@ let parse_input_helper () =
 let rec prompt_input () =
   if has_game_ended Game.s_per_month then end_game_function ()
   else (
-    Bot.purchase_indexfunds bot;
+    (* Bot.purchase_indexfunds bot; *)
     print_string prompt_str;
     parse_input_helper ();
     let time_elapsed =
