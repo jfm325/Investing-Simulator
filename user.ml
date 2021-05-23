@@ -63,6 +63,23 @@ let get_net_worth u stocks_lst indexfunds_lst =
   u.net_worth <- u.cash +. stocks_value +. index_value +. cds_value;
   u.net_worth
 
+let get_portfolio_percent u stocks_lst indexfunds_lst =
+  let round2 n = Float.(n *. 100.0 |> round |> fun x -> x /. 100.0) in
+  let sh_lst = Portfolio.get_stock_history u.portfolio in
+  let ih_list = Portfolio.get_index_history u.portfolio in
+  let cd_h = Portfolio.get_cd_history u.portfolio in
+  let cds_value = Cd_history.get_investment_value cd_h in
+  let index_value =
+    calculate_networth_index ih_list indexfunds_lst 0. 0
+  in
+  let stocks_value = calculate_networth_stock sh_lst stocks_lst 0. 0 in
+  let networth = u.cash +. stocks_value +. index_value +. cds_value in
+  let cash_pecent = round2 (u.cash /. networth *. 100.0) in
+  let stock_percent = round2 (stocks_value /. networth *. 100.0) in
+  let index_percent = round2 (index_value /. networth *. 100.0) in
+  let cd_percent = round2 (cds_value /. networth *. 100.0) in
+  [ cash_pecent; stock_percent; index_percent; cd_percent ]
+
 let change_cash_buy u shares stock =
   let curr_price = Stock.get_current_price stock in
   let value = float shares *. curr_price in

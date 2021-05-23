@@ -15,6 +15,7 @@ type command =
   | Sell_S of invest
   | Cash
   | Networth
+  | Portfolio_percent
   | Checkstock of invest
   | Help
   | BuyCD of invest
@@ -246,6 +247,39 @@ let checkstock_helper invest =
     print_string
       ("Your stocks currently has a gain $" ^ c ^ " dollars \n")
 
+let the_user_portfolio_percent u =
+  Stock.update_current_prices Init.stocks (Game.get_start_time ());
+  Stock.update_current_prices Init.index_funds (Game.get_start_time ());
+  print_endline "Portfolio";
+  let percent_cash =
+    string_of_float
+      (List.nth
+         (User.get_portfolio_percent u Init.stocks Init.index_funds)
+         0)
+  in
+  print_string ("Cash: (" ^ percent_cash ^ "%)" ^ "\n");
+  let percent_stock =
+    string_of_float
+      (List.nth
+         (User.get_portfolio_percent u Init.stocks Init.index_funds)
+         1)
+  in
+  print_string ("Stock: (" ^ percent_stock ^ "%)" ^ "\n");
+  let percent_index =
+    string_of_float
+      (List.nth
+         (User.get_portfolio_percent u Init.stocks Init.index_funds)
+         2)
+  in
+  print_string ("Index: (" ^ percent_index ^ "%)" ^ "\n");
+  let percent_cd =
+    string_of_float
+      (List.nth
+         (User.get_portfolio_percent u Init.stocks Init.index_funds)
+         3)
+  in
+  print_string ("CD: (" ^ percent_cd ^ "%)" ^ "\n")
+
 let view com u (curr : string) =
   give_user_income_if_needed u;
   try
@@ -265,6 +299,7 @@ let view com u (curr : string) =
     | Buy_Index invest -> buy_index u invest
     | Sell_Index invest -> sell_index u invest
     | Checkstock invest -> checkstock_helper invest
+    | Portfolio_percent -> the_user_portfolio_percent u
   with Not_found ->
     print_string "Invalid stock not found in market. \n"
 
@@ -274,6 +309,8 @@ let helper_parse player instr invest curr =
   else if instr = "bot" then view BotNetworth player curr
   else if instr = "view_index" then view ViewIndex player curr
   else if instr = "networth" then view Networth player curr
+  else if instr = "portfolio_percent" then
+    view Portfolio_percent player curr
   else if instr = "help" then view Help player curr
   else if instr = "sell_index" && invest <> [ "" ] then
     view (Sell_Index invest) player curr

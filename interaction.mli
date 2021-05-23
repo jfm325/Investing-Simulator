@@ -26,6 +26,7 @@ type command =
   | Sell_S of invest
   | Cash
   | Networth
+  | Portfolio_percent
   | Checkstock of invest
   | Help
   | BuyCD of invest

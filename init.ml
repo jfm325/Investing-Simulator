@@ -72,6 +72,7 @@ let instructions =
    See index_funds:    view_index \n\
    See networth:       networth\n\
    See on-hand cash:   cash\n\
+   See Portfolio Percentage :  portfolio_percent\n\
    See specific stock: checkstock [ticker_symbol]\n\
    Buy_index:   buy_index [index_fund_#] [# of shares]\n\
    Sell_index:  sell_index [index_fund_#] [# of shares]\n\

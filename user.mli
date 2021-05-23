@@ -35,6 +35,11 @@ val add_income_cash : t -> float -> unit
    user [u]. *)
 val get_net_worth : t -> Stock.t list -> Stock.t list -> float
 
+(* [get_net_worth u stocks_lst indexfunds_lst] return the net worth of
+   user [u]. *)
+val get_portfolio_percent :
+  t -> Stock.t list -> Stock.t list -> float list
+
 (** [change_cash_buy u shares stock] changes the user [u]'s cash when
     buying shares of an index fund or stock. *)
 val change_cash_buy : t -> int -> Stock.t -> unit
