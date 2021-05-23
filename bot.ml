@@ -62,4 +62,4 @@ let purchase_indexfunds bot =
   let ended = Game.game_ended () in
   let time = int_of_float (Unix.time () -. Game.get_start_time ()) in
   let i = if ended then 239 else time / Game.s_per_month in
-  if i mod 6 = 0 then buy_index_bot bot i
+  if i mod 3 = 0 then buy_index_bot bot i
