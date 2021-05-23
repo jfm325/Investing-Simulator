@@ -222,7 +222,7 @@ let rec prompt_for_start () =
 
 let main () =
   ANSITerminal.print_string [ ANSITerminal.green ] Init.intro_string;
-  print_endline Init.instructions;
+  ANSITerminal.print_string [ ANSITerminal.yellow ] Init.instructions;
   prompt_for_start ()
 
 let () = main ()
