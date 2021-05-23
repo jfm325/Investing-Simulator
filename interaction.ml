@@ -89,42 +89,87 @@ let checklegalterm t =
   else if t = 3 then ThreeYears
   else raise BadCommand
 
+(* [print_maturity_helper] is the helper function for [pp_print_cd] to
+   print the time until maturity of cds. Green text color for 0 months
+   left and red otherwise. *)
+let rec print_maturity_helper (lst : int list) =
+  match lst with
+  | [] -> ()
+  | h :: t ->
+      let months = string_of_int h in
+      let color =
+        match h with
+        | h' when h' <= 0 -> ANSITerminal.green
+        | h' when h' > 0 -> ANSITerminal.red
+        | _ -> ANSITerminal.default
+      in
+      ANSITerminal.print_string [ color ] (months ^ "\t\t");
+      print_maturity_helper t
+
+(* [print_collect_value_helper] is the helper function for [pp_print_cd]
+   to print the collect value of cds. Green text color for matured cds
+   and red otherwise. *)
+let rec print_collect_value_helper (lst : (bool * float) list) =
+  match lst with
+  | [] -> ()
+  | (b, value) :: t ->
+      let collect_value = string_of_float value in
+      let color =
+        match b with
+        | true -> ANSITerminal.green
+        | false -> ANSITerminal.red
+      in
+      let spacing = " | \t" in
+      ANSITerminal.print_string [ color ] collect_value;
+      ANSITerminal.print_string [ ANSITerminal.default ] spacing;
+      print_collect_value_helper t
+
 (* [pp_print_cd] is the helper function for [print_cd] to print info
    about owned cds . *)
-let pp_print_cd num term_str maturity_str apy_str =
+let pp_print_cd num term_str apy_str maturity_lst amt_lst =
+  let mat_str = "Months til Maturity:    " in
   let penalty_warning =
     "** 10% penalty if collected before maturity **\n"
   in
+  let collect_val_str = "Collect Value:\t\t" in
+  let mat_lst = List.rev maturity_lst in
+  let collect_value_lst = List.rev amt_lst in
   print_endline Init.bar;
-  ANSITerminal.print_string [ ANSITerminal.yellow ] "YOUR CDs";
+  ANSITerminal.print_string [ ANSITerminal.yellow ] "YOUR CDs ";
+  ANSITerminal.print_string [ ANSITerminal.red ] "(Can own a MAX of 3)";
   print_endline ("\n" ^ Init.bar);
-  print_endline num;
-  print_endline term_str;
-  print_endline maturity_str;
-  print_endline apy_str;
-  print_endline bar;
+  print_string (num ^ "\n" ^ term_str ^ "\n" ^ apy_str ^ "\n" ^ mat_str);
+  print_maturity_helper mat_lst;
+  print_endline "";
+  print_string collect_val_str;
+  print_collect_value_helper collect_value_lst;
+  print_endline ("\n" ^ bar);
   ANSITerminal.print_string [ ANSITerminal.red ] penalty_warning
+
+(* [print_cd_helper] is the helper function for [print_cd] to print out
+   info about cds owned. *)
+let rec print_cd_helper his_lst (lst : Cd.t list) num term apy_str
+    mat_lst amt_lst c =
+  match lst with
+  | [] -> pp_print_cd num term apy_str mat_lst amt_lst
+  | cd :: t ->
+      let collect_value = Cd.get_current_value cd in
+      let is_matured = Cd.is_cd_matured cd in
+      let amt_tuple = (is_matured, collect_value) in
+      print_cd_helper his_lst t
+        (num ^ string_of_int c ^ "\t\t")
+        (term ^ string_of_int (Cd.get_length cd) ^ "\t\t")
+        (apy_str ^ string_of_float (Cd.get_apy_percentage cd) ^ "\t\t")
+        (Cd.months_until_maturity cd :: mat_lst)
+        (amt_tuple :: amt_lst) (c + 1)
 
 (* [print_cd] prints info about cds owned. *)
 let print_cd his_lst lst count =
-  let num = "Cd:                    " in
-  let term = "Term (months):         " in
-  let maturity = "Months until Maturity: " in
-  let apy = "APY (%):               " in
+  let num = "Cd:\t\t\t" in
+  let term = "Term (months):\t\t" in
+  let apy = "APY (%):\t\t" in
   let c = 1 in
-  let rec print_cd_helper his_lst (lst : Cd.t list) num term mat_str
-      apy_str c =
-    match lst with
-    | [] -> pp_print_cd num term mat_str apy_str
-    | h :: t ->
-        print_cd_helper his_lst t
-          (num ^ string_of_int c ^ "\t")
-          (term ^ string_of_int (Cd.get_length h) ^ "\t")
-          (mat_str ^ string_of_int (Cd.months_until_maturity h) ^ "\t")
-          (apy_str ^ string_of_float (Cd.get_apy_percentage h) ^ "\t")
-          (c + 1)
-  in
-  print_cd_helper his_lst lst num term maturity apy c
+  print_cd_helper his_lst lst num term apy [] [] c
 
 (* [times_income_received] is the numer of times the user has received
    their $10k income every 6 months. *)
@@ -158,6 +203,7 @@ let display_index u =
 let displaycd u =
   let p = User.get_portfolio u in
   let cd_h = Portfolio.get_cd_history p in
+  Cd_history.update_cd_lst_values cd_h;
   let c_lst = Cd_history.get_cd_lst cd_h in
   print_cd cd_h c_lst 1
 

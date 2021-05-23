@@ -153,7 +153,6 @@ let end_game_function () =
     "User Portfolio Score \n";
   view_percent ()
 
-(*view_percent ()*)
 
 (** [parse_input_helper] reads the user input and calls corresponding
     commands. *)
