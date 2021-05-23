@@ -14,7 +14,8 @@ let get_current_apy cd_h =
   let time = int_of_float (current_time -. start_time) in
   let seconds_per_year = Game.s_per_month * 12 in
   let index = time / seconds_per_year in
-  cd_h.interest_rates.(index)
+  let index' = if index > 19 then 19 else index in
+  cd_h.interest_rates.(index')
 
 let get_cd_lst cd_hist = cd_hist.cd_lst
 
