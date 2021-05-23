@@ -1,3 +1,5 @@
+(*TEST PLAN*)
+
 open OUnit2
 open Stock
 open User
