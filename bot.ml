@@ -5,7 +5,7 @@ open Stock
 type t = {
   mutable index_hist : Index_history.i list;
   index_price_arr : float array;
-  mutable networth : float; (* mutable shares : int; *)
+  mutable networth : float;
 }
 
 let create_index_price_array filename n =
@@ -22,11 +22,14 @@ let create_index_price_array filename n =
   in
   fill_array (Array.create_float n)
 
-let create_bot =
+let path = "data/"
+
+let create_bot () =
   {
     index_hist = [];
-    index_price_arr = create_index_price_array "spy_index1995.txt" 240;
-    networth = 0. (* shares = 0; *);
+    index_price_arr =
+      create_index_price_array (path ^ "spy_index1995.txt") 240;
+    networth = 0.;
   }
 
 let get_index_price_lst bot = bot.index_price_arr
@@ -78,15 +81,3 @@ let calc_net_worth bot =
   invest_value +. total_cash
 
 let get_net_worth bot = calc_net_worth bot
-
-(* let buy_index_bot bot i = let price = (get_index_price_lst bot).(i)
-   in let n = int_of_float (200000. /. price) in let index_new =
-   Index_history.create_index_history "SPY" in let sh =
-   Index_history.buy index_new price n in bot.index_hist <- sh ::
-   bot.index_hist; bot.shares <- bot.shares + n; bot.networth <-
-   calc_net_worth bot.index_hist bot 0. *)
-
-(* let purchase_indexfunds bot = let ended = Game.game_ended () in let
-   time = int_of_float (Unix.time () -. Game.get_start_time ()) in let i
-   = if ended then 239 else time / Game.s_per_month in if i mod 3 = 0
-   then buy_index_bot bot i *)

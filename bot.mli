@@ -10,12 +10,8 @@ type t
 val create_index_price_array : string -> int -> float array
 
 (*creates a bot in the game*)
-val create_bot : t
+val create_bot : unit -> t
 
 (*returns the networth of the bot after it invests in a half-yearly
   basis*)
 val get_net_worth : t -> float
-
-(*makes the bot invest 200000. in index funds semi-annually until game
-  ends*)
-(* val purchase_indexfunds : t -> unit *)
