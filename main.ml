@@ -88,13 +88,13 @@ let rec print_stocks_helper stock_lst ticker_str price_str shares_str
   | [] -> pp_print_stocks ticker_str price_str shares_str pl_lst per_lst
   | h :: t ->
       let sh = List.nth Init.stock_history_lst index in
-      let ticker = Stock.get_ticker h in
+      let ticker = Stock.get_name h in
       let num_shares = get_shares sh in
       let pl = User.get_stocks_pl h sh in
       let per = Stock.get_percent_change h in
       let index_fund_num = "(" ^ string_of_int (index + 1) ^ ")" in
       print_stocks_helper t
-        (ticker_str ^ ticker ^ index_fund_num ^ "\t\t")
+        (ticker_str ^ ticker ^ index_fund_num ^ "\t")
         (price_str ^ string_of_float (get_current_price h) ^ "\t\t")
         (shares_str ^ string_of_int num_shares ^ "\t\t")
         (pl :: pl_lst) (per :: per_lst) (index + 1)
@@ -113,7 +113,7 @@ let rec print_index_helper index_lst ticker_str price_str shares_str
   | [] -> pp_print_index ticker_str price_str shares_str pl_lst per_lst
   | h :: t ->
       let sh = List.nth Init.index_history_lst index in
-      let ticker = Stock.get_ticker h in
+      let ticker = Stock.get_name h in
       let num_shares = Index_history.get_shares sh in
       let pl = User.get_index_pl h sh in
       let per = Stock.get_percent_change h in
@@ -127,7 +127,7 @@ let rec print_index_helper index_lst ticker_str price_str shares_str
 (* [print_index index_lst] prints the index fund info and performance in
    [index_lst]. *)
 let print_index index_lst =
-  print_index_helper index_lst Init.ticker_str Init.prices_str
+  print_index_helper index_lst "Index Fund:\t" Init.prices_str
     Init.shares_str [] [] 0
 
 (** [has_game_ended s] returns true when in-game time has reached or
@@ -152,7 +152,6 @@ let end_game_function () =
   ANSITerminal.print_string [ ANSITerminal.yellow ]
     "User Portfolio Score \n";
   view_percent ()
-
 
 (** [parse_input_helper] reads the user input and calls corresponding
     commands. *)
