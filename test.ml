@@ -150,8 +150,11 @@ let stock_test test_name (stock : Stock.t) (name : string)
   assert_equal price (get_price stock index) ~printer:string_of_float
 
 let stock_tests =
-  let coke = Stock.create_stock "Coke" "COKE" "coke1995.txt" in
-  let spy = Stock.create_stock "S&P500" "S&P500" "spy_index1995.txt" in
+  let path = "data/" in
+  let coke = Stock.create_stock "Coke" "COKE" (path ^ "coke1995.txt") in
+  let spy =
+    Stock.create_stock "S&P500" "S&P500" (path ^ "spy_index1995.txt")
+  in
   [
     stock_test "COKE: Price at index 0 = 28." coke "Coke" "COKE" 28. 0;
     stock_test "COKE: Price at index 239 (Last Index) = 97.54" coke
@@ -170,10 +173,16 @@ let stock_tests =
       "S&P500" "S&P500" 199.45 239;
   ]
 
+(* [cash_test] is the test for module User. User.cash is tested to see
+   if the user cash is being updated to match the expected output *)
 let cash_test test_name (user : User.t) (cash : float) =
   test_name >:: fun _ ->
   assert_equal cash (User.get_cash user) ~printer:string_of_float
 
+(* [buy_stock_test] is the test for module User. User.buy_stock is
+   tested to see if the user cash and stock portfolio are being updated
+   to match the expected output. It also test to see if you have enough
+   cash to purchase a stock *)
 let buy_stock_test test_name (user : User.t) (stock_n : int)
     (shares : int) (length : int) =
   test_name >:: fun _ ->
@@ -191,6 +200,10 @@ let buy_stock_test test_name (user : User.t) (stock_n : int)
        0)
     ~printer:string_of_int
 
+(* [buy_index_test] is the test for module User. User.buy_index is
+   tested to see if the user cash and index portfolio are being updated
+   to match the expected output.It also test to see if you have enough
+   cash to purchase a index. *)
 let buy_index_test test_name (user : User.t) (stock_name : string)
     (shares : int) (length : int) =
   test_name >:: fun _ ->
@@ -200,7 +213,7 @@ let buy_index_test test_name (user : User.t) (stock_name : string)
   if User.get_cash user -. cost < 0.0 || shares < 0 then
     print_endline
       "TRANSACTION ERROR: You do not have enough cash to purchase this \
-       stock \n"
+       index \n"
   else User.buy_index shares user (legal index_funds stock_name);
   assert_equal length
     (User.get_shares_ih_lst
@@ -208,14 +221,17 @@ let buy_index_test test_name (user : User.t) (stock_name : string)
        0)
     ~printer:string_of_int
 
+(* [sell_stock_test] is the test for module User. User.sell_stock is
+   tested to see if the user cash and stock portfolio are being updated
+   to match the expected output. It also test to see if you have enough
+   stock to sell *)
 let sell_stock_test test_name (user : User.t) (nums : int)
     (shares : int) (length : int) =
   test_name >:: fun _ ->
   Stock.update_current_prices stocks (Game.get_start_time ());
   if shares < 0 then
     print_endline
-      "TRANSACTION ERROR: You do not have enough cash to purchase this \
-       stock \n"
+      "TRANSACTION ERROR: You do not own enough stocks to sell \n"
   else
     User.sell_stock shares user (List.nth Init.stocks nums) (nums : int);
   assert_equal length
@@ -224,19 +240,25 @@ let sell_stock_test test_name (user : User.t) (nums : int)
        0)
     ~printer:string_of_int
 
+(* [sell_index_test] is the test for module User. User.sell_index is
+   tested to see if the user cash and index portfolio are being updated
+   to match the expected output. It also test to see if you have enough
+   index to sell *)
 let sell_index_test test_name (user : User.t) (shares : int) (num : int)
     (length : int) =
   test_name >:: fun _ ->
   Stock.update_current_prices index_funds (Game.get_start_time ());
   if shares < 0 then
     print_endline
-      "TRANSACTION ERROR: You do not have enough cash to purchase this \
-       stock \n"
+      "TRANSACTION ERROR:You do not own enough stocks to sell  \n"
   else User.sell_index shares user (List.nth Init.index_funds num) num;
   assert_equal length
     (User.get_shares_ih_lst Init.index_history_lst 0)
     ~printer:string_of_int
 
+(* [networth_test] is the test for module User. User.networth is tested
+   to see if the user networth is being updated to match the expected
+   output.*)
 let networth_test test_name (user : User.t) (networth : float) =
   test_name >:: fun _ ->
   Stock.update_current_prices stocks (Game.get_start_time ());
