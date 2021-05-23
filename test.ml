@@ -1,4 +1,52 @@
-(*TEST PLAN*)
+(* TEST PLAN *)
+
+(* Parts automatically tested by Ounit vs manually tested *)
+(* -Most of our testing is done automatically by Ounit , where we call
+   the necessary testing functions to assert if the expected value
+   equals the output. For example, this is seen in the tests for Cd in
+   cd_math_tests and cd_tests *)
+
+(* -Manually tested was the buy/sell of stocks and index funds and
+   checking the networth of the user. This was done because it was
+   desired that the purchase of investment portfolios and update of user
+   networth be independent from the normal Game play out. Some examples
+   of manual testing are seen in buy_stock_test and networth_test *)
+
+(* Modules tested by Ounit amd how test cases were developed *)
+(* The modules tested by Ounit are : *)
+(* -Stock *)
+(* -User *)
+(* - Cd *)
+(* - Cd_history *)
+(* - Index_History *)
+
+(* - indirectly tested was the Game module which handles the time
+   functinality of the progaram and the Interaction module which handles
+   updating networth and syncs the commands in the game to the various
+   features being tested here *)
+
+(* - We used a combination of black box, glass box, randomized testing.
+   Our testing was in otself randomized becuase we choose random indexes
+   in the price float array for stocks and index_funds while testing.
+   Black box testing was used in Cd and Stock testing. White box testing
+   was used for testing cash, networth and the buy/sell of stocks and
+   invest_funds *)
+
+(* Argument for why the testing approach demonstrates the correctness of
+   the system *)
+
+(* - Our testing approach is holistic because it runs a small demo of an
+   actual game playout and seeks to test out a subset of all possible
+   ineractions that the player might encounter while playing the game.
+   There are several test cases that seek to test the functionality of
+   the game and hether it is performing as expected by asserting the
+   returned values with the correct ouput. We alse check that the game
+   handles edge cases (seen in Cd testing) and failed commands i.e
+   transaction errors. Since the Stock Simulation game is played on the
+   terminal, handling unexpected commands that lead to transaction
+   errors (for example this might occur due to user having insufficient
+   cash/ stocks while buying/selling) is extremely important for smooth
+   perfomance of the game in real time *)
 
 open OUnit2
 open Stock
