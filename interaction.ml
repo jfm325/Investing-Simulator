@@ -284,16 +284,24 @@ let sell_index u invest =
 
 let checkstock_helper invest =
   Stock.update_current_prices stocks (Game.get_start_time ());
-  let s = List.hd invest in
-  let st = legal stocks s in
-  let b = legal_stock_history stock_history_lst s in
-  let c = string_of_float (User.get_stocks_pl st b) in
-  if float_of_string c < 0. then
-    ANSITerminal.print_string [ ANSITerminal.green ]
-      ("Your stocks currently has a loss $" ^ c ^ " dollars \n")
-  else
+  let stock_n = int_of_string (List.hd invest) - 1 in
+  let num_of_stocks = List.length Init.stocks in
+  if stock_n < 0 || stock_n >= num_of_stocks then
     ANSITerminal.print_string [ ANSITerminal.red ]
-      ("Your stocks currently has a gain $" ^ c ^ " dollars \n")
+      "TRANSACTION ERROR: Invalid index fund number.\n"
+  else
+    let stock = List.nth Init.stocks stock_n in
+    let stock_hist = List.nth Init.stock_history_lst stock_n in
+    let pl = User.get_stocks_pl stock stock_hist in
+    let pl_str = string_of_float pl in
+    match pl with
+    | pl' when pl' < 0. ->
+        ANSITerminal.print_string [ ANSITerminal.red ]
+          ("Your stocks currently has a loss $" ^ pl_str ^ " dollars \n")
+    | pl' when pl' = 0. -> print_string "No profit/loss on this stock\n"
+    | _ ->
+        ANSITerminal.print_string [ ANSITerminal.green ]
+          ("Your stocks currently has a gain $" ^ pl_str ^ " dollars \n")
 
 let the_user_portfolio_percent u =
   Stock.update_current_prices Init.stocks (Game.get_start_time ());
@@ -363,8 +371,7 @@ let helper_parse player instr invest curr =
   else if instr = "bot" then view BotNetworth player curr
   else if instr = "view_index" then view ViewIndex player curr
   else if instr = "networth" then view Networth player curr
-  else if instr = "portfolio_percent" then
-    view Portfolio_percent player curr
+  else if instr = "portfolio" then view Portfolio_percent player curr
   else if instr = "help" then view Help player curr
   else if instr = "sell_index" && invest <> [ "" ] then
     view (Sell_Index invest) player curr
