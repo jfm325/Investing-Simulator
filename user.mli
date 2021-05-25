@@ -1,7 +1,7 @@
-(* Representation of a User.
+(** Representation of a User.
 
-   This module contains the data stored for a user's financial info.
-   Contains current cash, networth, and their portfolio. *)
+    This module contains the data stored for a user's financial info.
+    Contains current cash, networth, and their portfolio. *)
 
 (* The type of record user. *)
 type t

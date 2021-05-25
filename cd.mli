@@ -1,6 +1,6 @@
-(* Representation of a cd (Certificate of Deposit).
+(** Representation of a cd (Certificate of Deposit).
 
-   This module represents a cd in the simulation and contains the *)
+    This module represents a cd in the simulation and contains the *)
 
 (** The abstract type for the length until maturity of a cd. *)
 type term = SixMonths | OneYear | ThreeYears

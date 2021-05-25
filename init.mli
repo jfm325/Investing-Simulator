@@ -1,7 +1,7 @@
-(* Representation of info to initialize game.
+(** Representation of info to initialize game.
 
-   This module contains info to intiliaze stocks, index funds, cds,
-   user, and bot in the game. Also contains strings used in display. *)
+    This module contains info to intiliaze stocks, index funds, cds,
+    user, and bot in the game. Also contains strings used in display. *)
 
 (** [stocks] is the list of stocks in the game. *)
 val stocks : Stock.t list

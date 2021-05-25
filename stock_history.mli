@@ -1,7 +1,7 @@
-(* Representation of investment history in stocks.
+(** Representation of investment history in stocks.
 
-   This module represents a user's investment history in stocks.
-   Includes buy-in prices and number of shares owned. *)
+    This module represents a user's investment history in stocks.
+    Includes buy-in prices and number of shares owned. *)
 
 (** The abstract type for a portfolio. *)
 type t

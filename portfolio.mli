@@ -1,7 +1,7 @@
-(* Representation of an investment portfolio.
+(** Representation of an investment portfolio.
 
-   This module represents a portfolio in the simulation and contains a
-   user's investments. *)
+    This module represents a portfolio in the simulation and contains a
+    user's investments. *)
 
 (** The abstract type for a portfolio. *)
 type t

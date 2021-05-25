@@ -1,5 +1,5 @@
-(* This module handles the time in the game and determines when the game
-   has ended. *)
+(** This module handles the time in the game and determines when the
+    game has ended. *)
 
 (** [start_time] is the start time of the game represented in float
     format *)

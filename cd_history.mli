@@ -1,7 +1,7 @@
-(* Representation of investment history in cds (Certificate of
-   Deposits).
+(** Representation of investment history in cds (Certificate of
+    Deposits).
 
-   This module represents a user's investment history in cds. *)
+    This module represents a user's investment history in cds. *)
 
 (** The abstract type for investment history in cds. *)
 type t
