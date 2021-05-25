@@ -23,7 +23,7 @@ build:
 	$(OCAMLBUILD) $(OBJECTS)
 
 zip:
-	zip stock_simulator.zip *.ml* *.txt *.sh _tags .merlin .ocamlformat .ocamlinit Makefile	
+	zip stock_simulator.zip *.ml* data/* *.txt *.sh _tags .merlin .ocamlformat .ocamlinit Makefile	
 
 docs: docs-public docs-private
 	
