@@ -20,7 +20,10 @@ val get_ticker : i -> string
 (** [get_shares sh] is the number of shares owned for stock history
     [sh]. *)
 val get_shares : i -> int
+(** [sell ih n] calls the helper method update_sell to sell the stock and
+ subtracts n shares from the stock *)
 val sell : i -> int -> unit
+(** [update_sell sh n] removes shares from the index.buy_in_prices *)
 val update_sell : i -> int -> unit
 (** [get_buy_in_prices sh] is the buy_in_prices for stock history [sh]. *)
 val get_buy_in_prices : i -> (float * int) list

@@ -27,20 +27,29 @@ val user : User.t
 (** [bot] contains info about the bot in the game. *)
 val bot : Bot.t
 
+(** [bar] string representation of bar *)
 val bar : string
 
+(** [shares_str] string representation of shares *)
 val shares_str : string
 
+(** [percent_str] string representation of percent *)
 val percent_str : string
 
+(** [tickers_str] string representation of tickers *)
 val ticker_str : string
 
+(** [index_fund_str] string representation of index funds *)
 val index_fund_str : string
 
+(** [prices_str] string representation of prices *)
 val prices_str : string
 
+(** [profit_loss_str] string representation of profit or loss *)
 val profit_loss_str : string
 
+(** [intro_string ] string representation of intro of the game *)
 val intro_string : string
 
+(** [instructions] string representation of instructions of the game *)
 val instructions : string

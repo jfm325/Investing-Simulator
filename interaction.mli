@@ -35,6 +35,7 @@ type command =
   | ViewIndex
   | BotNetworth
 
+(** The type [currency] represents a player currency for the game*)
 type currency =
   | USD
   | CAD
@@ -55,6 +56,7 @@ exception BadCommand
 (*converts currency to symbol*)
 val curr_symb : currency -> string
 
+(*match the type of currency the user wants*)
 val match_type_curr : string -> currency
 
 (*Converts int to Cd term length, if 1 then SixMonths, 2 then OneYear, 3
@@ -65,6 +67,8 @@ val checklegalterm : int -> Cd.term
   returns the stock*)
 val legal : Stock.t list -> Stock.ticker_symbol -> Stock.t
 
+(*breaks the user portfolio by percentages of what they own in each
+  asset*)
 val the_user_portfolio_percent : User.t -> unit
 
 (** [view com u] executes the parsed command that was the player's (u)
