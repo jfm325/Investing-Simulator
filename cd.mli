@@ -8,8 +8,8 @@ type term = SixMonths | OneYear | ThreeYears
 (** The abstract type for a stock. *)
 type t
 
-(* [match_new_rate l r] is the new rate based on the rate for 1 year
-   [r], and the length [l] of the cd. *)
+(** [match_new_rate l r] is the new rate based on the rate for 1 year
+    [r], and the length [l] of the cd. *)
 val match_new_rate : term -> float -> float
 
 (** [get_apy_percentage cd] is the percent form of the apy for cd [cd]. *)

@@ -19,20 +19,20 @@ val get_name : t -> stock_name
 (** [get_ticker s] is the ticker symbol of stock [s]. *)
 val get_ticker : t -> ticker_symbol
 
-(* [get_price s i] is the price of the stock [s] at index [i] of the
-   array of prices. Requires: [i] is a valid index in the range 0 -
-   length of array. *)
+(** [get_price s i] is the price of the stock [s] at index [i] of the
+    array of prices. Requires: [i] is a valid index in the range 0 -
+    length of array. *)
 val get_price : t -> int -> float
 
-(* [get_current_price s] is the current price of the stock [s]. *)
+(** [get_current_price s] is the current price of the stock [s]. *)
 val get_current_price : t -> float
 
-(* [get_percent_change s] is the current percent change of the stock
-   [s]. *)
+(** [get_percent_change s] is the current percent change of the stock
+    [s]. *)
 val get_percent_change : t -> float
 
-(* [update_current_prices lst start_time] updates the current prices of
-   stocks in [lst] based on the current time.*)
+(** [update_current_prices lst start_time] updates the current prices of
+    stocks in [lst] based on the current time.*)
 val update_current_prices : t list -> float -> unit
 
 (** [create_stock n t f] is the stock with name [n], ticker symbol [t],

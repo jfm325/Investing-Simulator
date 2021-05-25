@@ -53,22 +53,22 @@ exception EmptyCommand
 (** Raised when a bad command is encountered. *)
 exception BadCommand
 
-(*converts currency to symbol*)
+(**[curr_symb curr] converts currency to symbol*)
 val curr_symb : currency -> string
 
-(*match the type of currency the user wants*)
+(**[match_type_curr str] match the type of currency the user wants*)
 val match_type_curr : string -> currency
 
-(*Converts int to Cd term length, if 1 then SixMonths, 2 then OneYear, 3
-  then 3Years*)
+(**[checklegalterm t ] converts int to Cd term length, if 1 then
+   SixMonths, 2 then OneYear, 3 then 3Years*)
 val checklegalterm : int -> Cd.term
 
-(*Checks if the stock ticker exists in the markey, if it legally exits
-  returns the stock*)
+(**[legal list symb] checks if the stock ticker exists in the market, if
+   it legally exits returns the stock*)
 val legal : Stock.t list -> Stock.ticker_symbol -> Stock.t
 
-(*breaks the user portfolio by percentages of what they own in each
-  asset*)
+(**[the_user_portfolio_percent u] breaks the user portfolio by
+   percentages of what they own in each asset*)
 val the_user_portfolio_percent : User.t -> unit
 
 (** [view com u] executes the parsed command that was the player's (u)
